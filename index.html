@@ -35,7 +35,7 @@
         .btn-3d {
             transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 8px 0px rgba(0,0,0,0.15), 0 15px 20px rgba(0,0,0,0.1);
-            transform: translateY(0);
+            transform: translateY(0); cursor: pointer;
         }
         .btn-3d:active {
             transform: translateY(8px); box-shadow: 0 0px 0px rgba(0,0,0,0.15), 0 5px 5px rgba(0,0,0,0.1);
@@ -52,11 +52,11 @@
         .confetti { position: absolute; width: 12px; height: 24px; animation: fall 3s linear forwards; }
         @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
 
-        #balloon-area { position: absolute; inset: 0; z-index: 20; overflow: hidden; }
-        .balloon-wrapper { position: absolute; cursor: pointer; display: flex; flex-direction: column; items-center; animation: floatUp var(--speed) ease-in forwards, wobble 3s ease-in-out infinite alternate; pointer-events: auto; }
+        #balloon-area { position: absolute; inset: 0; z-index: 20; overflow: hidden; pointer-events: none; }
+        .balloon-wrapper { position: absolute; cursor: pointer; display: flex; flex-direction: column; align-items: center; animation: floatUp var(--speed) ease-in forwards, wobble 3s ease-in-out infinite alternate; pointer-events: auto; }
         .balloon-body {
             width: 90px; height: 110px; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
-            display: flex; align-items: center; justify-content: center; font-size: 3rem;
+            display: flex; align-items: center; justify-content: center; font-size: 2.8rem;
             box-shadow: inset -10px -10px 20px rgba(0,0,0,0.2), 0 10px 15px rgba(0,0,0,0.2);
             position: relative; transition: transform 0.1s;
         }
@@ -90,7 +90,6 @@
 
     <!-- Screen 2: Dashboard -->
     <div id="screen-dashboard" class="screen-container screen-hidden flex-1 w-full max-w-3xl flex-col items-center pb-24 mt-2 hidden">
-        <!-- Top Bar -->
         <div class="w-full flex justify-between items-center mb-6 bg-white/80 backdrop-blur-md p-4 rounded-[2rem] shadow-lg border-2 border-amber-100">
             <button type="button" onclick="window.showScreen('profiles')" class="btn-3d px-4 py-3 bg-gray-200 rounded-2xl text-gray-700 font-bold text-sm">⬅️ Đổi</button>
             <div class="flex items-center gap-3">
@@ -102,13 +101,11 @@
             </div>
         </div>
         
-        <!-- Language Switcher -->
         <div class="flex bg-gray-200 rounded-3xl p-1.5 mb-8 shadow-inner border-2 border-gray-300 w-full max-w-sm">
             <button type="button" onclick="window.toggleLanguage('vi')" id="lang-vi" class="lang-switch flex-1 py-3 rounded-2xl text-lg font-game bg-amber-500 text-white shadow-md transition-all">🇻🇳 Tiếng Việt</button>
             <button type="button" onclick="window.toggleLanguage('es')" id="lang-es" class="lang-switch flex-1 py-3 rounded-2xl text-lg font-game text-gray-500 transition-all">🇪🇸 Español</button>
         </div>
 
-        <!-- Mini Games Grid (The Arcade) -->
         <div class="w-full bg-blue-50/80 backdrop-blur-sm rounded-[2rem] p-6 border-4 border-blue-200 shadow-xl mb-10">
             <h2 id="arcade-title" class="text-2xl font-game text-blue-800 mb-4 text-center">🎮 Khu Vui Chơi (Arcade)</h2>
             <div class="grid grid-cols-2 gap-4">
@@ -127,7 +124,6 @@
             </div>
         </div>
 
-        <!-- Curriculum Map -->
         <h2 id="curriculum-title" class="text-3xl font-game text-amber-800 mb-6 text-center">📚 Bản đồ Học Tập</h2>
         <div id="lessons-map" class="w-full flex flex-col gap-6"></div>
     </div>
@@ -368,7 +364,12 @@
             saved.forEach(p => {
                 const btn = document.createElement('div');
                 btn.className = 'btn-3d w-40 h-48 bg-white rounded-3xl border-4 border-amber-300 flex flex-col items-center justify-center cursor-pointer';
-                btn.onclick = () => window.selectProfile(p);
+                
+                // Unified touch and click support
+                const handleSelect = (e) => { e.preventDefault(); window.selectProfile(p); };
+                btn.addEventListener('click', handleSelect);
+                btn.addEventListener('touchend', handleSelect);
+
                 btn.innerHTML = `<span class="text-6xl mb-2">${p.emoji}</span><span class="font-game text-xl">${p.name}</span><span class="text-amber-500 font-bold mt-1">⭐ ${p.stars || 0}</span>`;
                 container.appendChild(btn);
             });
@@ -387,7 +388,6 @@
             document.getElementById('lang-vi').className = `lang-switch flex-1 py-3 rounded-2xl text-lg font-game transition-all ${lang==='vi'?'bg-amber-500 text-white shadow-md':'text-gray-500'}`;
             document.getElementById('lang-es').className = `lang-switch flex-1 py-3 rounded-2xl text-lg font-game transition-all ${lang==='es'?'bg-amber-500 text-white shadow-md':'text-gray-500'}`;
             
-            // Translate Arcade Section
             document.getElementById('arcade-title').innerText = lang === 'es' ? '🎮 Zona de Juegos (Arcade)' : '🎮 Khu Vui Chơi (Arcade)';
             document.getElementById('arcade-btn-slicer').innerText = lang === 'es' ? 'Cortar Palabras' : 'Chém Từ';
             document.getElementById('arcade-btn-balloon').innerText = lang === 'es' ? 'Globos' : 'Bắt Bóng';
@@ -410,9 +410,14 @@
                     if(!topic.levels[lvl] || topic.levels[lvl].length === 0) return;
                     const isDone = currentProfile.progress[topic.id] && currentProfile.progress[topic.id][lvl];
                     const btn = document.createElement('button');
+                    btn.type = 'button';
                     btn.className = `btn-3d p-3 rounded-2xl flex flex-col items-center justify-center border-b-4 ${isDone ? 'bg-emerald-100 border-emerald-400 text-emerald-800' : 'bg-amber-100 border-amber-300 text-amber-800'}`;
+                    
+                    const triggerLesson = (e) => { e.preventDefault(); window.startLesson(topic.id, lvl, topic.levels[lvl]); };
+                    btn.addEventListener('click', triggerLesson);
+                    btn.addEventListener('touchend', triggerLesson);
+
                     btn.innerHTML = `<span class="text-3xl mb-1">${isDone?'⭐':topic.levels[lvl][0].emoji}</span><span class="text-[10px] font-black uppercase tracking-wide">${lvl.substring(0,3)}</span>`;
-                    btn.onclick = () => window.startLesson(topic.id, lvl, topic.levels[lvl]);
                     grid.appendChild(btn);
                 });
                 sec.appendChild(grid); mapContainer.appendChild(sec);
@@ -588,7 +593,7 @@
             requestAnimationFrame(slicerLoop);
         }
 
-        // Balloon
+        // Balloon Pop - Fixed emoji rendering (No more silhouette bug)
         let balRun = false, balScore = 0, balTarget = null;
         window.startBalloonGame = () => { window.showScreen('balloon'); balRun = true; balScore = 0; document.getElementById('balloon-score').innerText='0'; nextBalloonRound(); };
         window.exitBalloon = () => { balRun = false; window.showScreen('dashboard'); };
@@ -605,13 +610,15 @@
             [...sample].sort(()=>0.5-Math.random()).forEach((w, i) => {
                 const bw = document.createElement('div');
                 bw.className = 'balloon-wrapper';
-                bw.style.left = `${10 + (i*30)}vw`;
+                bw.style.left = `${12 + (i*28)}vw`;
                 bw.style.setProperty('--speed', `${Math.random()*3 + 5}s`);
                 
                 const color = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#a855f7'][Math.floor(Math.random()*5)];
                 
                 bw.innerHTML = `
-                    <div class="balloon-body" style="background: radial-gradient(circle at 30% 30%, #fff 0%, ${color} 20%, #900 100%); color: transparent; text-shadow: 0 0 0 white;">${w.emoji}</div>
+                    <div class="balloon-body" style="background: radial-gradient(circle at 30% 30%, #fff 0%, ${color} 70%, #600 100%);">
+                        <span style="filter: none; text-shadow: none; z-index: 5;">${w.emoji}</span>
+                    </div>
                     <div class="balloon-string"></div>
                 `;
 
@@ -634,7 +641,10 @@
                         bw.classList.add('shake'); setTimeout(()=>bw.classList.remove('shake'), 400);
                     }
                 };
+                
                 bw.addEventListener('pointerdown', handlePop);
+                bw.addEventListener('touchend', handlePop);
+                
                 bw.addEventListener('animationend', (e) => { if(e.animationName === 'floatUp') { bw.remove(); if(w.id === balTarget.id && balRun) nextBalloonRound(); } });
                 area.appendChild(bw);
             });
@@ -666,7 +676,9 @@
                 const b = document.createElement('div');
                 b.className = 'spell-block btn-3d w-14 h-16 bg-amber-400 rounded-2xl flex items-center justify-center text-3xl font-game text-amber-900 border-b-4 border-amber-600';
                 b.innerText = c; b.id = `sblk-${i}`;
-                b.onclick = () => {
+                
+                const handleBlockClick = (e) => {
+                    e.preventDefault();
                     if(c === spellArr[spellIdx]) {
                         window.playSound.blip();
                         b.style.visibility = 'hidden';
@@ -682,6 +694,9 @@
                         window.playSound.error(); b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'), 400);
                     }
                 };
+                b.addEventListener('click', handleBlockClick);
+                b.addEventListener('touchend', handleBlockClick);
+
                 bank.appendChild(b);
             });
         }
@@ -695,8 +710,10 @@
         function initWritingCanvas() {
             wCanvas = document.getElementById('writing-canvas'); wCtx = wCanvas.getContext('2d');
             const rect = wCanvas.parentElement.getBoundingClientRect(); wCanvas.width = rect.width; wCanvas.height = rect.height;
+            
             wCanvas.addEventListener('pointerdown', wStart); wCanvas.addEventListener('pointermove', wDraw);
             window.addEventListener('pointerup', wStop);
+            
             window.nextWritingWord();
         }
 
@@ -704,6 +721,7 @@
             wCtx.clearRect(0,0,wCanvas.width, wCanvas.height);
             wCtx.strokeStyle = 'rgba(255,255,255,0.1)'; wCtx.lineWidth = 4; wCtx.setLineDash([15, 15]);
             wCtx.beginPath(); wCtx.moveTo(40, wCanvas.height/2); wCtx.lineTo(wCanvas.width-40, wCanvas.height/2); wCtx.stroke(); wCtx.setLineDash([]);
+            
             wCtx.textAlign = 'center'; wCtx.textBaseline = 'middle'; wCtx.font = "900 80px 'Nunito'";
             wCtx.fillStyle = 'rgba(255,255,255,0.05)';
             wCtx.fillText(`${wTarget.emoji} ${wTarget[currentLang]}`, wCanvas.width/2, wCanvas.height/2);
