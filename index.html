@@ -109,6 +109,9 @@
                     <option value="advanced">🎓 Nâng cao (Advanced)</option>
                 </select>
             </div>
+            <div class="mb-4">
+                <button type="button" onclick="window.resetCurrentProfileProgress()" class="w-full bg-amber-100 hover:bg-amber-200 text-amber-700 font-black py-3 rounded-xl border-2 border-amber-300 text-sm">🔄 Đặt Lại Điểm & Tiến Trình Này (Reset Progress)</button>
+            </div>
             <div class="mb-6">
                 <button type="button" onclick="window.deleteCurrentProfile()" class="w-full bg-red-100 hover:bg-red-200 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm">🗑️ Xóa Hồ Sơ Này (Delete Profile)</button>
             </div>
@@ -370,24 +373,17 @@
                     { emoji: '🐶', text: 'Con chó màu vàng đang vẫy đuôi.', prompt: 'Con vật trong tranh là gì?', options: ['Con chó', 'Con mèo', 'Con chim'], correct: 0 },
                     { emoji: '🍎', text: 'Quả táo đỏ mọng trên cành cây.', prompt: 'Đây là loại quả gì?', options: ['Quả táo', 'Quả chuối', 'Quả cam'], correct: 0 },
                     { emoji: '🚗', text: 'Chiếc ô tô màu đỏ chạy trên đường.', prompt: 'Phương tiện này là gì?', options: ['Xe ô tô', 'Xe đạp', 'Tàu hỏa'], correct: 0 },
-                    { emoji: '🏠', text: 'Ngôi nhà nhỏ màu vàng có khu vườn xinh.', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Bệnh viện', 'Trường học'], correct: 0 },
-                    { emoji: '🐱', text: 'Con mèo mướp đang nằm sưởi nắng.', prompt: 'Con vật trong tranh là gì?', options: ['Con mèo', 'Con chó', 'Con heo'], correct: 0 },
-                    { emoji: '🍌', text: 'Nải chuối chín vàng thơm ngọt.', prompt: 'Đây là quả gì?', options: ['Quả chuối', 'Quả táo', 'Quả lê'], correct: 0 },
-                    { emoji: '🐟', text: 'Chú cá nhỏ bơi lội tung tăng trong hồ.', prompt: 'Con vật trong tranh là gì?', options: ['Con cá', 'Con chim', 'Con ếch'], correct: 0 },
-                    { emoji: '🚲', text: 'Chiếc xe đạp nhỏ màu xanh.', prompt: 'Phương tiện này là gì?', options: ['Xe đạp', 'Ô tô', 'Máy bay'], correct: 0 }
+                    { emoji: '🏠', text: 'Ngôi nhà nhỏ màu vàng có khu vườn xinh.', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Bệnh viện', 'Trường học'], correct: 0 }
                 ],
                 intermediate: [
                     { emoji: '🌅', text: 'Buổi sáng bình minh trên biển, ông mặt trời đỏ rực nhô lên từ phía xa chiếu những tia nắng vàng óng ánh xuống mặt nước lăn tăn sóng.', prompt: 'Cảnh tượng trong tranh diễn ra vào lúc nào?', options: ['Buổi sáng bình minh', 'Buổi trưa nắng gắt', 'Đêm trăng sáng'], correct: 0 },
                     { emoji: '🚲', text: 'Bé An đạp chiếc xe đạp màu xanh dương qua con đường làng rợp bóng tre xanh mát vào mỗi buổi chiều.', prompt: 'Bé An đang làm gì vào buổi chiều?', options: ['Đạp xe đạp qua đường làng', 'Chạy bộ công viên', 'Đi học vẽ tranh'], correct: 0 },
-                    { emoji: '🍜', text: 'Tô phở bò nóng hổi khói nghi ngút đặt trên bàn, kèm theo đĩa rau thơm tươi ngon và vài lát chanh tươi.', prompt: 'Món ăn được miêu tả là gì?', options: ['Tô phở bò nóng hổi', 'Bún chả giò', 'Mì ý sốt cà chua'], correct: 0 },
-                    { emoji: '🌳', text: 'Khu vườn cổ tích xanh mướt có rất nhiều loài hoa đua nhau khoe sắc và những chú bướm rực rỡ bay lượn.', prompt: 'Khu vườn có đặc điểm gì?', options: ['Hoa khoe sắc và bướm bay', 'Cây cối khô héo', 'Tuyết trắng phủ kín'], correct: 0 },
-                    { emoji: '📚', text: 'Góc học tập gọn gàng với bàn gỗ xinh xắn, đèn bàn sáng rực và chồng sách vở xếp ngay ngắn.', prompt: 'Không gian này dùng để làm gì?', options: ['Góc học tập gọn gàng', 'Phòng khách tiếp khách', 'Nhà bếp nấu ăn'], correct: 0 }
+                    { emoji: '🍜', text: 'Tô phở bò nóng hổi khói nghi ngút đặt trên bàn, kèm theo đĩa rau thơm tươi ngon và vài lát chanh tươi.', prompt: 'Món ăn được miêu tả là gì?', options: ['Tô phở bò nóng hổi', 'Bún chả giò', 'Mì ý sốt cà chua'], correct: 0 }
                 ],
                 advanced: [
                     { emoji: '🏰', text: 'Lâu đài cổ kính nằm sừng sững trên đỉnh đồi cao, bao bọc bởi tường đá rêu phong và những cánh rừng nguyên sinh bạt ngàn sương mù bao phủ suốt bốn mùa.', prompt: 'Đặc điểm nào KHÔNG đúng với lâu đài trong đoạn văn?', options: ['Nằm ở thung lũng ngập tràn nắng', 'Nằm sừng sững trên đỉnh đồi cao', 'Bao bọc bởi tường đá rêu phong'], correct: 0 },
                     { emoji: '🚀', text: 'Con tàu vũ trụ khổng lồ phóng vút qua bầu trời đêm đầy sao, bắt đầu hành trình khám phá những thiên hà xa xôi ngoài hệ mặt trời.', prompt: 'Mục đích hành trình của con tàu vũ trụ là gì?', options: ['Khám phá các thiên hà xa xôi', 'Quay về Trái Đất nghỉ ngơi', 'Bay vòng quanh mặt trăng'], correct: 0 },
-                    { emoji: '🌊', text: 'Đại dương xanh thẳm ẩn chứa vô số điều kỳ diệu với những rặng san hô rực rỡ sắc màu và hàng ngàn loài sinh vật biển bơi lội tung tăng.', prompt: 'Đại dương xanh thẳm chứa đựng điều gì?', options: ['Rặng san hô và sinh vật biển', 'Những tòa nhà chọc trời', 'Đường cao tốc hiện đại'], correct: 0 },
-                    { emoji: '🏔️', text: 'Dãy núi hùng vĩ vươn cao chạm đến những tầng mây trắng xóa, đỉnh núi phủ đầy tuyết trắng quanh năm tạo nên khung cảnh thiên nhiên ngoạn mục.', prompt: 'Cảnh quan dãy núi có điểm gì nổi bật?', options: ['Đỉnh núi phủ đầy tuyết trắng', 'Rừng nhiệt đới rậm rạp', 'Bãi biển cát vàng óng ánh'], correct: 0 }
+                    { emoji: '🌊', text: 'Đại dương xanh thẳm ẩn chứa vô số điều kỳ diệu với những rặng san hô rực rỡ sắc màu và hàng ngàn loài sinh vật biển bơi lội tung tăng.', prompt: 'Đại dương xanh thẳm chứa đựng điều gì?', options: ['Rặng san hô và sinh vật biển', 'Những tòa nhà chọc trời', 'Đường cao tốc hiện đại'], correct: 0 }
                 ]
             },
             es: {
@@ -395,23 +391,17 @@
                     { emoji: '🐶', text: 'El perro marrón mueve su cola.', prompt: '¿Qué animal aparece en la imagen?', options: ['El perro', 'El gato', 'El pájaro'], correct: 0 },
                     { emoji: '🍎', text: 'La manzana roja cuelga del árbol.', prompt: '¿Qué fruta es esta?', options: ['La manzana', 'El plátano', 'La uva'], correct: 0 },
                     { emoji: '🚗', text: 'El coche rojo viaja por la calle.', prompt: '¿Qué vehículo es este?', options: ['El coche', 'La bicicleta', 'El avión'], correct: 0 },
-                    { emoji: '🏠', text: 'La pequeña casa amarilla con jardín.', prompt: '¿Qué lugar es este?', options: ['La casa', 'La escuela', 'El hospital'], correct: 0 },
-                    { emoji: '🐱', text: 'El gato duerme bajo el sol.', prompt: '¿Qué animal es este?', options: ['El gato', 'El perro', 'El ratón'], correct: 0 },
-                    { emoji: '🍌', text: 'Un plátano amarillo y dulce.', prompt: '¿Qué fruta es esta?', options: ['El plátano', 'La manzana', 'La pera'], correct: 0 },
-                    { emoji: '🐟', text: 'Un pez pequeño nada en el río.', prompt: '¿Qué animal es este?', options: ['El pez', 'El pájaro', 'La rana'], correct: 0 }
+                    { emoji: '🏠', text: 'La pequeña casa amarilla con jardín.', prompt: '¿Qué lugar es este?', options: ['La casa', 'La escuela', 'El hospital'], correct: 0 }
                 ],
                 intermediate: [
                     { emoji: '🌅', text: 'El amanecer en el mar muestra al sol brillante iluminando las suaves olas doradas de la mañana.', prompt: '¿En qué momento del día ocurre la escena?', options: ['Amanecer en la mañana', 'Mediodía soleado', 'Noche estrellada'], correct: 0 },
                     { emoji: '🚲', text: 'Sofía monta su bicicleta azul por el camino rodeado de árboles verdes todas las tardes.', prompt: '¿Qué hace Sofía todas las tardes?', options: ['Monta su bicicleta por el camino', 'Juega al fútbol', 'Pinta cuadros'], correct: 0 },
-                    { emoji: '🍜', text: 'Un plato de sopa caliente y deliciosa acompañada de hierbas frescas y limón.', prompt: '¿Qué platillo se describe?', options: ['Una sopa caliente y deliciosa', 'Pan con queso', 'Ensalada verde'], correct: 0 },
-                    { emoji: '🌳', text: 'Un jardín mágico lleno de flores coloridas y mariposas que vuelan alegremente.', prompt: '¿Cómo es el jardín?', options: ['Lleno de flores y mariposas', 'Seco y sin vida', 'Cubierto de nieve'], correct: 0 },
-                    { emoji: '📚', text: 'Un escritorio ordenado con lámpara brillante y libros apilados.', prompt: '¿Para qué sirve este espacio?', options: ['Para estudiar y leer', 'Para cocinar', 'Para dormir'], correct: 0 }
+                    { emoji: '🍜', text: 'Un plato de sopa caliente y deliciosa acompañada de hierbas frescas y limón.', prompt: '¿Qué platillo se describe?', options: ['Una sopa caliente y deliciosa', 'Pan con queso', 'Ensalada verde'], correct: 0 }
                 ],
                 advanced: [
                     { emoji: '🏰', text: 'El antiguo castillo se alza majestuoso sobre una colina alta, rodeado de murallas de piedra y bosques misteriosos cubiertos de neblina.', prompt: '¿Qué característica describe mejor al castillo?', options: ['Se alza majestuoso sobre una colina alta', 'Está en la playa tropical', 'Es una cabaña moderna'], correct: 0 },
                     { emoji: '🚀', text: 'La gigantesca nave espacial cruza velozmente el cielo estrellado, iniciando su gran misión de explorar lejanas galaxias.', prompt: '¿Cuál es la misión de la nave espacial?', options: ['Explorar lejanas galaxias', 'Regresar a la Tierra', 'Orbitar la luna únicamente'], correct: 0 },
-                    { emoji: '🌊', text: 'El océano profundo esconde maravillas increíbles con arrecifes de coral brillantes y miles de coloridas especies marinas.', prompt: '¿Qué esconde el océano profundo?', options: ['Arrecifes de coral y especies marinas', 'Carros y edificios', 'Montañas de hielo'], correct: 0 },
-                    { emoji: '🏔️', text: 'Las majestuosas montañas se elevan hacia el cielo, con cumbres nevadas todo el año que forman un paisaje impresionante.', prompt: '¿Qué destaca del paisaje montañoso?', options: ['Cumbres nevadas todo el año', 'Selvas tropicales densas', 'Playas de arena dorada'], correct: 0 }
+                    { emoji: '🌊', text: 'El océano profundo esconde maravillas increíbles con arrecifes de coral brillantes y miles de coloridas especies marinas.', prompt: '¿Qué esconde el océano profundo?', options: ['Arrecifes de coral y especies marinas', 'Carros y edificios', 'Montañas de hielo'], correct: 0 }
                 ]
             }
         };
@@ -529,9 +519,12 @@
                     level6: words.filter(w=>w.lvl===6),
                     level7: words.filter(w=>w.lvl===7)
                 };
-                Object.keys(levels).forEach((lvlKey, idx) => {
-                    if(levels[lvlKey].length === 0) {
-                        levels[lvlKey] = [words[idx % words.length]];
+                Object.keys(levels).forEach((lvlKey) => {
+                    if(levels[lvlKey].length < 6) {
+                        const extra = words.filter(w => !levels[lvlKey].includes(w));
+                        while(levels[lvlKey].length < 6 && extra.length > 0) {
+                            levels[lvlKey].push(extra.pop());
+                        }
                     }
                 });
                 curriculum.push({ id: topic.id, vi: topic.vi, es: topic.es, emoji: topic.emoji, levels });
@@ -605,6 +598,23 @@
         window.closeProfileModal = function() {
             const modal = document.getElementById('profile-modal');
             if(modal) modal.classList.add('hidden');
+        };
+        window.resetCurrentProfileProgress = function() {
+            if(currentProfile && confirm("Đặt lại điểm và tiến trình học tập của hồ sơ này?")) {
+                currentProfile.stars = 0;
+                currentProfile.progress = {};
+                let saved = JSON.parse(localStorage.getItem('vuihoc_modern_profiles') || '[]');
+                const idx = saved.findIndex(p => p.id === currentProfile.id);
+                if(idx > -1) {
+                    saved[idx] = currentProfile;
+                    localStorage.setItem('vuihoc_modern_profiles', JSON.stringify(saved));
+                }
+                const starsEl = document.getElementById('dash-stars');
+                if(starsEl) starsEl.innerText = '0';
+                window.closeProfileModal();
+                renderDashboard();
+                alert("Đã đặt lại tiến trình thành công!");
+            }
         };
         window.deleteCurrentProfile = function() {
             const idEl = document.getElementById('prof-edit-id');
@@ -951,8 +961,9 @@
         window.restartSameLessonWithNewWords = function() {
             const topic = curriculum.find(t => t.id === currentLessonData.weekId);
             if(topic) {
-                const words = [...topic.levels[currentLessonData.levelId]].sort(() => 0.5 - Math.random());
-                window.startLesson(currentLessonData.weekId, currentLessonData.levelId, words);
+                const baseWords = VOCAB_DATABASE.filter(w => w.cat === topic.id);
+                const shuffled = [...baseWords].sort(() => 0.5 - Math.random());
+                window.startLesson(currentLessonData.weekId, currentLessonData.levelId, shuffled);
             }
         };
 
@@ -962,7 +973,7 @@
             if(curIdx < levelKeys.length - 1) {
                 const nextLvl = levelKeys[curIdx + 1];
                 const words = curriculum.find(t => t.id === currentLessonData.weekId).levels[nextLvl];
-                window.startLesson(currentLessonData.weekId, nextLvl, words);
+                window.startLesson(currentLessonData.weekId, nextLvl, [...words].sort(() => 0.5 - Math.random()));
             } else {
                 window.exitGame();
             }
@@ -1246,3 +1257,4 @@
     </script>
 </body>
 </html>
+```eof
