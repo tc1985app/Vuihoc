@@ -6,11 +6,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Vui Học">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪷</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22[http://www.w3.org/2000/svg%22](http://www.w3.org/2000/svg%22) viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪷</text></svg>">
     
     <title>Vui Học - Bilingual Platform</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <link href="[https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap](https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap)" rel="stylesheet">
     
     <style>
         :root {
@@ -146,7 +146,7 @@
             <p class="text-sm sm:text-xl text-gray-500 font-bold mb-6 tracking-wide uppercase">Bilingual 1000+ Words</p>
         </header>
         <div id="profiles-container" class="flex flex-wrap justify-center gap-6 w-full mb-8"></div>
-        <button type="button" onclick="window.createProfile()" class="btn-3d px-8 py-4 bg-amber-500 text-white font-game text-xl rounded-[2rem] border-4 border-amber-600">➕ Bắt Đầu Ngay!</button>
+        <button type="button" onclick="window.createProfile()" id="add-profile-btn" class="btn-3d px-8 py-4 bg-amber-500 text-white font-game text-xl rounded-[2rem] border-4 border-amber-600">➕ Thêm Hồ Sơ (Add Profile)</button>
     </div>
 
     <!-- Screen 2: Dashboard -->
@@ -271,7 +271,7 @@
         <div id="balloon-area"></div>
     </div>
 
-    <!-- Screen: Robust Standard Memory Match Game -->
+    <!-- Screen: Memory Match Game -->
     <div id="screen-memory" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-purple-50 hidden overflow-y-auto pt-6 px-4 pb-12">
         <div class="w-full max-w-xl flex justify-between items-center mb-6">
             <button type="button" onclick="window.exitMemoryGame()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-500 font-game text-lg border-2 border-red-200">Thoát</button>
@@ -353,7 +353,7 @@
                     { emoji: '🐶', text: 'Con chó màu vàng đang vẫy đuôi.', prompt: 'Con vật trong tranh là gì?', options: ['Con chó', 'Con mèo', 'Con chim'], correct: 0 },
                     { emoji: '🍎', text: 'Quả táo đỏ mọng trên cành cây.', prompt: 'Đây là loại quả gì?', options: ['Quả táo', 'Quả chuối', 'Quả cam'], correct: 0 },
                     { emoji: '🚗', text: 'Chiếc ô tô màu đỏ chạy trên đường.', prompt: 'Phương tiện này là gì?', options: ['Xe ô tô', 'Xe đạp', 'Tàu hỏa'], correct: 0 },
-                    { emoji: '🏠', text: 'Ng ngôi nhà nhỏ màu vàng có khu vườn xinh.', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Bệnh viện', 'Trường học'], correct: 0 }
+                    { emoji: '🏠', text: 'Ngôi nhà nhỏ màu vàng có khu vườn xinh.', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Bệnh viện', 'Trường học'], correct: 0 }
                 ],
                 intermediate: [
                     { emoji: '🌅', text: 'Buổi sáng bình minh trên biển, ông mặt trời đỏ rực nhô lên từ phía xa chiếu những tia nắng vàng óng ánh xuống mặt nước lăn tăn sóng.', prompt: 'Cảnh tượng trong tranh diễn ra vào lúc nào?', options: ['Buổi sáng bình minh', 'Buổi trưa nắng gắt', 'Đêm trăng sáng'], correct: 0 },
@@ -652,6 +652,7 @@
             const descSubtitle = document.getElementById('desc-subtitle');
             const alphaBtn = document.getElementById('alpha-btn');
             const descBtn = document.getElementById('desc-btn');
+            const addProfileBtn = document.getElementById('add-profile-btn');
 
             if(arcadeTitle) arcadeTitle.innerText = lang === 'es' ? '🎮 Zona de Juegos (Arcade)' : '🎮 Khu Vui Chơi (Arcade)';
             if(btnSlicer) btnSlicer.innerText = lang === 'es' ? 'Cortar Palabras' : 'Chém Từ';
@@ -664,6 +665,7 @@
             if(descSubtitle) descSubtitle.innerText = lang === 'es' ? 'Describe Pictures' : 'Describe Pictures';
             if(alphaBtn) alphaBtn.innerText = lang === 'es' ? 'Explorar' : 'Khám Phá';
             if(descBtn) descBtn.innerText = lang === 'es' ? 'Desafío' : 'Thử Thách';
+            if(addProfileBtn) addProfileBtn.innerText = lang === 'es' ? '➕ Añadir Perfil (Add Profile)' : '➕ Thêm Hồ Sơ (Add Profile)';
 
             renderDashboard();
         };
@@ -707,7 +709,7 @@
             window.speechSynthesis.speak(utt);
         };
 
-        // Picture Description Game (Robust & Dynamic)
+        // Picture Description Game (Adaptive to Proficiency)
         let descList = [];
         let descIdx = 0;
         window.startDescribeGame = function() {
@@ -873,7 +875,7 @@
             }
         }
 
-        // Slicer (With Speech Pronunciation on Slice)
+        // Slicer
         let slcRun = false, sCtx, sCan, sFruits = [], sParticles = [], sTrail = [], sScore = 0;
         window.startSlicerGame = function() { window.showScreen('slicer'); };
         window.exitSlicer = function() { slcRun = false; window.showScreen('dashboard'); };
@@ -895,9 +897,8 @@
                 
                 sFruits.forEach(f => {
                     if(!f.sliced && Math.hypot(x - f.x, y - f.y) < 60) {
-                        f.sliced = true; 
-                        window.playSound.slice(); 
-                        window.speakText(f.word[currentLang]); // Pronounce word on slice!
+                        f.sliced = true; window.playSound.slice(); 
+                        window.speakText(f.word[currentLang]);
                         sScore++; 
                         if(scoreEl) scoreEl.innerText = sScore;
                         for(let i=0; i<15; i++) sParticles.push({x: f.x, y: f.y, vx: (Math.random()-0.5)*15, vy: (Math.random()-0.5)*15, life: 1, c: `hsl(${Math.random()*360},100%,50%)`});
