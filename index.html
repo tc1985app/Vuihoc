@@ -329,12 +329,12 @@
             error: () => { playTone(300, 'sawtooth', 0.2, 0.1); setTimeout(()=>playTone(250, 'sawtooth', 0.2, 0.1), 150); }
         };
 
-        // Fully corrected Alphabet dataset with precise vocabulary words starting with each letter
+        // Perfectly Matched Alphabet Datasets: Emoji + Word starting with that exact letter
         const ALPHABET_VI = [
-            {char: 'A', emoji: '🍎', word: 'Áo'}, {char: 'Ă', emoji: '🌙', word: 'Ăn'}, {char: 'Â', emoji: '🥞', word: 'Ấm'}, {char: 'B', emoji: '🎈', word: 'Bút'},
-            {char: 'C', emoji: '🐱', word: 'Cá'}, {char: 'D', emoji: '🎒', word: 'Dép'}, {char: 'Đ', emoji: '🚂', word: 'Đèn'}, {char: 'E', emoji: '🐘', word: 'Em'},
-            {char: 'Ê', emoji: '🛏️', word: 'Êm'}, {char: 'G', emoji: '🐓', word: 'Gà'}, {char: 'H', emoji: '🏠', word: 'Hành'}, {char: 'I', emoji: '📌', word: 'In'},
-            {char: 'K', emoji: '🪁', word: 'Kẹo'}, {char: 'L', emoji: '🦁', word: 'Lá'}, {char: 'M', emoji: '🐵', word: 'Mèo'}, {char: 'N', emoji: '🍌', word: 'Nhà'},
+            {char: 'A', emoji: '🍎', word: 'Áo'}, {char: 'Ă', emoji: '🌙', word: 'Ăn'}, {char: 'Â', emoji: '🥞', word: 'Ấm'}, {char: 'B', emoji: '🎈', word: 'Bóng'},
+            {char: 'C', emoji: '🐱', word: 'Con mèo'}, {char: 'D', emoji: '🎒', word: 'Dép'}, {char: 'Đ', emoji: '🚂', word: 'Đèn'}, {char: 'E', emoji: '🐘', word: 'Em bé'},
+            {char: 'Ê', emoji: '🛏️', word: 'Êm'}, {char: 'G', emoji: '🐓', word: 'Gà'}, {char: 'H', emoji: '🏠', word: 'Hoa'}, {char: 'I', emoji: '📌', word: 'In'},
+            {char: 'K', emoji: '🪁', word: 'Kẹo'}, {char: 'L', emoji: '🦁', word: 'Lá'}, {char: 'M', emoji: '🐵', word: 'Mẹ'}, {char: 'N', emoji: '🍌', word: 'Nhà'},
             {char: 'O', emoji: '⭕', word: 'Ong'}, {char: 'Ô', emoji: '☂️', word: 'Ô tô'}, {char: 'Ơ', emoji: '🦋', word: 'Ớt'}, {char: 'P', emoji: '🎹', word: 'Phở'},
             {char: 'Q', emoji: '👑', word: 'Quả'}, {char: 'R', emoji: '🤖', word: 'Rổ'}, {char: 'S', emoji: '⭐', word: 'Sách'}, {char: 'T', emoji: '🐢', word: 'Tay'},
             {char: 'U', emoji: '🍇', word: 'Ủ'}, {char: 'Ư', emoji: '🦘', word: 'Ức'}, {char: 'V', emoji: '🎻', word: 'Vịt'}, {char: 'X', emoji: '🚲', word: 'Xe'}, {char: 'Y', emoji: '⛵', word: 'Yếm'}
@@ -357,7 +357,7 @@
                     { emoji: '🐶', text: 'Con chó màu vàng đang vẫy đuôi.', prompt: 'Con vật trong tranh là gì?', options: ['Con chó', 'Con mèo', 'Con chim'], correct: 0 },
                     { emoji: '🍎', text: 'Quả táo đỏ mọng trên cành cây.', prompt: 'Đây là loại quả gì?', options: ['Quả táo', 'Quả chuối', 'Quả cam'], correct: 0 },
                     { emoji: '🚗', text: 'Chiếc ô tô màu đỏ chạy trên đường.', prompt: 'Phương tiện này là gì?', options: ['Xe ô tô', 'Xe đạp', 'Tàu hỏa'], correct: 0 },
-                    { emoji: '🏠', text: 'Ngôi nhà nhỏ màu vàng có khu vườn xinh.', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Bệnh viện', 'Trường học'], correct: 0 }
+                    { emoji: '🏠', text: 'Ng ngôi nhà nhỏ màu vàng có khu vườn xinh.', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Bệnh viện', 'Trường học'], correct: 0 }
                 ],
                 intermediate: [
                     { emoji: '🌅', text: 'Buổi sáng bình minh trên biển, ông mặt trời đỏ rực nhô lên từ phía xa chiếu những tia nắng vàng óng ánh xuống mặt nước lăn tăn sóng.', prompt: 'Cảnh tượng trong tranh diễn ra vào lúc nào?', options: ['Buổi sáng bình minh', 'Buổi trưa nắng gắt', 'Đêm trăng sáng'], correct: 0 },
@@ -595,7 +595,8 @@
             activeAlphabet.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'btn-3d bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 flex flex-col items-center justify-center cursor-pointer';
-                card.onclick = () => window.speakText(item.word, currentLang === 'es' ? 'es-ES' : 'vi-VN');
+                // Pronounce just the letter/sound (item.char) instead of the full word
+                card.onclick = () => window.speakText(item.char, currentLang === 'es' ? 'es-ES' : 'vi-VN');
                 card.innerHTML = `<span class="text-3xl font-game text-amber-800">${item.char}</span><span class="text-2xl mt-1">${item.emoji}</span><span class="text-[10px] font-bold text-gray-500 mt-0.5">${item.word}</span>`;
                 grid.appendChild(card);
             });
