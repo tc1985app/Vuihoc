@@ -74,6 +74,14 @@
         .pop-particle { position: absolute; width: 15px; height: 15px; border-radius: 50%; animation: explode 0.5s ease-out forwards; pointer-events: none; }
         @keyframes explode { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
 
+        /* Memory Match Cards */
+        .memory-card { perspective: 1000px; cursor: pointer; height: 110px; }
+        .memory-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.4s; transform-style: preserve-3d; }
+        .memory-card.flipped .memory-card-inner { transform: rotateY(180deg); }
+        .memory-card-front, .memory-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-weight: 900; box-shadow: 0 6px 0px rgba(0,0,0,0.1); border: 3px solid #d8b4fe; }
+        .memory-card-front { background: #9333ea; color: white; font-size: 2rem; }
+        .memory-card-back { background: white; color: #581c87; transform: rotateY(180deg); font-size: 1.1rem; padding: 4px; }
+
         canvas { display: block; width: 100%; height: 100%; touch-action: none; }
     </style>
 </head>
@@ -177,8 +185,8 @@
                 <button type="button" onclick="window.startBalloonGame()" class="btn-3d py-6 bg-sky-500 text-white rounded-3xl border-b-[6px] border-sky-700 flex flex-col items-center">
                     <span class="text-4xl mb-2">🎈</span><span id="arcade-btn-balloon" class="font-game text-lg">Bắt Bóng</span>
                 </button>
-                <button type="button" onclick="window.startSpellingGame()" class="btn-3d py-6 bg-purple-500 text-white rounded-3xl border-b-[6px] border-purple-700 flex flex-col items-center">
-                    <span class="text-4xl mb-2">🔤</span><span id="arcade-btn-spelling" class="font-game text-lg">Xếp Chữ</span>
+                <button type="button" onclick="window.startMemoryGame()" class="btn-3d py-6 bg-purple-500 text-white rounded-3xl border-b-[6px] border-purple-700 flex flex-col items-center">
+                    <span class="text-4xl mb-2">🧠</span><span id="arcade-btn-memory" class="font-game text-lg">Lật Hình</span>
                 </button>
                 <button type="button" onclick="window.startWritingGame()" class="btn-3d py-6 bg-teal-500 text-white rounded-3xl border-b-[6px] border-teal-700 flex flex-col items-center">
                     <span class="text-4xl mb-2">✍️</span><span id="arcade-btn-writing" class="font-game text-lg">Tập Viết</span>
@@ -235,7 +243,7 @@
         </div>
     </div>
 
-    <!-- Screen 4: Picture Description Game (Adaptive to Proficiency) -->
+    <!-- Screen 4: Picture Description Game -->
     <div id="screen-describe" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-teal-50 hidden overflow-y-auto pt-8 px-4 pb-12">
         <div class="w-full max-w-xl flex justify-between items-center mb-6">
             <button type="button" onclick="window.exitDescribeGame()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-500 font-game text-lg border-2 border-red-200">Thoát</button>
@@ -268,17 +276,15 @@
         <div id="balloon-area"></div>
     </div>
 
-    <!-- Screen: Multiple Choice Spelling Game -->
-    <div id="screen-spelling" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-purple-50 hidden overflow-y-auto pt-6 px-4">
+    <!-- Screen: Memory Match (Lật Hình Tìm Cặp) -->
+    <div id="screen-memory" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-purple-50 hidden overflow-y-auto pt-6 px-4 pb-12">
         <div class="w-full max-w-xl flex justify-between items-center mb-6">
-            <button type="button" onclick="window.exitSpelling()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-500 font-game text-lg border-2 border-red-200">Thoát</button>
-            <div class="bg-purple-500 px-6 py-3 rounded-2xl text-white font-game text-xl shadow-md border-2 border-purple-400">Điểm: <span id="spelling-score">0</span></div>
+            <button type="button" onclick="window.exitMemoryGame()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-500 font-game text-lg border-2 border-red-200">Thoát</button>
+            <div class="bg-purple-500 px-6 py-3 rounded-2xl text-white font-game text-xl shadow-md border-2 border-purple-400">Cặp Tìm Được: <span id="memory-score">0</span> / 4</div>
         </div>
-        <div class="bg-white rounded-[3rem] p-8 border-8 border-purple-300 shadow-2xl w-full max-w-lg flex flex-col items-center mb-6 pop-in text-center">
-            <span id="spell-emoji" class="text-8xl mb-4 block floating">🐶</span>
-            <button type="button" onclick="window.playSpellPromptAudio()" class="btn-3d px-6 py-3 bg-purple-600 text-white font-game rounded-2xl text-base shadow-md mb-6 flex items-center gap-2 mx-auto">🔊 Nghe Từ Này</button>
-            <h3 class="text-2xl font-game text-purple-900 mb-6">Chọn cách viết đúng của từ trên:</h3>
-            <div id="spell-options" class="w-full flex flex-col gap-3"></div>
+        <div class="bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-purple-300 shadow-2xl w-full max-w-xl flex flex-col items-center pop-in text-center">
+            <h3 class="text-2xl font-game text-purple-900 mb-6">🧠 Lật Hình Tìm Cặp (Memory Match)</h3>
+            <div id="memory-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full"></div>
         </div>
     </div>
 
@@ -346,7 +352,6 @@
             {char: 'Y', emoji: '⛵', word: 'I griega'}, {char: 'Z', emoji: '🦊', word: 'Zeta'}
         ];
 
-        // Picture Description Game Data (Adaptive to Proficiency Levels)
         const DESCRIBE_DATA = {
             vi: {
                 beginner: [
@@ -495,7 +500,7 @@
                 if (target) { target.classList.remove('hidden'); void target.offsetWidth; target.classList.remove('screen-hidden'); }
                 if(screenName === 'slicer') startSlicerCanvas();
                 if(screenName === 'balloon') startBalloonCanvas();
-                if(screenName === 'spelling') startSpellingGame();
+                if(screenName === 'memory') startMemoryGame();
                 if(screenName === 'writing') initWritingCanvas();
             }, 50);
         };
@@ -644,7 +649,7 @@
             const arcadeTitle = document.getElementById('arcade-title');
             const btnSlicer = document.getElementById('arcade-btn-slicer');
             const btnBalloon = document.getElementById('arcade-btn-balloon');
-            const btnSpelling = document.getElementById('arcade-btn-spelling');
+            const btnMemory = document.getElementById('arcade-btn-memory');
             const btnWriting = document.getElementById('arcade-btn-writing');
             const currTitle = document.getElementById('curriculum-title');
             const alphaTitle = document.getElementById('alpha-title');
@@ -656,7 +661,7 @@
             if(arcadeTitle) arcadeTitle.innerText = lang === 'es' ? '🎮 Zona de Juegos (Arcade)' : '🎮 Khu Vui Chơi (Arcade)';
             if(btnSlicer) btnSlicer.innerText = lang === 'es' ? 'Cortar Palabras' : 'Chém Từ';
             if(btnBalloon) btnBalloon.innerText = lang === 'es' ? 'Globos' : 'Bắt Bóng';
-            if(btnSpelling) btnSpelling.innerText = lang === 'es' ? 'Deletrear' : 'Xếp Chữ';
+            if(btnMemory) btnMemory.innerText = lang === 'es' ? 'Memoria' : 'Lật Hình';
             if(btnWriting) btnWriting.innerText = lang === 'es' ? 'Escribir' : 'Tập Viết';
             if(currTitle) currTitle.innerText = lang === 'es' ? '📚 Mapa de Aprendizaje' : '📚 Bản đồ Học Tập';
             if(alphaTitle) alphaTitle.innerText = lang === 'es' ? 'Alfabeto' : 'Bảng Chữ Cái';
@@ -1013,49 +1018,82 @@
         }
         window.playBalloonAudio = () => { if(balTarget) window.speakText(balTarget[currentLang]); };
 
-        // Multiple Choice Spelling Game
-        let spellScore = 0, spellTarget = null;
-        window.startSpellingGame = () => { window.showScreen('spelling'); spellScore = 0; const s = document.getElementById('spelling-score'); if(s) s.innerText='0'; loadMultipleChoiceSpell(); };
-        window.exitSpelling = () => window.showScreen('dashboard');
+        // Memory Match Game (Rebuilt replacement for Spelling)
+        let memoryScore = 0, firstCard = null, lockBoard = false;
+        window.startMemoryGame = () => {
+            window.showScreen('memory');
+            memoryScore = 0;
+            document.getElementById('memory-score').innerText = '0';
+            loadMemoryCards();
+        };
+        window.exitMemoryGame = () => window.showScreen('dashboard');
 
-        function loadMultipleChoiceSpell() {
-            spellTarget = VOCAB_DATABASE[Math.floor(Math.random()*VOCAB_DATABASE.length)];
-            const emojiEl = document.getElementById('spell-emoji');
-            if(emojiEl) emojiEl.innerText = spellTarget.emoji;
-            window.speakText(spellTarget[currentLang]);
+        function loadMemoryCards() {
+            const grid = document.getElementById('memory-grid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            firstCard = null;
+            lockBoard = false;
 
-            const optionsContainer = document.getElementById('spell-options');
-            if(!optionsContainer) return;
-            optionsContainer.innerHTML = '';
+            const subset = [...VOCAB_DATABASE].sort(() => 0.5 - Math.random()).slice(0, 4);
+            let cardsData = [];
+            subset.forEach(item => {
+                cardsData.push({ id: item.id, content: item.emoji, type: 'emoji' });
+                cardsData.push({ id: item.id, content: item[currentLang], type: 'text' });
+            });
+            cardsData.sort(() => 0.5 - Math.random());
 
-            let choices = [spellTarget[currentLang]];
-            while(choices.length < 3) {
-                const rand = VOCAB_DATABASE[Math.floor(Math.random()*VOCAB_DATABASE.length)][currentLang];
-                if(!choices.includes(rand)) choices.push(rand);
-            }
-            choices.sort(() => 0.5 - Math.random());
+            cardsData.forEach(card => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'memory-card';
+                cardEl.dataset.id = card.id;
+                cardEl.innerHTML = `
+                    <div class="memory-card-inner">
+                        <div class="memory-card-front">❓</div>
+                        <div class="memory-card-back">${card.content}</div>
+                    </div>
+                `;
 
-            choices.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'btn-3d w-full p-4 bg-purple-100 border-2 border-purple-300 rounded-2xl text-purple-900 font-game text-2xl text-center';
-                btn.innerText = opt;
-                btn.onclick = () => {
-                    if(opt === spellTarget[currentLang]) {
-                        window.playSound.success(); fireConfetti();
-                        spellScore++;
-                        const sEl = document.getElementById('spelling-score');
-                        if(sEl) sEl.innerText = spellScore;
-                        setTimeout(loadMultipleChoiceSpell, 1000);
+                cardEl.onclick = () => {
+                    if (lockBoard || cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) return;
+                    cardEl.classList.add('flipped');
+                    window.playSound.blip();
+
+                    if (!firstCard) {
+                        firstCard = cardEl;
+                        if(card.type === 'text') window.speakText(card.content);
+                        return;
+                    }
+
+                    const secondCard = cardEl;
+                    if(card.type === 'text') window.speakText(card.content);
+
+                    if (firstCard.dataset.id === secondCard.dataset.id) {
+                        firstCard.classList.add('matched');
+                        secondCard.classList.add('matched');
+                        firstCard = null;
+                        memoryScore++;
+                        document.getElementById('memory-score').innerText = memoryScore;
+                        window.playSound.success();
+
+                        if (memoryScore === 4) {
+                            fireConfetti();
+                            setTimeout(loadMemoryCards, 1500);
+                        }
                     } else {
-                        window.playSound.error();
-                        btn.classList.add('shake'); setTimeout(()=>btn.classList.remove('shake'), 400);
+                        lockBoard = true;
+                        setTimeout(() => {
+                            firstCard.classList.remove('flipped');
+                            secondCard.classList.remove('flipped');
+                            firstCard = null;
+                            lockBoard = false;
+                        }, 900);
                     }
                 };
-                optionsContainer.appendChild(btn);
+
+                grid.appendChild(cardEl);
             });
         }
-        window.playSpellPromptAudio = () => { if(spellTarget) window.speakText(spellTarget[currentLang]); };
 
         // Writing
         let wCanvas, wCtx, isDrawing = false, wTarget = null;
