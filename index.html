@@ -419,6 +419,8 @@
                     { words: ["Con", "chó", "màu", "vàng"], target: "Con chó màu vàng", meaning: "The dog is yellow." },
                     { words: ["Con", "mèo", "thích", "ngủ"], target: "Con mèo thích ngủ", meaning: "The cat likes to sleep." },
                     { words: ["Bé", "thích", "ăn", "phở"], target: "Bé thích ăn phở", meaning: "The baby likes eating pho." },
+                    { words: ["Quả", "bóng", "màu", "đỏ"], target: "Quả bóng màu đỏ", meaning: "The ball is red." },
+                    { words: ["Tôi", "có", "hai", "mắt"], target: "Tôi có hai mắt", meaning: "I have two eyes." },
                     { words: ["Trời", "hôm", "nay", "đẹp"], target: "Trời hôm nay đẹp", meaning: "The sky is beautiful today." },
                     { words: ["Mẹ", "đi", "chợ", "mua", "cá"], target: "Mẹ đi chợ mua cá", meaning: "Mom goes to the market to buy fish." }
                 ],
@@ -427,7 +429,8 @@
                     { question: "Ai thích ăn phở trong câu: 'Bé Lan thích ăn phở bò'?", options: ["Lan", "Mẹ", "Ba"], correct: 0, text: "Bé Lan thích ăn phở bò." },
                     { question: "Giá của Bánh Mì là bao nhiêu?", options: ["35k", "25k", "65k"], correct: 1, text: "MENU QUÁN:\n- Phở Bò: 65k\n- Bánh Mì: 25k" },
                     { words: ["Gia", "đình", "tôi", "rất", "hạnh", "phúc"], target: "Gia đình tôi rất hạnh phúc", meaning: "My family is very happy." },
-                    { words: ["Hôm", "nay", "trời", "mưa", "to"], target: "Hôm nay trời mưa to", meaning: "It is raining heavily today." }
+                    { words: ["Hôm", "nay", "trời", "mưa", "to"], target: "Hôm nay trời mưa to", meaning: "It is raining heavily today." },
+                    { words: ["Số", "năm", "lớn", "hơn", "số", "hai"], target: "Số năm lớn hơn số hai", meaning: "Number five is bigger than number two." }
                 ],
                 advanced: [
                     { question: "Điều gì làm nên giá trị của văn hóa Việt Nam?", options: ["Sự đa dạng", "Sự đồng nhất", "Sự hiện đại"], correct: 0, text: "Sự đa dạng là một trong những yếu tố quan trọng nhất làm nên giá trị của văn hóa Việt Nam." },
@@ -441,6 +444,8 @@
                     { words: ["El", "perro", "es", "marrón"], target: "El perro es marrón", meaning: "The dog is brown." },
                     { words: ["El", "gato", "duerme", "mucho"], target: "El gato duerme mucho", meaning: "The cat sleeps a lot." },
                     { words: ["Me", "gusta", "la", "sopa"], target: "Me gusta la sopa", meaning: "I like soup." },
+                    { words: ["La", "pelota", "es", "roja"], target: "La pelota es roja", meaning: "The ball is red." },
+                    { words: ["Tengo", "dos", "ojos"], target: "Tengo dos ojos", meaning: "I have two eyes." },
                     { words: ["El", "sol", "es", "amarillo"], target: "El sol es amarillo", meaning: "The sun is yellow." },
                     { words: ["Mi", "mamá", "es", "bonita"], target: "Mi mamá es bonita", meaning: "My mom is pretty." }
                 ],
@@ -449,7 +454,8 @@
                     { question: "¿A quién le gusta la sopa en la oración: 'A María le gusta la sopa'?", options: ["María", "Juan", "Pedro"], correct: 0, text: "A María le gusta la sopa." },
                     { question: "¿Cuánto cuestan los Tacos?", options: ["$9", "$3", "$12"], correct: 0, text: "MENÚ:\n- Sopa Pho: $12\n- Tacos: $9" },
                     { words: ["Mi", "familia", "es", "muy", "feliz"], target: "Mi familia es muy feliz", meaning: "My family is very happy." },
-                    { words: ["Hoy", "llueve", "mucho"], target: "Hoy llueve mucho", meaning: "It is raining a lot today." }
+                    { words: ["Hoy", "llueve", "mucho"], target: "Hoy llueve mucho", meaning: "It is raining a lot today." },
+                    { words: ["El", "cinco", "es", "mayor", "que", "dos"], target: "El cinco es mayor que dos", meaning: "Five is bigger than two." }
                 ],
                 advanced: [
                     { question: "¿Qué factor es importante en la cultura hispana?", options: ["La diversidad", "La homogeneidad", "La tecnología"], correct: 0, text: "La diversidad es un factor fundamental en la cultura hispana." },
@@ -465,19 +471,51 @@
             { id: 'blending', vi: 'Tập Đánh Vần', es: 'Fonética y Blending', eng: 'Phonetic Blending', emoji: '🧩', isBlendingWeek: true },
             { id: 'sentenceGame', vi: 'Thử Thách Đọc & Câu', es: 'Desafíos de Lectura', eng: 'Sentence & Reading Challenge', emoji: '📖', isSentenceGameWeek: true },
             { 
-                id: 'week1', vi: 'Văn hóa & Động vật', es: 'Cultura y Animales', eng: 'Culture & Animals', emoji: '🪷', 
+                id: 'week1', vi: 'Động vật', es: 'Animales', eng: 'Animals', emoji: '🪷', 
                 levels: { 
                     beginner: [ { vi: 'Chó', es: 'Perro', emoji: '🐶' }, { vi: 'Mèo', es: 'Gato', emoji: '🐱' }, { vi: 'Chim', es: 'Pájaro', emoji: '🐦' }, { vi: 'Cá', es: 'Pez', emoji: '🐟' } ], 
                     intermediate: [ { vi: 'Con chó', es: 'El perro', emoji: '🐕' }, { vi: 'Con mèo', es: 'El gato', emoji: '🐈' }, { vi: 'Con chim', es: 'El pájaro', emoji: '🦅' }, { vi: 'Con cá', es: 'El pez', emoji: '🐠' } ], 
-                    advanced: [ { vi: 'Truyền thống', es: 'Tradición', emoji: '🏮' }, { vi: 'Di sản văn hóa', es: 'Patrimonio', emoji: '🏛️' }, { vi: 'Đa dạng sinh học', es: 'Biodiversidad', emoji: '🌿' } ] 
+                    advanced: [ { vi: 'Hổ', es: 'Tigre', emoji: '🐅' }, { vi: 'Voi', es: 'Elefante', emoji: '🐘' }, { vi: 'Khỉ', es: 'Mono', emoji: '🐒' } ] 
                 } 
             },
             { 
-                id: 'week2', vi: 'Ẩm thực & Đời sống', es: 'Gastronomía y Vida', eng: 'Food & Daily Life', emoji: '🍜', 
+                id: 'week2', vi: 'Ẩm thực', es: 'Comida', eng: 'Food', emoji: '🍜', 
                 levels: { 
-                    beginner: [ { vi: 'Phở', es: 'Sopa Phở', emoji: '🍲' }, { vi: 'Cơm', es: 'Arroz', emoji: '🍚' }, { vi: 'Thịt', es: 'Carne', emoji: '🥩' }, { vi: 'Rau', es: 'Verdura', emoji: '🥬' } ], 
-                    intermediate: [ { vi: 'Bánh mì', es: 'Pan vietnamita', emoji: '🥖' }, { vi: 'Cà phê', es: 'Café', emoji: '☕' }, { vi: 'Trà', es: 'Té', emoji: '🍵' }, { vi: 'Sữa', es: 'Leche', emoji: '🥛' } ], 
-                    advanced: [ { vi: 'Ẩm thực ba miền', es: 'Gastronomía regional', emoji: '🥢' }, { vi: 'Thói quen ăn uống', es: 'Hábitos alimenticios', emoji: '🍽️' } ] 
+                    beginner: [ { vi: 'Phở', es: 'Sopa', emoji: '🍲' }, { vi: 'Cơm', es: 'Arroz', emoji: '🍚' }, { vi: 'Thịt', es: 'Carne', emoji: '🥩' }, { vi: 'Rau', es: 'Verdura', emoji: '🥬' } ], 
+                    intermediate: [ { vi: 'Bánh mì', es: 'Pan', emoji: '🥖' }, { vi: 'Cà phê', es: 'Café', emoji: '☕' }, { vi: 'Trà', es: 'Té', emoji: '🍵' }, { vi: 'Sữa', es: 'Leche', emoji: '🥛' } ], 
+                    advanced: [ { vi: 'Trái cây', es: 'Fruta', emoji: '🍎' }, { vi: 'Nước ép', es: 'Jugo', emoji: '🧃' } ] 
+                } 
+            },
+            { 
+                id: 'week3', vi: 'Màu Sắc & Hình Khối', es: 'Colores y Formas', eng: 'Colors & Shapes', emoji: '🎨', 
+                levels: { 
+                    beginner: [ { vi: 'Đỏ', es: 'Rojo', emoji: '🔴' }, { vi: 'Xanh', es: 'Azul', emoji: '🔵' }, { vi: 'Vàng', es: 'Amarillo', emoji: '🟡' }, { vi: 'Lục', es: 'Verde', emoji: '🟢' } ], 
+                    intermediate: [ { vi: 'Tròn', es: 'Círculo', emoji: '⭕' }, { vi: 'Vuông', es: 'Cuadrado', emoji: '🟩' }, { vi: 'Sao', es: 'Estrella', emoji: '⭐' }, { vi: 'Tim', es: 'Corazón', emoji: '❤️' } ], 
+                    advanced: [ { vi: 'Trắng', es: 'Blanco', emoji: '⚪' }, { vi: 'Đen', es: 'Negro', emoji: '⚫' }, { vi: 'Tím', es: 'Morado', emoji: '🟣' }, { vi: 'Cam', es: 'Naranja', emoji: '🟠' } ] 
+                } 
+            },
+            { 
+                id: 'week4', vi: 'Số Đếm (1-10)', es: 'Números', eng: 'Numbers', emoji: '🔢', 
+                levels: { 
+                    beginner: [ { vi: 'Một', es: 'Uno', emoji: '1️⃣' }, { vi: 'Hai', es: 'Dos', emoji: '2️⃣' }, { vi: 'Ba', es: 'Tres', emoji: '3️⃣' }, { vi: 'Bốn', es: 'Cuatro', emoji: '4️⃣' } ], 
+                    intermediate: [ { vi: 'Năm', es: 'Cinco', emoji: '5️⃣' }, { vi: 'Sáu', es: 'Seis', emoji: '6️⃣' }, { vi: 'Bảy', es: 'Siete', emoji: '7️⃣' }, { vi: 'Tám', es: 'Ocho', emoji: '8️⃣' } ], 
+                    advanced: [ { vi: 'Chín', es: 'Nueve', emoji: '9️⃣' }, { vi: 'Mười', es: 'Diez', emoji: '🔟' }, { vi: 'Số', es: 'Número', emoji: '🔢' } ] 
+                } 
+            },
+            { 
+                id: 'week5', vi: 'Gia Đình', es: 'Familia', eng: 'Family', emoji: '👨‍👩‍👧‍👦', 
+                levels: { 
+                    beginner: [ { vi: 'Mẹ', es: 'Mamá', emoji: '👩' }, { vi: 'Ba', es: 'Papá', emoji: '👨' }, { vi: 'Bé', es: 'Bebé', emoji: '👶' }, { vi: 'Bà', es: 'Abuela', emoji: '👵' } ], 
+                    intermediate: [ { vi: 'Ông', es: 'Abuelo', emoji: '👴' }, { vi: 'Anh', es: 'Hermano', emoji: '👦' }, { vi: 'Chị', es: 'Hermana', emoji: '👧' } ], 
+                    advanced: [ { vi: 'Gia đình', es: 'Familia', emoji: '👨‍👩‍👧‍👦' }, { vi: 'Yêu', es: 'Amor', emoji: '❤️' }, { vi: 'Nhà', es: 'Casa', emoji: '🏠' } ] 
+                } 
+            },
+            { 
+                id: 'week6', vi: 'Cơ Thể', es: 'Cuerpo', eng: 'Body Parts', emoji: '👀', 
+                levels: { 
+                    beginner: [ { vi: 'Mắt', es: 'Ojo', emoji: '👁️' }, { vi: 'Mũi', es: 'Nariz', emoji: '👃' }, { vi: 'Miệng', es: 'Boca', emoji: '👄' }, { vi: 'Tai', es: 'Oreja', emoji: '👂' } ], 
+                    intermediate: [ { vi: 'Tay', es: 'Mano', emoji: '✋' }, { vi: 'Chân', es: 'Pie', emoji: '🦶' }, { vi: 'Tóc', es: 'Pelo', emoji: '💇' }, { vi: 'Đầu', es: 'Cabeza', emoji: '🗣️' } ], 
+                    advanced: [ { vi: 'Răng', es: 'Diente', emoji: '🦷' }, { vi: 'Lưỡi', es: 'Lengua', emoji: '👅' } ] 
                 } 
             }
         ];
@@ -1131,7 +1169,7 @@
             });
         }
 
-        // Fruit Slicer (Fixed coordinate scaling and spawn height)
+        // Fruit Slicer
         let slicerRunning = false, sCtx, sCanvas, sFruits = [], sScore = 0;
         window.startSlicerGame = function() {
             window.showScreen('slicer');
@@ -1165,7 +1203,7 @@
             requestAnimationFrame(slicerLoop);
         }
 
-        // Balloon Pop (Fixed click and touch propagation)
+        // Balloon Pop
         let balloonRunning = false, balloonScore = 0, balloonTarget = null;
         window.startBalloonGame = function() {
             window.showScreen('balloon');
@@ -1209,7 +1247,9 @@
         }
         window.playBalloonAudio = function() {
             if(balloonTarget) {
-                window.speakText(balloonTarget[currentLang], currentLang === 'es' ? 'es-ES' : 'vi-VN');
+                const utt = new SpeechSynthesisUtterance(balloonTarget[currentLang]);
+                utt.lang = currentLang === 'es' ? 'es-ES' : 'vi-VN';
+                window.speechSynthesis.speak(utt);
             }
         }
 
@@ -1262,7 +1302,9 @@
         }
         window.playSpellingAudio = function() {
             if(spellingTarget) {
-                window.speakText(spellingTarget[currentLang], currentLang === 'es' ? 'es-ES' : 'vi-VN');
+                const utt = new SpeechSynthesisUtterance(spellingTarget[currentLang]);
+                utt.lang = currentLang === 'es' ? 'es-ES' : 'vi-VN';
+                window.speechSynthesis.speak(utt);
             }
         }
 
