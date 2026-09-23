@@ -35,8 +35,8 @@
         body.dark-mode .bg-white { background-color: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important; }
         body.dark-mode .text-gray-800, body.dark-mode .text-gray-700 { color: #f8fafc !important; }
 
-        .screen-container { transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 1; transform: scale(1); width: 100%; display: flex; flex-direction: column; align-items: center; }
-        .screen-hidden { opacity: 0 !important; transform: scale(0.95) !important; pointer-events: none; position: absolute; display: none !important; }
+        .screen-container { transition: opacity 0.3s ease, transform 0.3s ease; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .screen-hidden { opacity: 0 !important; transform: scale(0.98) !important; pointer-events: none; position: absolute; display: none !important; }
 
         .btn-3d {
             transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
@@ -49,10 +49,8 @@
 
         .floating { animation: float 3s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
-        .pop-in { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .pop-in { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
-        @keyframes shake { 10%, 90% { transform: translate3d(-3px, 0, 0); } 20%, 80% { transform: translate3d(5px, 0, 0); } }
 
         #confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 9999; overflow: hidden; }
         .confetti { position: absolute; width: 12px; height: 24px; animation: fall 3s linear forwards; }
@@ -146,7 +144,7 @@
             <p id="report-subtitle" class="text-gray-600 font-bold mb-6">Bạn đã nhận <span class="text-amber-600 font-black">+5 ⭐</span>. Muốn làm gì tiếp theo?</p>
             
             <div class="flex flex-col gap-3">
-                <button type="button" onclick="window.restartSameLessonWithNewWords()" class="btn-3d w-full bg-blue-500 hover:bg-blue-600 text-white font-game text-base py-3 rounded-2xl shadow-md">🔄 Học Thêm Từ Mới (New Words)</button>
+                <button type="button" onclick="window.restartSameLessonWithNewWords()" id="btn-new-words" class="btn-3d w-full bg-blue-500 hover:bg-blue-600 text-white font-game text-base py-3 rounded-2xl shadow-md">🔄 Học Thêm Từ Mới (New Words)</button>
                 <button type="button" onclick="window.advanceToNextLevel()" id="btn-next-level" class="btn-3d w-full bg-emerald-500 hover:bg-emerald-600 text-white font-game text-base py-3 rounded-2xl shadow-md">⬆️ Thử Cấp Tiếp Theo (Next Level)</button>
                 <button type="button" onclick="window.closeReportCard()" id="btn-continue" class="btn-3d w-full bg-amber-500 hover:bg-amber-600 text-white font-game text-base py-3 rounded-2xl shadow-md">🏠 Về Trang Chủ (Dashboard)</button>
             </div>
@@ -159,7 +157,7 @@
             <button type="button" onclick="window.openSettings()" class="absolute top-0 right-0 btn-3d px-4 py-2 bg-white text-gray-700 font-bold rounded-2xl border-2 border-gray-300 text-sm shadow-sm">⚙️</button>
             <div class="text-6xl mb-4 floating">🪷</div>
             <h1 class="text-4xl sm:text-6xl font-game text-amber-600 mb-2 drop-shadow-sm">Vui Học</h1>
-            <p class="text-sm sm:text-xl text-gray-500 font-bold mb-6 tracking-wide uppercase">Thế Giới Ngôn Ngữ Kỳ Diệu</p>
+            <p id="sub-title-main" class="text-sm sm:text-xl text-gray-500 font-bold mb-6 tracking-wide uppercase">Thế Giới Ngôn Ngữ Kỳ Diệu</p>
         </header>
         <div id="profiles-container" class="flex flex-wrap justify-center gap-6 w-full mb-8"></div>
         <button type="button" onclick="window.createProfile()" id="add-profile-btn" class="btn-3d px-8 py-4 bg-amber-500 text-white font-game text-xl rounded-[2rem] border-4 border-amber-600">➕ Thêm Tên Người Dùng (Add User)</button>
@@ -293,7 +291,7 @@
     </div>
 
     <script type="module">
-        let profiles = JSON.parse(localStorage.getItem('vuihoc_react_profiles_v29') || 'null') || [
+        let profiles = JSON.parse(localStorage.getItem('vuihoc_react_profiles_v30') || 'null') || [
             { id: '1', name: 'An', emoji: '🐯', lang: 'vi', level: 'beginner', stars: 15, progress: {} },
             { id: '2', name: 'Sofia', emoji: '🌸', lang: 'es', level: 'intermediate', stars: 28, progress: {} }
         ];
@@ -309,7 +307,7 @@
         let turnTimerInterval = null;
 
         function saveProfiles() {
-            localStorage.setItem('vuihoc_react_profiles_v29', JSON.stringify(profiles));
+            localStorage.setItem('vuihoc_react_profiles_v30', JSON.stringify(profiles));
         }
 
         const UI_TEXT = {
@@ -329,12 +327,15 @@
                 next: 'Tiếp Theo ➡️',
                 reportTitle: 'Hoàn Thành Cấp Độ!',
                 reportSub: 'Bạn đã nhận +5 ⭐. Muốn làm gì tiếp theo?',
+                newWordsBtn: '🔄 Học Thêm Từ Mới (New Words)',
+                nextLevelBtn: '⬆️ Thử Cấp Tiếp Theo (Next Level)',
                 continueBtn: '🏠 Về Trang Chủ (Dashboard)',
                 memTitle: '🧠 Lật Hình Tìm Cặp (Memory Match)',
                 memSub: 'Chạm vào thẻ để lật, nghe phát âm và tìm cặp đúng!',
                 memPairs: 'Cặp',
                 sliceScore: 'Điểm',
-                alertTimeUp: '⏰ Hết giờ lượt chơi! Đổi bạn khác nào!'
+                alertTimeUp: '⏰ Hết giờ lượt chơi! Đổi bạn khác nào!',
+                subTitleMain: 'Thế Giới Ngôn Ngữ Kỳ Diệu'
             },
             es: {
                 switchProfile: '⬅️ Cambiar Perfil',
@@ -352,37 +353,66 @@
                 next: 'Siguiente ➡️',
                 reportTitle: '¡Nivel Completado!',
                 reportSub: 'Has ganado +5 ⭐. ¿Qué quieres hacer?',
+                newWordsBtn: '🔄 Aprender Palabras Nuevas',
+                nextLevelBtn: '⬆️ Siguiente Nivel',
                 continueBtn: '🏠 Ir al Inicio (Dashboard)',
                 memTitle: '🧠 Memoria de Parejas (Memory Match)',
                 memSub: '¡Toca las tarjetas para voltearlas, escucha la pronunciación y encuentra las parejas!',
                 memPairs: 'Parejas',
                 sliceScore: 'Puntos',
-                alertTimeUp: '⏰ ¡Se acabó el tiempo del turno! ¡Cambien de jugador!'
+                alertTimeUp: '⏰ ¡Se acabó el tiempo del turno! ¡Cambien de jugador!',
+                subTitleMain: 'El Mundo Mágico de los Idiomas'
             }
         };
 
         window.updateUILanguage = function() {
             const t = UI_TEXT[currentLang];
-            document.getElementById('dash-btn-switch').innerText = t.switchProfile;
-            document.getElementById('timer-label').innerText = t.timerTitle;
-            document.getElementById('timer-sub').innerText = t.timerSub;
-            document.getElementById('arcade-btn-alpha').innerText = t.alphaBtn;
-            document.getElementById('arcade-btn-memory').innerText = t.memoryBtn;
-            document.getElementById('arcade-btn-describe').innerText = t.descBtn;
-            document.getElementById('arcade-btn-slicer').innerText = t.slicerBtn;
-            document.getElementById('curriculum-title').innerHTML = `<span>📚</span> ${t.mapTitle}`;
-            document.getElementById('lesson-btn-exit').innerText = t.exit;
-            document.getElementById('lesson-btn-next').innerText = t.next;
-            document.getElementById('report-title').innerText = t.reportTitle;
-            document.getElementById('report-subtitle').innerText = t.reportSub;
-            document.getElementById('btn-continue').innerText = t.continueBtn;
-            document.getElementById('mem-title').innerText = t.memTitle;
-            document.getElementById('mem-subtitle').innerText = t.memSub;
-            document.getElementById('mem-lbl-pairs').innerText = t.memPairs;
-            document.getElementById('slice-lbl-score').innerText = t.sliceScore;
-            document.getElementById('desc-btn-exit').innerText = t.exit;
-            document.getElementById('mem-btn-exit').innerText = t.exit;
-            document.getElementById('slice-btn-exit').innerText = t.exit;
+            const dashSwitch = document.getElementById('dash-btn-switch');
+            if(dashSwitch) dashSwitch.innerText = t.switchProfile;
+            const timerLabel = document.getElementById('timer-label');
+            if(timerLabel) timerLabel.innerText = t.timerTitle;
+            const timerSub = document.getElementById('timer-sub');
+            if(timerSub) timerSub.innerText = t.timerSub;
+            const aBtn = document.getElementById('arcade-btn-alpha');
+            if(aBtn) aBtn.innerText = t.alphaBtn;
+            const mBtn = document.getElementById('arcade-btn-memory');
+            if(mBtn) mBtn.innerText = t.memoryBtn;
+            const dBtn = document.getElementById('arcade-btn-describe');
+            if(dBtn) dBtn.innerText = t.descBtn;
+            const sBtn = document.getElementById('arcade-btn-slicer');
+            if(sBtn) sBtn.innerText = t.slicerBtn;
+            const cTitle = document.getElementById('curriculum-title');
+            if(cTitle) cTitle.innerHTML = `<span>📚</span> ${t.mapTitle}`;
+            const lExit = document.getElementById('lesson-btn-exit');
+            if(lExit) lExit.innerText = t.exit;
+            const lNext = document.getElementById('lesson-btn-next');
+            if(lNext) lNext.innerText = t.next;
+            const rTitle = document.getElementById('report-title');
+            if(rTitle) rTitle.innerText = t.reportTitle;
+            const rSub = document.getElementById('report-subtitle');
+            if(rSub) rSub.innerHTML = t.reportSub;
+            const btnNew = document.getElementById('btn-new-words');
+            if(btnNew) btnNew.innerText = t.newWordsBtn;
+            const btnNextLvl = document.getElementById('btn-next-level');
+            if(btnNextLvl) btnNextLvl.innerText = t.nextLevelBtn;
+            const btnCont = document.getElementById('btn-continue');
+            if(btnCont) btnCont.innerText = t.continueBtn;
+            const mTitle = document.getElementById('mem-title');
+            if(mTitle) mTitle.innerText = t.memTitle;
+            const mSub = document.getElementById('mem-subtitle');
+            if(mSub) mSub.innerText = t.memSub;
+            const mPairs = document.getElementById('mem-lbl-pairs');
+            if(mPairs) mPairs.innerText = t.memPairs;
+            const sScore = document.getElementById('slice-lbl-score');
+            if(sScore) sScore.innerText = t.sliceScore;
+            const descExit = document.getElementById('desc-btn-exit');
+            if(descExit) descExit.innerText = t.exit;
+            const memExit = document.getElementById('mem-btn-exit');
+            if(memExit) memExit.innerText = t.exit;
+            const sliceExit = document.getElementById('slice-btn-exit');
+            if(sliceExit) sliceExit.innerText = t.exit;
+            const subMain = document.getElementById('sub-title-main');
+            if(subMain) subMain.innerText = t.subTitleMain;
         };
 
         window.setTimerMinutes = function(mins) {
@@ -587,7 +617,7 @@
             window.renderDashboardMap();
         };
 
-        // Fully Populated 7 Categories with rich 4-6 items per level
+        // Complete 7 Categories with rich items per level
         const TOPICS = [
             { 
                 id: 'animals', vi: 'Động Vật', es: 'Animales', emoji: '🦁',
@@ -605,31 +635,19 @@
                         { vi: 'Gấu', es: 'Oso', img: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Hươu cao cổ', es: 'Jirafa', img: 'https://images.unsplash.com/photo-1534567153574-2b12153a87f0?auto=format&fit=crop&w=600&q=80' }],
                     4: [{ vi: 'Thỏ', es: 'Conejo', img: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Sóc', es: 'Ardilla', img: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Cáo', es: 'Zorro', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Sói', es: 'Lobo', img: 'https://images.unsplash.com/photo-1561731216-c3a4d99437d5?auto=format&fit=crop&w=600&q=80' }],
-                    5: [{ vi: 'Rùa', es: 'Tortuga', img: 'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Ếch', es: 'Rana', img: 'https://images.unsplash.com/photo-1534067783941-51c9c23ecefd?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Rắn', es: 'Serpiente', img: 'https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?auto=format&fit=crop&w=600&q=80' }],
-                    6: [{ vi: 'Cá voi', es: 'Ballena', img: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Cá mập', es: 'Tiburón', img: 'https://images.unsplash.com/photo-1560275619-4d6236189f06?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Cá heo', es: 'Delfín', img: 'https://images.unsplash.com/photo-1570455855949-a34e40a049f7?auto=format&fit=crop&w=600&q=80' }],
-                    7: [{ vi: 'Đại bàng', es: 'Águila', img: 'https://images.unsplash.com/photo-1611689342806-0863700ce1e4?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Cú mèo', es: 'Búho', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=600&q=80' }]
+                        { vi: 'Sóc', es: 'Ardilla', img: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=600&q=80' }],
+                    5: [{ vi: 'Rùa', es: 'Tortuga', img: 'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=600&q=80' }],
+                    6: [{ vi: 'Cá voi', es: 'Ballena', img: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80' }],
+                    7: [{ vi: 'Đại bàng', es: 'Águila', img: 'https://images.unsplash.com/photo-1611689342806-0863700ce1e4?auto=format&fit=crop&w=600&q=80' }]
                 }
             },
             { 
                 id: 'food', vi: 'Ẩm Thực', es: 'Comida', emoji: '🍜',
                 levels: {
                     1: [{ vi: 'Táo', es: 'Manzana', img: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Chuối', es: 'Plátano', img: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Bánh mì', es: 'Pan', img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Nước', es: 'Agua', img: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=600&q=80' }],
-                    2: [{ vi: 'Phở', es: 'Sopa', img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Cam', es: 'Naranja', img: 'https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Trứng', es: 'Huevo', img: 'https://images.unsplash.com/photo-1516467508483-a7212febe31a?auto=format&fit=crop&w=600&q=80' }],
-                    3: [{ vi: 'Bánh ngọt', es: 'Pastel', img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Phô mai', es: 'Queso', img: 'https://images.unsplash.com/photo-1452195100486-9cc805987862?auto=format&fit=crop&w=600&q=80' }],
+                        { vi: 'Chuối', es: 'Plátano', img: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=600&q=80' }],
+                    2: [{ vi: 'Phở', es: 'Sopa', img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80' }],
+                    3: [{ vi: 'Bánh ngọt', es: 'Pastel', img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80' }],
                     4: [{ vi: 'Dưa hấu', es: 'Sandía', img: 'https://images.unsplash.com/photo-1587049352847-4a222e784d38?auto=format&fit=crop&w=600&q=80' }],
                     5: [{ vi: 'Cà chua', es: 'Tomate', img: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=600&q=80' }],
                     6: [{ vi: 'Pizza', es: 'Pizza', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80' }],
