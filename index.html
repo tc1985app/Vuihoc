@@ -75,7 +75,7 @@
         @keyframes explode { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
 
         .spell-slot { background: rgba(255,255,255,0.9); box-shadow: inset 0 4px 6px rgba(0,0,0,0.1); }
-        .spell-block { cursor: pointer; touch-action: manipulation; transition: all 0.2s; user-select: none; }
+        .spell-btn { cursor: pointer; touch-action: manipulation; transition: all 0.15s; user-select: none; }
 
         canvas { display: block; width: 100%; height: 100%; touch-action: none; }
     </style>
@@ -96,6 +96,14 @@
                 <label class="block text-gray-700 font-bold mb-2">Biểu tượng (Emoji):</label>
                 <input type="text" id="prof-emoji" maxlength="2" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold text-2xl text-center" placeholder="🐯">
             </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 font-bold mb-2">Cấp độ (Proficiency Level):</label>
+                <select id="prof-level" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold">
+                    <option value="beginner">👶 Mới học (Beginner)</option>
+                    <option value="intermediate">👦 Cơ bản (Intermediate)</option>
+                    <option value="advanced">🎓 Nâng cao (Advanced)</option>
+                </select>
+            </div>
             <div class="flex gap-3">
                 <button type="button" onclick="window.closeProfileModal()" class="btn-3d flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-2xl">Hủy</button>
                 <button type="button" onclick="window.saveProfileData()" class="btn-3d flex-1 bg-amber-600 text-white font-game py-3 rounded-2xl shadow-md">Lưu</button>
@@ -112,7 +120,7 @@
                 <input type="checkbox" id="dark-mode-toggle" class="w-6 h-6 cursor-pointer" onclick="window.toggleDarkMode(this.checked)">
             </div>
             <div class="mb-4">
-                <button type="button" onclick="window.openProfileModalForCurrent()" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-black py-3 rounded-xl border-2 border-blue-300 text-sm mb-2">✏️ Đổi Tên & Avatar</button>
+                <button type="button" onclick="window.openProfileModalForCurrent()" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-black py-3 rounded-xl border-2 border-blue-300 text-sm mb-2">✏️ Đổi Tên, Avatar & Cấp Độ</button>
             </div>
             <div class="mb-6">
                 <button type="button" onclick="window.resetProgress()" class="w-full bg-red-100 hover:bg-red-200 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm">🔄 Đặt Lại Điểm & Tiến Trình</button>
@@ -190,18 +198,18 @@
                         <p class="text-xs text-amber-700 font-bold">Alphabet & Phonics</p>
                     </div>
                 </div>
-                <button type="button" onclick="window.openAlphabetModal()" class="btn-3d px-4 py-2.5 bg-amber-600 text-white font-game text-sm rounded-2xl shadow-md">Khám Phá</button>
+                <button type="button" onclick="window.openAlphabetModal()" id="alpha-btn" class="btn-3d px-4 py-2.5 bg-amber-600 text-white font-game text-sm rounded-2xl shadow-md">Khám Phá</button>
             </div>
 
             <div class="bg-emerald-50/80 backdrop-blur-sm rounded-[2rem] p-5 border-4 border-emerald-200 shadow-md flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <span class="text-3xl">📖</span>
                     <div class="text-left">
-                        <h3 id="reading-title" class="text-lg font-game text-emerald-900">Đọc Hiểu</h3>
-                        <p class="text-xs text-emerald-700 font-bold">Reading Comprehension</p>
+                        <h3 id="reading-title" class="text-lg font-game text-emerald-900">Đọc Hiểu Đoạn Văn</h3>
+                        <p class="text-xs text-emerald-700 font-bold">Reading & Paragraphs</p>
                     </div>
                 </div>
-                <button type="button" onclick="window.startReadingGame()" class="btn-3d px-4 py-2.5 bg-emerald-600 text-white font-game text-sm rounded-2xl shadow-md">Luyện Tập</button>
+                <button type="button" onclick="window.startReadingGame()" id="reading-btn" class="btn-3d px-4 py-2.5 bg-emerald-600 text-white font-game text-sm rounded-2xl shadow-md">Luyện Tập</button>
             </div>
         </div>
 
@@ -230,16 +238,20 @@
         </div>
     </div>
 
-    <!-- Screen 4: Reading Comprehension Practice -->
-    <div id="screen-reading" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-emerald-50 hidden overflow-y-auto pt-8 px-4">
+    <!-- Screen 4: Reading Comprehension with Paragraphs -->
+    <div id="screen-reading" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-emerald-50 hidden overflow-y-auto pt-8 px-4 pb-12">
         <div class="w-full max-w-xl flex justify-between items-center mb-6">
             <button type="button" onclick="window.exitReadingGame()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-500 font-game text-lg border-2 border-red-200">Thoát</button>
             <div class="bg-emerald-200 px-4 py-2 rounded-2xl border-2 border-emerald-400 font-game text-emerald-800"><span id="reading-progress">1 / 5</span></div>
         </div>
         
-        <div class="bg-white rounded-[3rem] p-8 border-8 border-emerald-300 shadow-2xl w-full max-w-lg flex flex-col items-center mb-6 pop-in text-center">
-            <span id="reading-emoji" class="text-7xl mb-4 block">📖</span>
-            <h3 id="reading-question" class="text-2xl font-game text-gray-800 mb-6">Đọc câu và chọn nghĩa đúng:</h3>
+        <div class="bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-emerald-300 shadow-2xl w-full max-w-xl flex flex-col items-center mb-6 pop-in text-center">
+            <span id="reading-emoji" class="text-6xl mb-3 block">📖</span>
+            <div id="reading-paragraph-box" class="w-full bg-emerald-50/70 border-2 border-emerald-200 p-4 sm:p-5 rounded-2xl mb-6 text-left shadow-inner">
+                <p id="reading-paragraph-text" class="text-base sm:text-lg font-game text-emerald-900 leading-relaxed mb-3"></p>
+                <button type="button" onclick="window.playReadingAudio()" id="reading-audio-btn" class="btn-3d px-4 py-2 bg-emerald-600 text-white font-game rounded-xl text-sm shadow-sm flex items-center gap-2 mx-auto">🔊 Nghe Đoạn Văn</button>
+            </div>
+            <h3 id="reading-question" class="text-xl sm:text-2xl font-game text-gray-800 mb-6">Câu hỏi: ...</h3>
             <div id="reading-options" class="w-full flex flex-col gap-3"></div>
         </div>
     </div>
@@ -262,7 +274,7 @@
         <div id="balloon-area"></div>
     </div>
 
-    <!-- Screen: Rebuilt Wooden Block Spelling (Xếp Chữ) -->
+    <!-- Screen: Wooden Block Spelling -->
     <div id="screen-spelling" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-amber-100 hidden overflow-y-auto">
         <div class="w-full max-w-2xl flex justify-between items-center p-6 z-10">
             <button type="button" onclick="window.exitSpelling()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-500 font-game shadow-md">Thoát</button>
@@ -271,7 +283,7 @@
         <div class="flex-1 flex flex-col items-center justify-center w-full max-w-2xl px-4 pb-12">
             <div class="bg-white rounded-[3rem] p-8 border-8 border-purple-300 shadow-2xl flex flex-col items-center mb-8 pop-in">
                 <span id="spelling-emoji" class="text-8xl mb-2">🐶</span>
-                <button type="button" onclick="window.playSpellingAudio()" class="mt-2 px-4 py-2 bg-purple-100 text-purple-700 font-game rounded-xl border border-purple-300 text-sm">🔊 Nghe Từ</button>
+                <button type="button" onclick="window.playSpellingAudio()" id="spelling-audio-btn" class="btn-3d mt-2 px-6 py-2.5 bg-purple-600 text-white font-game rounded-2xl text-sm shadow-md">🔊 Nghe Từ</button>
             </div>
             
             <div id="spelling-slots" class="flex gap-2 sm:gap-3 mb-10 flex-wrap justify-center p-4 bg-amber-900/10 rounded-3xl w-full"></div>
@@ -343,20 +355,52 @@
             {char: 'Y', emoji: '⛵'}, {char: 'Z', emoji: '🦊'}
         ];
 
-        const READING_POOL = {
+        const READING_PARAGRAPHS = {
             vi: [
-                { emoji: '🐶', question: 'Con chó màu gì trong câu: "Con chó màu vàng đang chạy"?', options: ['Màu vàng', 'Màu đỏ', 'Màu đen'], correct: 0 },
-                { emoji: '🍲', question: 'Món ăn nào được nhắc đến: "Bé thích ăn phở bò nóng"?', options: ['Phở bò', 'Bánh mì', 'Cơm rang'], correct: 0 },
-                { emoji: '🌅', question: 'Trời hôm nay thế nào trong câu: "Trời hôm nay rất đẹp"?', options: ['Rất đẹp', 'Mưa to', 'Lạnh lắm'], correct: 0 },
-                { emoji: '🍎', question: 'Quả táo có đặc điểm gì trong câu: "Quả táo màu đỏ ngọt lịm"?', options: ['Màu đỏ ngọt lịm', 'Màu xanh chua', 'Màu vàng'], correct: 0 },
-                { emoji: '🚗', question: 'Xe ô tô làm gì trong câu: "Xe ô tô chạy nhanh trên đường"?', options: ['Chạy nhanh trên đường', 'Đậu trong nhà', 'Bay trên trời'], correct: 0 }
+                {
+                    emoji: '🌳',
+                    paragraph: 'Vào một buổi sáng mùa xuân, khu rừng rộn ràng tiếng chim hót lí lo. Các bạn nhỏ cùng nhau đi dạo dưới tán cây xanh mát. Bé An nhìn thấy một bông hoa hồng rực rỡ đang nở rộ bên đường.',
+                    question: 'Bé An nhìn thấy loài hoa gì nở rộ bên đường?',
+                    options: ['Hoa hồng rực rỡ', 'Hoa cúc vàng', 'Hoa hướng dương'],
+                    correct: 0
+                },
+                {
+                    emoji: '🍜',
+                    paragraph: 'Hôm nay là chủ nhật, cả nhà cùng nhau đi ăn phở truyền thống ở góc phố quen thuộc. Mùi nước dùng thơm phức lan tỏa trong gió khiến ai nấy đều cảm thấy hào hứng và đói bụng.',
+                    question: 'Cả nhà đi ăn món gì vào ngày chủ nhật?',
+                    options: ['Phở truyền thống', 'Bánh mì kẹp', 'Cơm tấm sườn'],
+                    correct: 0
+                },
+                {
+                    emoji: '🐱',
+                    paragraph: 'Chú mèo mướp nhà em rất ngoan. Mỗi khi em đi học về, chú lại ra tận cửa quẫy đuôi chào đón. Tối đến, chú nằm cuộn tròn trên chiếc thảm ấm áp cạnh giường ngủ.',
+                    question: 'Chú mèo làm gì khi em đi học về?',
+                    options: ['Ra cửa quẫy đuôi chào đón', 'Nằm ngủ trong bếp', 'Chạy ra vườn bắt chuột'],
+                    correct: 0
+                }
             ],
             es: [
-                { emoji: '🐶', question: '¿De qué color es el perro en: "El perro es marrón y corre"?', options: ['Marrón', 'Blanco', 'Negro'], correct: 0 },
-                { emoji: '🍲', question: '¿Qué le gusta comer en: "A María le gusta la sopa"?', options: ['La sopa', 'El pan', 'El arroz'], correct: 0 },
-                { emoji: '🌅', question: '¿Cómo está el día en: "Hoy el día está muy bonito"?', options: ['Muy bonito', 'Lluvioso', 'Frío'], correct: 0 },
-                { emoji: '🍎', question: '¿Cómo es la manzana en: "La manzana roja es dulce"?', options: ['Roja y dulce', 'Verde y ácida', 'Amarilla'], correct: 0 },
-                { emoji: '🚗', question: '¿Qué hace el carro en: "El coche corre por la calle"?', options: ['Corre por la calle', 'Vuela', 'Nata'], correct: 0 }
+                {
+                    emoji: '🌳',
+                    paragraph: 'En una hermosa mañana de primavera, el bosque se llena con el canto alegre de los pájaros. Los niños pasean felices bajo la sombra de los árboles verdes. Sofía ve una rosa roja muy brillante junto al camino.',
+                    question: '¿Qué ve Sofía junto al camino?',
+                    options: ['Una rosa roja brillante', 'Un gato negro', 'Una mariposa amarilla'],
+                    correct: 0
+                },
+                {
+                    emoji: '🍜',
+                    paragraph: 'Hoy es domingo y toda la familia va a desayunar sopa tradicional al restaurante de la esquina. El aroma delicioso de la comida hace que todos tengan mucho apetito.',
+                    question: '¿A dónde va toda la familia hoy domingo?',
+                    options: ['A comer sopa tradicional', 'Al parque de atracciones', 'A la playa a nadar'],
+                    correct: 0
+                },
+                {
+                    emoji: '🐱',
+                    paragraph: 'El gato de mi casa es muy cariñoso. Cuando regreso de la escuela, siempre corre hacia la puerta para saludarme moviendo su cola. Por la noche, duerme plácidamente sobre la alfombra.',
+                    question: '¿Qué hace el gato cuando regreso de la escuela?',
+                    options: ['Corre a la puerta a saludarme', 'Se esconde debajo de la cama', 'Come pescado fresco'],
+                    correct: 0
+                }
             ]
         };
 
@@ -505,11 +549,13 @@
             const idEl = document.getElementById('prof-edit-id');
             const nameEl = document.getElementById('prof-name');
             const emojiEl = document.getElementById('prof-emoji');
+            const levelEl = document.getElementById('prof-level');
             const modal = document.getElementById('profile-modal');
             
             if(idEl) idEl.value = currentProfile.id;
             if(nameEl) nameEl.value = currentProfile.name;
             if(emojiEl) emojiEl.value = currentProfile.emoji;
+            if(levelEl) levelEl.value = currentProfile.level || 'beginner';
             window.closeSettings();
             if(modal) modal.classList.remove('hidden');
         };
@@ -521,11 +567,13 @@
             const idEl = document.getElementById('prof-edit-id');
             const nameEl = document.getElementById('prof-name');
             const emojiEl = document.getElementById('prof-emoji');
-            if(!idEl || !nameEl || !emojiEl) return;
+            const levelEl = document.getElementById('prof-level');
+            if(!idEl || !nameEl || !emojiEl || !levelEl) return;
             
             const id = idEl.value;
             const name = nameEl.value.trim();
             const emoji = emojiEl.value.trim() || '👦';
+            const level = levelEl.value;
             if(!name) { alert('Vui lòng nhập tên!'); return; }
             
             let saved = JSON.parse(localStorage.getItem('vuihoc_modern_profiles') || '[]');
@@ -533,6 +581,7 @@
             if(idx > -1) {
                 saved[idx].name = name;
                 saved[idx].emoji = emoji;
+                saved[idx].level = level;
                 localStorage.setItem('vuihoc_modern_profiles', JSON.stringify(saved));
                 currentProfile = saved[idx];
                 const nameElDash = document.getElementById('dash-name');
@@ -618,6 +667,10 @@
             const currTitle = document.getElementById('curriculum-title');
             const alphaTitle = document.getElementById('alpha-title');
             const readingTitle = document.getElementById('reading-title');
+            const alphaBtn = document.getElementById('alpha-btn');
+            const readingBtn = document.getElementById('reading-btn');
+            const audioBtn = document.getElementById('reading-audio-btn');
+            const spellAudioBtn = document.getElementById('spelling-audio-btn');
 
             if(arcadeTitle) arcadeTitle.innerText = lang === 'es' ? '🎮 Zona de Juegos (Arcade)' : '🎮 Khu Vui Chơi (Arcade)';
             if(btnSlicer) btnSlicer.innerText = lang === 'es' ? 'Cortar Palabras' : 'Chém Từ';
@@ -626,7 +679,11 @@
             if(btnWriting) btnWriting.innerText = lang === 'es' ? 'Escribir' : 'Tập Viết';
             if(currTitle) currTitle.innerText = lang === 'es' ? '📚 Mapa de Aprendizaje' : '📚 Bản đồ Học Tập';
             if(alphaTitle) alphaTitle.innerText = lang === 'es' ? 'Alfabeto' : 'Bảng Chữ Cái';
-            if(readingTitle) readingTitle.innerText = lang === 'es' ? 'Comprensión Lectora' : 'Đọc Hiểu';
+            if(readingTitle) readingTitle.innerText = lang === 'es' ? 'Comprensión Lectora' : 'Đọc Hiểu Đoạn Văn';
+            if(alphaBtn) alphaBtn.innerText = lang === 'es' ? 'Explorar' : 'Khám Phá';
+            if(readingBtn) readingBtn.innerText = lang === 'es' ? 'Practicar' : 'Luyện Tập';
+            if(audioBtn) audioBtn.innerHTML = lang === 'es' ? '🔊 Escuchar Párrafo' : '🔊 Nghe Đoạn Văn';
+            if(spellAudioBtn) spellAudioBtn.innerHTML = lang === 'es' ? '🔊 Escuchar Palabra' : '🔊 Nghe Từ';
 
             renderDashboard();
         };
@@ -669,22 +726,27 @@
             window.speechSynthesis.speak(utt);
         };
 
-        // Reading Comprehension Game
-        let readingQuestions = [];
-        let readingIdx = 0;
+        // Reading Comprehension Game with Paragraphs
+        let readingParagraphsList = [];
+        let readingParaIdx = 0;
         window.startReadingGame = function() {
-            const pool = READING_POOL[currentLang] || READING_POOL['vi'];
-            readingQuestions = [...pool].sort(() => 0.5 - Math.random()).slice(0, 5);
-            readingIdx = 0;
+            const pool = READING_PARAGRAPHS[currentLang] || READING_PARAGRAPHS['vi'];
+            readingParagraphsList = [...pool].sort(() => 0.5 - Math.random());
+            readingParaIdx = 0;
             window.showScreen('reading');
-            loadReadingQuestion();
+            loadReadingParagraph();
         };
         window.exitReadingGame = () => window.showScreen('dashboard');
 
-        function loadReadingQuestion() {
-            if(readingIdx >= readingQuestions.length) {
+        window.playReadingAudio = function() {
+            const q = readingParagraphsList[readingParaIdx];
+            if(q) window.speakText(q.paragraph);
+        };
+
+        function loadReadingParagraph() {
+            if(readingParaIdx >= readingParagraphsList.length) {
                 window.playSound.success(); fireConfetti();
-                alert(currentLang === 'es' ? '¡Excelente comprensión lectora! +3 ⭐' : 'Xuất sắc! Hoàn thành đọc hiểu +3 ⭐');
+                alert(currentLang === 'es' ? '¡Excelente comprensión lectora! +3 ⭐' : 'Xuất sắc! Hoàn thành đọc hiểu đoạn văn +3 ⭐');
                 if(currentProfile) {
                     currentProfile.stars += 3;
                     let saved = JSON.parse(localStorage.getItem('vuihoc_modern_profiles') || '[]');
@@ -694,11 +756,12 @@
                 window.exitReadingGame();
                 return;
             }
-            const q = readingQuestions[readingIdx];
-            document.getElementById('reading-progress').innerText = `${readingIdx + 1} / ${readingQuestions.length}`;
+            const q = readingParagraphsList[readingParaIdx];
+            document.getElementById('reading-progress').innerText = `${readingParaIdx + 1} / ${readingParagraphsList.length}`;
             document.getElementById('reading-emoji').innerText = q.emoji;
+            document.getElementById('reading-paragraph-text').innerText = q.paragraph;
             document.getElementById('reading-question').innerText = q.question;
-            window.speakText(q.question);
+            window.speakText(q.paragraph);
 
             const optContainer = document.getElementById('reading-options');
             optContainer.innerHTML = '';
@@ -710,8 +773,8 @@
                 btn.onclick = () => {
                     if(i === q.correct) {
                         window.playSound.success();
-                        readingIdx++;
-                        setTimeout(loadReadingQuestion, 800);
+                        readingParaIdx++;
+                        setTimeout(loadReadingParagraph, 800);
                     } else {
                         window.playSound.error();
                         btn.classList.add('shake'); setTimeout(() => btn.classList.remove('shake'), 400);
@@ -966,7 +1029,7 @@
         }
         window.playBalloonAudio = () => { if(balTarget) window.speakText(balTarget[currentLang]); };
 
-        // Rebuilt Spelling (Xếp Chữ)
+        // Rebuilt Spelling Game
         let spellScore = 0, spellTarget = null, spellArr = [], spellIdx = 0;
         window.startSpellingGame = () => { window.showScreen('spelling'); spellScore = 0; const s = document.getElementById('spelling-score'); if(s) s.innerText='0'; loadSpellWord(); };
         window.exitSpelling = () => window.showScreen('dashboard');
@@ -990,11 +1053,11 @@
                 slots.appendChild(s);
             });
 
-            [...spellArr].sort(()=>0.5-Math.random()).forEach((c, i) => {
+            [...spellArr].sort(()=>0.5-Math.random()).forEach((c) => {
                 const b = document.createElement('button');
                 b.type = 'button';
-                b.className = 'spell-block btn-3d w-12 h-14 sm:w-14 sm:h-16 bg-amber-400 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-game text-amber-900 border-b-4 border-amber-600';
-                b.innerText = c; 
+                b.className = 'spell-btn btn-3d w-12 h-14 sm:w-14 sm:h-16 bg-amber-400 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-game text-amber-900 border-b-4 border-amber-600';
+                b.innerText = c;
                 
                 b.onclick = () => {
                     if(c === spellArr[spellIdx]) {
@@ -1066,4 +1129,3 @@
     </script>
 </body>
 </html>
-```eof
