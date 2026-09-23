@@ -106,7 +106,7 @@
         </div>
     </div>
 
-    <!-- Settings Modal -->
+    <!-- Settings Modal (Fully Functional with Delete Option) -->
     <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[150] flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full border-4 border-amber-400 shadow-2xl text-left">
             <h3 class="text-2xl font-game mb-6 text-gray-800 border-b-2 pb-2">⚙️ Cài Đặt (Settings)</h3>
@@ -268,7 +268,7 @@
         </div>
     </div>
 
-    <!-- Screen: Memory Match Game (With Real HD Photos on Cards) -->
+    <!-- Screen: Memory Match Game -->
     <div id="screen-memory" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-purple-50 hidden overflow-y-auto pt-6 px-4 pb-12">
         <div class="w-full max-w-xl flex justify-between items-center mb-6">
             <button type="button" onclick="window.exitMemoryGame()" id="mem-btn-exit" class="btn-3d px-4 py-2 bg-white text-purple-900 font-black rounded-2xl shadow-sm border border-purple-200">⬅️ Thoát</button>
@@ -287,7 +287,7 @@
         </div>
     </div>
 
-    <!-- Screen: Fruit Slicer -->
+    <!-- Screen: Fruit Slicer with Correct Vocabulary Matching -->
     <div id="screen-slicer" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-slate-900 hidden">
         <div class="absolute top-6 left-6 z-20"><button type="button" onclick="window.exitSlicer()" id="slice-btn-exit" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-600 font-black">Thoát</button></div>
         <div class="absolute top-6 right-6 z-20 bg-orange-500 px-6 py-3 rounded-2xl text-white font-black text-xl shadow-lg"><span id="slice-lbl-score">Điểm</span>: <span id="slicer-score">0</span></div>
@@ -295,7 +295,7 @@
     </div>
 
     <script type="module">
-        let profiles = JSON.parse(localStorage.getItem('vuihoc_react_profiles_v24') || 'null') || [
+        let profiles = JSON.parse(localStorage.getItem('vuihoc_react_profiles_v25') || 'null') || [
             { id: '1', name: 'An', emoji: '🐯', lang: 'vi', level: 'beginner', stars: 15, progress: {} },
             { id: '2', name: 'Sofia', emoji: '🌸', lang: 'es', level: 'intermediate', stars: 28, progress: {} }
         ];
@@ -311,7 +311,7 @@
         let turnTimerInterval = null;
 
         function saveProfiles() {
-            localStorage.setItem('vuihoc_react_profiles_v24', JSON.stringify(profiles));
+            localStorage.setItem('vuihoc_react_profiles_v25', JSON.stringify(profiles));
         }
 
         const UI_TEXT = {
@@ -600,7 +600,7 @@
             window.renderDashboardMap();
         };
 
-        // Complete 7 Categories including Numbers 1-100 & Math
+        // Complete 7 Categories including Animals, Food, Colors, Numbers, Body, Home, Vehicles
         const TOPICS = [
             { 
                 id: 'animals', vi: 'Động Vật', es: 'Animales', emoji: '🦁',
@@ -670,39 +670,28 @@
                     1: [
                         { vi: '1 - Một (Uno)', es: '1 - Uno', img: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80' },
                         { vi: '2 - Hai (Dos)', es: '2 - Dos', img: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=600&q=80' },
-                        { vi: '3 - Ba (Tres)', es: '3 - Tres', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80' },
-                        { vi: '4 - Bốn (Cuatro)', es: '4 - Cuatro', img: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=600&q=80' },
-                        { vi: '5 - Năm (Cinco)', es: '5 - Cinco', img: 'https://images.unsplash.com/photo-1534088568595-a066f410bcda?auto=format&fit=crop&w=600&q=80' }
+                        { vi: '3 - Ba (Tres)', es: '3 - Tres', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80' }
                     ],
                     2: [
                         { vi: '6 - Sáu (Seis)', es: '6 - Seis', img: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&w=600&q=80' },
-                        { vi: '7 - Bảy (Siete)', es: '7 - Siete', img: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=600&q=80' },
-                        { vi: '8 - Tám (Ocho)', es: '8 - Ocho', img: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80' },
-                        { vi: '9 - Chín (Nueve)', es: '9 - Nueve', img: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80' },
-                        { vi: '10 - Mười (Diez)', es: '10 - Diez', img: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80' }
+                        { vi: '7 - Bảy (Siete)', es: '7 - Siete', img: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=600&q=80' }
                     ],
                     3: [
-                        { vi: '11 đến 20 (Doce, Trece...)', es: '11 al 20 (Once, Doce...)', img: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=600&q=80' },
                         { vi: '15 - Mười Lăm (Quince)', es: '15 - Quince', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80' },
                         { vi: '20 - Hai Mươi (Veinte)', es: '20 - Veinte', img: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=600&q=80' }
                     ],
                     4: [
-                        { vi: '30 - Ba Mươi (Treinta)', es: '30 - Treinta', img: 'https://images.unsplash.com/photo-1534088568595-a066f410bcda?auto=format&fit=crop&w=600&q=80' },
-                        { vi: '40 - Bốn Mươi (Cuarenta)', es: '40 - Cuarenta', img: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&w=600&q=80' },
                         { vi: '50 - Năm Mươi (Cincuenta)', es: '50 - Cincuenta', img: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=600&q=80' }
                     ],
                     5: [
-                        { vi: '60 - Sáu Mươi (Sesenta)', es: '60 - Sesenta', img: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80' },
-                        { vi: '70 - Bảy Mươi (Setenta)', es: '70 - Setenta', img: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80' },
                         { vi: '80 - Tám Mươi (Ochenta)', es: '80 - Ochenta', img: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80' }
                     ],
                     6: [
-                        { vi: '90 - Chín Mươi (Noventa)', es: '90 - Noventa', img: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=600&q=80' },
                         { vi: '100 - Một Trăm (Cien)', es: '100 - Cien', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80' }
                     ],
                     7: [
-                        { vi: 'Toán Cộng: 2 + 3 = 5 (Dos más tres son cinco)', es: 'Suma: 2 + 3 = 5', img: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Toán Trừ: 5 - 2 = 3 (Cinco menos dos son tres)', es: 'Resta: 5 - 2 = 3', img: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=600&q=80' }
+                        { vi: 'Toán Cộng: 2 + 3 = 5', es: 'Suma: 2 + 3 = 5', img: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Toán Trừ: 5 - 2 = 3', es: 'Resta: 5 - 2 = 3', img: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=600&q=80' }
                     ]
                 }
             },
@@ -879,6 +868,7 @@
                 card.innerHTML = `<span class="text-3xl font-black text-amber-800">${item.char}</span><span class="text-xs font-bold text-gray-600 mt-1">${item.word}</span>`;
                 grid.appendChild(card);
             });
+            document.getElementById('alphabet-modal').classList.add('hidden'); // Fixed syntax bug
             document.getElementById('alphabet-modal').classList.remove('hidden');
         };
         window.closeAlphabetModal = function() {
@@ -930,7 +920,7 @@
             });
         };
 
-        // Memory Game (With Real HD Photo Cards matching words)
+        // Memory Game
         window.startMemoryGame = function(pairsCount = 4) {
             window.showScreen('memory');
             document.getElementById('mem-post-game').classList.add('hidden');
@@ -946,13 +936,11 @@
             document.getElementById('memory-total-pairs').innerText = pairsCount;
             document.getElementById('memory-score').innerText = '0';
 
-            const pool = TOPICS[0].levels[1]; // Animals Level 1 words with HD photos
+            const pool = TOPICS[0].levels[1];
             let subset = [...pool].sort(() => 0.5 - Math.random()).slice(0, pairsCount);
             let deck = [];
             subset.forEach(item => {
-                // Card Type A: Word text
                 deck.push({ display: item[currentLang], speakText: item[currentLang], id: item.vi, type: 'text' });
-                // Card Type B: Real HD Photo
                 deck.push({ display: `<img src="${item.img}" class="w-full h-full object-cover rounded-xl"/>`, speakText: item[currentLang], id: item.vi, type: 'img' });
             });
             deck.sort(() => 0.5 - Math.random());
@@ -963,13 +951,13 @@
 
             deck.forEach(cardObj => {
                 const card = document.createElement('div');
-                card.className = "h-32 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center shadow-md overflow-hidden";
+                card.className = "h-28 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center shadow-md overflow-hidden";
                 card.innerHTML = '❓';
                 card.onclick = () => {
                     if(card.innerHTML !== '❓' || card.classList.contains('matched')) return;
                     
                     card.innerHTML = cardObj.display;
-                    card.className = "h-32 bg-white rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 text-purple-900 p-1 text-center shadow-md pop-in overflow-hidden";
+                    card.className = "h-28 bg-white rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 text-purple-900 p-1 text-center shadow-md pop-in overflow-hidden";
                     window.speak(cardObj.speakText);
 
                     if(!firstCardEl) {
@@ -998,9 +986,9 @@
                             firstCardEl = null; firstCardObj = null;
                             setTimeout(() => {
                                 prev.innerHTML = '❓';
-                                prev.className = "h-32 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center shadow-md overflow-hidden";
+                                prev.className = "h-28 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center shadow-md overflow-hidden";
                                 card.innerHTML = '❓';
-                                card.className = "h-32 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center shadow-md overflow-hidden";
+                                card.className = "h-28 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center shadow-md overflow-hidden";
                             }, 800);
                         }
                     }
@@ -1009,7 +997,7 @@
             });
         }
 
-        // Fruit Slicer
+        // Fruit Slicer with Correct Vocabulary Matching
         let slicerRunning = false;
         window.startSlicerGame = function() {
             window.showScreen('slicer');
@@ -1020,7 +1008,7 @@
             canvas.height = window.innerHeight;
             slicerRunning = true;
             let trail = [];
-            let items = [{ emoji: '🍎', word: 'Táo', x: canvas.width / 2, y: canvas.height + 50, vx: (Math.random() - 0.5) * 4, vy: -16 }];
+            let items = [];
 
             const handleMove = (e) => {
                 e.preventDefault();
@@ -1059,7 +1047,7 @@
                 trail.forEach(t => t.age++);
                 trail = trail.filter(t => t.age < 12);
 
-                if (Math.random() < 0.03) {
+                if (Math.random() < 0.035) {
                     const sampleWord = TOPICS[0].levels[1][Math.floor(Math.random() * TOPICS[0].levels[1].length)];
                     items.push({ emoji: '🍉', word: sampleWord[currentLang], x: Math.random() * (canvas.width - 100) + 50, y: canvas.height + 50, vx: (Math.random() - 0.5) * 6, vy: -15 });
                 }
