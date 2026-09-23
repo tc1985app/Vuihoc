@@ -121,6 +121,17 @@
         </div>
     </div>
 
+    <!-- Alphabet Modal -->
+    <div id="alphabet-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-[150] flex flex-col items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-2xl w-full border-4 border-amber-400 shadow-2xl card-pop flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center mb-4 border-b-2 pb-2">
+                <h3 id="alphabet-modal-title" class="text-2xl font-game text-amber-700">🪷 Bảng Chữ Cái (Alphabet)</h3>
+                <button type="button" onclick="window.closeAlphabetModal()" class="btn-3d px-4 py-2 bg-gray-200 rounded-xl font-bold">✕ Đóng</button>
+            </div>
+            <div id="alphabet-grid" class="flex-1 overflow-y-auto grid grid-cols-4 sm:grid-cols-6 gap-3 p-2"></div>
+        </div>
+    </div>
+
     <!-- Screen 1: Profiles -->
     <div id="screen-profiles" class="screen-container flex-1 w-full max-w-4xl flex flex-col items-center justify-center text-center">
         <header class="mb-10 w-full mt-4 relative">
@@ -168,6 +179,17 @@
                     <span class="text-4xl mb-2">✍️</span><span id="arcade-btn-writing" class="font-game text-lg">Tập Viết</span>
                 </button>
             </div>
+        </div>
+
+        <div class="w-full bg-amber-50/80 backdrop-blur-sm rounded-[2rem] p-6 border-4 border-amber-200 shadow-xl mb-10 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="text-4xl">🔤</span>
+                <div class="text-left">
+                    <h3 id="alpha-title" class="text-xl font-game text-amber-900">Bảng Chữ Cái</h3>
+                    <p class="text-xs text-amber-700 font-bold">Alphabet & Phonics</p>
+                </div>
+            </div>
+            <button type="button" onclick="window.openAlphabetModal()" class="btn-3d px-6 py-3 bg-amber-600 text-white font-game rounded-2xl shadow-md">Khám Phá</button>
         </div>
 
         <h2 id="curriculum-title" class="text-3xl font-game text-amber-800 mb-6 text-center">📚 Bản đồ Học Tập</h2>
@@ -271,36 +293,51 @@
             error: () => { playTone(300, 'sawtooth', 0.2, 0.1); setTimeout(()=>playTone(250, 'sawtooth', 0.2, 0.1), 150); }
         };
 
+        const ALPHABET_VI = [
+            {char: 'A', emoji: '🍎'}, {char: 'Ă', emoji: '🌙'}, {char: 'Â', emoji: '🥞'}, {char: 'B', emoji: '🎈'},
+            {char: 'C', emoji: '🐱'}, {char: 'D', emoji: '🎒'}, {char: 'Đ', emoji: '🚂'}, {char: 'E', emoji: '🐘'},
+            {char: 'Ê', emoji: '🛏️'}, {char: 'G', emoji: '🐓'}, {char: 'H', emoji: '🏠'}, {char: 'I', emoji: '📌'},
+            {char: 'K', emoji: '🪁'}, {char: 'L', emoji: '🦁'}, {char: 'M', emoji: '🐵'}, {char: 'N', emoji: '🍌'},
+            {char: 'O', emoji: '⭕'}, {char: 'Ô', emoji: '☂️'}, {char: 'Ơ', emoji: '🦋'}, {char: 'P', emoji: '🎹'},
+            {char: 'Q', emoji: '👑'}, {char: 'R', emoji: '🤖'}, {char: 'S', emoji: '⭐'}, {char: 'T', emoji: '🐢'},
+            {char: 'U', emoji: '🍇'}, {char: 'Ư', emoji: '🦘'}, {char: 'V', emoji: '🎻'}, {char: 'X', emoji: '🚲'}, {char: 'Y', emoji: '⛵'}
+        ];
+
+        const ALPHABET_ES = [
+            {char: 'A', emoji: '🍎'}, {char: 'B', emoji: '🎈'}, {char: 'C', emoji: '🐱'}, {char: 'Ch', emoji: '🍫'},
+            {char: 'D', emoji: '🎒'}, {char: 'E', emoji: '🐘'}, {char: 'F', emoji: '🔥'}, {char: 'G', emoji: '🐓'},
+            {char: 'H', emoji: '🏠'}, {char: 'I', emoji: '📌'}, {char: 'J', emoji: '🦒'}, {char: 'K', emoji: '🪁'},
+            {char: 'L', emoji: '🦁'}, {char: 'Ll', emoji: '🦙'}, {char: 'M', emoji: '🐵'}, {char: 'N', emoji: '🍌'},
+            {char: 'Ñ', emoji: '🪅'}, {char: 'O', emoji: '⭕'}, {char: 'P', emoji: '🎹'}, {char: 'Q', emoji: '👑'},
+            {char: 'R', emoji: '🤖'}, {char: 'Rr', emoji: '🚂'}, {char: 'S', emoji: '⭐'}, {char: 'T', emoji: '🐢'},
+            {char: 'U', emoji: '🍇'}, {char: 'V', emoji: '🎻'}, {char: 'W', emoji: '🧇'}, {char: 'X', emoji: '🎄'},
+            {char: 'Y', emoji: '⛵'}, {char: 'Z', emoji: '🦊'}
+        ];
+
         const VOCAB_DATABASE = [
             { id: 'dog', vi: 'Chó', es: 'Perro', emoji: '🐶', cat: 'animals', lvl: 1 },
             { id: 'cat', vi: 'Mèo', es: 'Gato', emoji: '🐱', cat: 'animals', lvl: 1 },
             { id: 'bird', vi: 'Chim', es: 'Pájaro', emoji: '🐦', cat: 'animals', lvl: 1 },
             { id: 'fish', vi: 'Cá', es: 'Pez', emoji: '🐟', cat: 'animals', lvl: 1 },
-            { id: 'cow', vi: 'Bò', es: 'Vaca', emoji: '🐮', cat: 'animals', lvl: 1 },
-            { id: 'pig', vi: 'Lợn', es: 'Cerdo', emoji: '🐷', cat: 'animals', lvl: 1 },
-            { id: 'chicken', vi: 'Gà', es: 'Pollo', emoji: '🐔', cat: 'animals', lvl: 1 },
-            { id: 'duck', vi: 'Vịt', es: 'Pato', emoji: '🦆', cat: 'animals', lvl: 1 },
-            { id: 'mouse', vi: 'Chuột', es: 'Ratón', emoji: '🐭', cat: 'animals', lvl: 2 },
-            { id: 'horse', vi: 'Ngựa', es: 'Caballo', emoji: '🐴', cat: 'animals', lvl: 2 },
-            { id: 'elephant', vi: 'Voi', es: 'Elefante', emoji: '🐘', cat: 'animals', lvl: 2 },
-            { id: 'tiger', vi: 'Hổ', es: 'Tigre', emoji: '🐅', cat: 'animals', lvl: 2 },
-            { id: 'lion', vi: 'Sư tử', es: 'León', emoji: '🦁', cat: 'animals', lvl: 2 },
-            { id: 'monkey', vi: 'Khỉ', es: 'Mono', emoji: '🐒', cat: 'animals', lvl: 2 },
-            { id: 'snake', vi: 'Rắn', es: 'Serpiente', emoji: '🐍', cat: 'animals', lvl: 3 },
-            { id: 'bear', vi: 'Gấu', es: 'Oso', emoji: '🐻', cat: 'animals', lvl: 3 },
+            { id: 'cow', vi: 'Bò', es: 'Vaca', emoji: '🐮', cat: 'animals', lvl: 2 },
+            { id: 'pig', vi: 'Lợn', es: 'Cerdo', emoji: '🐷', cat: 'animals', lvl: 2 },
+            { id: 'chicken', vi: 'Gà', es: 'Pollo', emoji: '🐔', cat: 'animals', lvl: 2 },
+            { id: 'duck', vi: 'Vịt', es: 'Pato', emoji: '🦆', cat: 'animals', lvl: 2 },
+            { id: 'mouse', vi: 'Chuột', es: 'Ratón', emoji: '🐭', cat: 'animals', lvl: 3 },
+            { id: 'horse', vi: 'Ngựa', es: 'Caballo', emoji: '🐴', cat: 'animals', lvl: 3 },
+            { id: 'elephant', vi: 'Voi', es: 'Elefante', emoji: '🐘', cat: 'animals', lvl: 3 },
+            { id: 'tiger', vi: 'Hổ', es: 'Tigre', emoji: '🐅', cat: 'animals', lvl: 3 },
             
             { id: 'water', vi: 'Nước', es: 'Agua', emoji: '💧', cat: 'food', lvl: 1 },
             { id: 'milk', vi: 'Sữa', es: 'Leche', emoji: '🥛', cat: 'food', lvl: 1 },
             { id: 'rice', vi: 'Cơm', es: 'Arroz', emoji: '🍚', cat: 'food', lvl: 1 },
             { id: 'bread', vi: 'Bánh mì', es: 'Pan', emoji: '🥖', cat: 'food', lvl: 1 },
-            { id: 'apple', vi: 'Táo', es: 'Manzana', emoji: '🍎', cat: 'food', lvl: 1 },
-            { id: 'banana', vi: 'Chuối', es: 'Plátano', emoji: '🍌', cat: 'food', lvl: 1 },
+            { id: 'apple', vi: 'Táo', es: 'Manzana', emoji: '🍎', cat: 'food', lvl: 2 },
+            { id: 'banana', vi: 'Chuối', es: 'Plátano', emoji: '🍌', cat: 'food', lvl: 2 },
             { id: 'meat', vi: 'Thịt', es: 'Carne', emoji: '🥩', cat: 'food', lvl: 2 },
-            { id: 'fish_food', vi: 'Cá (ăn)', es: 'Pescado', emoji: '🐟', cat: 'food', lvl: 2 },
             { id: 'egg', vi: 'Trứng', es: 'Huevo', emoji: '🥚', cat: 'food', lvl: 2 },
-            { id: 'cheese', vi: 'Phô mai', es: 'Queso', emoji: '🧀', cat: 'food', lvl: 2 },
-            { id: 'orange', vi: 'Cam', es: 'Naranja', emoji: '🍊', cat: 'food', lvl: 2 },
-            { id: 'grape', vi: 'Nho', es: 'Uva', emoji: '🍇', cat: 'food', lvl: 2 },
+            { id: 'orange', vi: 'Cam', es: 'Naranja', emoji: '🍊', cat: 'food', lvl: 3 },
+            { id: 'grape', vi: 'Nho', es: 'Uva', emoji: '🍇', cat: 'food', lvl: 3 },
             { id: 'soup', vi: 'Súp/Phở', es: 'Sopa', emoji: '🍲', cat: 'food', lvl: 3 },
             { id: 'cake', vi: 'Bánh', es: 'Pastel', emoji: '🍰', cat: 'food', lvl: 3 },
             
@@ -334,6 +371,8 @@
             { id: 'foot', vi: 'Chân', es: 'Pie', emoji: '🦶', cat: 'body', lvl: 2 },
             { id: 'head', vi: 'Đầu', es: 'Cabeza', emoji: '👤', cat: 'body', lvl: 2 },
             { id: 'hair', vi: 'Tóc', es: 'Pelo', emoji: '💇', cat: 'body', lvl: 2 },
+            { id: 'tooth', vi: 'Răng', es: 'Diente', emoji: '🦷', cat: 'body', lvl: 3 },
+            { id: 'tongue', vi: 'Lưỡi', es: 'Lengua', emoji: '👅', cat: 'body', lvl: 3 },
             
             { id: 'house', vi: 'Nhà', es: 'Casa', emoji: '🏠', cat: 'home', lvl: 1 },
             { id: 'bed', vi: 'Giường', es: 'Cama', emoji: '🛏️', cat: 'home', lvl: 1 },
@@ -343,6 +382,8 @@
             { id: 'tv', vi: 'Tivi', es: 'Televisión', emoji: '📺', cat: 'home', lvl: 2 },
             { id: 'book', vi: 'Sách', es: 'Libro', emoji: '📖', cat: 'home', lvl: 2 },
             { id: 'pen', vi: 'Bút', es: 'Bolígrafo', emoji: '🖊️', cat: 'home', lvl: 2 },
+            { id: 'mom', vi: 'Mẹ', es: 'Mamá', emoji: '👩', cat: 'home', lvl: 3 },
+            { id: 'dad', vi: 'Ba', es: 'Papá', emoji: '👨', cat: 'home', lvl: 3 },
             
             { id: 'car', vi: 'Xe ô tô', es: 'Coche', emoji: '🚗', cat: 'vehicles', lvl: 1 },
             { id: 'bike', vi: 'Xe đạp', es: 'Bicicleta', emoji: '🚲', cat: 'vehicles', lvl: 1 },
@@ -456,6 +497,24 @@
             window.closeProfileModal();
         };
 
+        window.openAlphabetModal = function() {
+            const grid = document.getElementById('alphabet-grid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            const activeAlphabet = currentLang === 'es' ? ALPHABET_ES : ALPHABET_VI;
+            document.getElementById('alphabet-modal-title').innerText = currentLang === 'es' ? '🪷 Alfabeto' : '🪷 Bảng Chữ Cái';
+            
+            activeAlphabet.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'btn-3d bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 flex flex-col items-center justify-center cursor-pointer';
+                card.onclick = () => window.speakText(item.char, currentLang === 'es' ? 'es-ES' : 'vi-VN');
+                card.innerHTML = `<span class="text-3xl font-game text-amber-800">${item.char}</span><span class="text-2xl mt-1">${item.emoji}</span>`;
+                grid.appendChild(card);
+            });
+            document.getElementById('alphabet-modal').classList.remove('hidden');
+        };
+        window.closeAlphabetModal = function() { document.getElementById('alphabet-modal').classList.add('hidden'); };
+
         window.createProfile = function() {
             const name = prompt(currentLang === 'es' ? '¿Nombre del niño(a)?' : "Tên của bé? (Child's Name):", "Bé " + Math.floor(Math.random()*100));
             if(name) {
@@ -511,6 +570,7 @@
             const btnSpelling = document.getElementById('arcade-btn-spelling');
             const btnWriting = document.getElementById('arcade-btn-writing');
             const currTitle = document.getElementById('curriculum-title');
+            const alphaTitle = document.getElementById('alpha-title');
 
             if(arcadeTitle) arcadeTitle.innerText = lang === 'es' ? '🎮 Zona de Juegos (Arcade)' : '🎮 Khu Vui Chơi (Arcade)';
             if(btnSlicer) btnSlicer.innerText = lang === 'es' ? 'Cortar Palabras' : 'Chém Từ';
@@ -518,6 +578,7 @@
             if(btnSpelling) btnSpelling.innerText = lang === 'es' ? 'Deletrear' : 'Xếp Chữ';
             if(btnWriting) btnWriting.innerText = lang === 'es' ? 'Escribir' : 'Tập Viết';
             if(currTitle) currTitle.innerText = lang === 'es' ? '📚 Mapa de Aprendizaje' : '📚 Bản đồ Học Tập';
+            if(alphaTitle) alphaTitle.innerText = lang === 'es' ? 'Alfabeto' : 'Bảng Chữ Cái';
 
             renderDashboard();
         };
