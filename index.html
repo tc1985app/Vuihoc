@@ -21,6 +21,7 @@
             background-color: var(--bg-light); color: #1f2937;
             overflow-x: hidden; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
             user-select: none; -webkit-user-select: none;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
         h1, h2, h3, .font-game { font-family: 'Nunito', sans-serif !important; font-weight: 900; letter-spacing: 0.5px; }
 
@@ -28,6 +29,11 @@
             background-image: radial-gradient(#e5e7eb 2px, transparent 2px), radial-gradient(#e5e7eb 2px, transparent 2px);
             background-size: 50px 50px; background-position: 0 0, 25px 25px;
         }
+
+        body.dark-mode { background-color: #0f172a !important; color: #f8fafc !important; }
+        body.dark-mode .cultural-bg { background-image: radial-gradient(#334155 2px, transparent 2px), radial-gradient(#334155 2px, transparent 2px); }
+        body.dark-mode .bg-white { background-color: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important; }
+        body.dark-mode .text-gray-800, body.dark-mode .text-gray-700 { color: #f8fafc !important; }
 
         .screen-container { transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 1; transform: scale(1); }
         .screen-hidden { opacity: 0 !important; transform: scale(0.95) !important; pointer-events: none; position: absolute; }
@@ -77,9 +83,25 @@
 <body id="app-body" class="min-h-screen flex flex-col items-center p-3 sm:p-6 cultural-bg">
     <div id="confetti-container"></div>
 
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[150] flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full border-4 border-amber-400 shadow-2xl card-pop text-left">
+            <h3 class="text-2xl font-game mb-6 text-gray-800 border-b-2 pb-2">⚙️ Cài Đặt (Settings)</h3>
+            <div class="mb-4 flex justify-between items-center bg-gray-100 p-3 rounded-xl border-2 border-gray-300">
+                <label class="text-gray-700 font-bold">Ban đêm (Dark Mode):</label>
+                <input type="checkbox" id="dark-mode-toggle" class="w-6 h-6 cursor-pointer" onclick="window.toggleDarkMode(this.checked)">
+            </div>
+            <div class="mb-6">
+                <button type="button" onclick="window.resetProgress()" class="w-full bg-red-100 hover:bg-red-200 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm">🔄 Đặt Lại Tiến Trình (Reset Progress)</button>
+            </div>
+            <button type="button" onclick="window.closeSettings()" class="btn-3d w-full bg-amber-600 text-white font-game py-3 rounded-2xl border-b-4 border-amber-800 text-lg text-center">Đóng (Close)</button>
+        </div>
+    </div>
+
     <!-- Screen 1: Profiles -->
     <div id="screen-profiles" class="screen-container flex-1 w-full max-w-4xl flex flex-col items-center justify-center text-center">
-        <header class="mb-10 w-full mt-4">
+        <header class="mb-10 w-full mt-4 relative">
+            <button type="button" onclick="window.openSettings()" class="absolute top-0 right-0 btn-3d px-4 py-2 bg-white text-gray-700 font-bold rounded-2xl border-2 border-gray-300 text-sm shadow-sm">⚙️</button>
             <div class="text-6xl mb-4 floating">🪷</div>
             <h1 class="text-4xl sm:text-6xl font-game text-amber-600 mb-2 drop-shadow-sm">Vui Học</h1>
             <p class="text-sm sm:text-xl text-gray-500 font-bold mb-6 tracking-wide uppercase">Bilingual 1000+ Words</p>
@@ -99,6 +121,7 @@
                     <span class="text-amber-500 font-black text-sm bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200">⭐ <span id="dash-stars">0</span></span>
                 </div>
             </div>
+            <button type="button" onclick="window.openSettings()" class="btn-3d px-3 py-2.5 bg-gray-100 rounded-2xl text-gray-700 font-bold text-sm">⚙️</button>
         </div>
         
         <div class="flex bg-gray-200 rounded-3xl p-1.5 mb-8 shadow-inner border-2 border-gray-300 w-full max-w-sm">
@@ -341,6 +364,26 @@
             }, 50);
         };
 
+        window.openSettings = function() {
+            document.getElementById('dark-mode-toggle').checked = document.body.classList.contains('dark-mode');
+            document.getElementById('settings-modal').classList.remove('hidden');
+        };
+        window.closeSettings = function() { document.getElementById('settings-modal').classList.add('hidden'); };
+        window.toggleDarkMode = function(isDark) {
+            if(isDark) document.body.classList.add('dark-mode');
+            else document.body.classList.remove('dark-mode');
+        };
+        window.resetProgress = function() {
+            if(currentProfile && confirm("Đặt lại điểm và tiến trình của bé?")) {
+                currentProfile.stars = 0; currentProfile.progress = {};
+                let saved = JSON.parse(localStorage.getItem('vuihoc_modern_profiles') || '[]');
+                const idx = saved.findIndex(p => p.id === currentProfile.id);
+                if(idx > -1) { saved[idx] = currentProfile; localStorage.setItem('vuihoc_modern_profiles', JSON.stringify(saved)); }
+                document.getElementById('dash-stars').innerText = '0';
+                renderDashboard(); window.closeSettings();
+            }
+        };
+
         window.createProfile = function() {
             const name = prompt(currentLang === 'es' ? '¿Nombre del niño(a)?' : "Tên của bé? (Child's Name):", "Bé " + Math.floor(Math.random()*100));
             if(name) {
@@ -364,10 +407,7 @@
             saved.forEach(p => {
                 const btn = document.createElement('div');
                 btn.className = 'btn-3d w-40 h-48 bg-white rounded-3xl border-4 border-amber-300 flex flex-col items-center justify-center cursor-pointer';
-                
-                const handleSelect = (e) => { e.preventDefault(); window.selectProfile(p); };
-                btn.addEventListener('pointerdown', handleSelect);
-
+                btn.onclick = () => window.selectProfile(p);
                 btn.innerHTML = `<span class="text-6xl mb-2">${p.emoji}</span><span class="font-game text-xl">${p.name}</span><span class="text-amber-500 font-bold mt-1">⭐ ${p.stars || 0}</span>`;
                 container.appendChild(btn);
             });
@@ -410,10 +450,7 @@
                     const btn = document.createElement('button');
                     btn.type = 'button';
                     btn.className = `btn-3d p-3 rounded-2xl flex flex-col items-center justify-center border-b-4 ${isDone ? 'bg-emerald-100 border-emerald-400 text-emerald-800' : 'bg-amber-100 border-amber-300 text-amber-800'}`;
-                    
-                    const triggerLesson = (e) => { e.preventDefault(); window.startLesson(topic.id, lvl, topic.levels[lvl]); };
-                    btn.addEventListener('pointerdown', triggerLesson);
-
+                    btn.onclick = () => window.startLesson(topic.id, lvl, topic.levels[lvl]);
                     btn.innerHTML = `<span class="text-3xl mb-1">${isDone?'⭐':topic.levels[lvl][0].emoji}</span><span class="text-[10px] font-black uppercase tracking-wide">${lvl.substring(0,3)}</span>`;
                     grid.appendChild(btn);
                 });
@@ -620,7 +657,7 @@
                 `;
 
                 const handlePop = (e) => {
-                    e.preventDefault();
+                    e.stopPropagation();
                     if(w.id === balTarget.id) {
                         window.playSound.pop(); fireConfetti();
                         balScore++; document.getElementById('balloon-score').innerText = balScore;
@@ -639,14 +676,16 @@
                     }
                 };
                 
-                bw.addEventListener('pointerdown', handlePop);
+                bw.onclick = handlePop;
+                bw.ontouchend = handlePop;
+                
                 bw.addEventListener('animationend', (e) => { if(e.animationName === 'floatUp') { bw.remove(); if(w.id === balTarget.id && balRun) nextBalloonRound(); } });
                 area.appendChild(bw);
             });
         }
         window.playBalloonAudio = () => window.speakText(balTarget[currentLang]);
 
-        // Spelling (Xếp Chữ) - Robust pointerdown handling
+        // Spelling (Xếp Chữ)
         let spellScore = 0, spellTarget = null, spellArr = [], spellIdx = 0;
         window.startSpellingGame = () => { window.showScreen('spelling'); spellScore = 0; document.getElementById('spelling-score').innerText='0'; loadSpellWord(); };
         window.exitSpelling = () => window.showScreen('dashboard');
@@ -690,7 +729,8 @@
                     }
                 };
 
-                b.addEventListener('pointerdown', handleBlockAction);
+                b.onclick = handleBlockAction;
+                b.ontouchend = handleBlockAction;
 
                 bank.appendChild(b);
             });
@@ -738,3 +778,4 @@
     </script>
 </body>
 </html>
+```eof
