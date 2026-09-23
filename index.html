@@ -74,14 +74,6 @@
         .pop-particle { position: absolute; width: 15px; height: 15px; border-radius: 50%; animation: explode 0.5s ease-out forwards; pointer-events: none; }
         @keyframes explode { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
 
-        /* Memory Match Cards */
-        .memory-card { perspective: 1000px; cursor: pointer; height: 110px; }
-        .memory-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.4s; transform-style: preserve-3d; }
-        .memory-card.flipped .memory-card-inner { transform: rotateY(180deg); }
-        .memory-card-front, .memory-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-weight: 900; box-shadow: 0 6px 0px rgba(0,0,0,0.1); border: 3px solid #d8b4fe; }
-        .memory-card-front { background: #9333ea; color: white; font-size: 2rem; }
-        .memory-card-back { background: white; color: #581c87; transform: rotateY(180deg); font-size: 1.1rem; padding: 4px; }
-
         canvas { display: block; width: 100%; height: 100%; touch-action: none; }
     </style>
 </head>
@@ -709,6 +701,7 @@
             });
         }
 
+        // Bulletproof Tablet Accent Matcher with Audio Fallback Stream
         window.speakText = function(txt, forceLang) {
             if(!window.speechSynthesis) return;
             window.speechSynthesis.cancel();
@@ -718,10 +711,21 @@
             utt.lang = targetLang;
             
             let voices = window.speechSynthesis.getVoices();
-            let voice = voices.find(v => v.lang === targetLang) || voices.find(v => v.lang.startsWith(targetLang.substring(0, 2)));
-            if(voice) utt.voice = voice;
+            let prefix = targetLang.substring(0, 2).toLowerCase();
             
-            window.speechSynthesis.speak(utt);
+            let voice = voices.find(v => v.lang.toLowerCase() === targetLang.toLowerCase()) || 
+                        voices.find(v => v.lang.toLowerCase().startsWith(prefix));
+            
+            if(voice) {
+                utt.voice = voice;
+                window.speechSynthesis.speak(utt);
+            } else {
+                // Fallback for tablets lacking local voice packs: use Google Translate TTS audio stream
+                const audio = new Audio(`https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(txt)}&tl=${prefix}&client=tw-ob`);
+                audio.play().catch(() => {
+                    window.speechSynthesis.speak(utt); // Final fallback to browser default
+                });
+            }
         };
 
         // Picture Description Game (Adaptive to Proficiency)
@@ -1157,4 +1161,3 @@
     </script>
 </body>
 </html>
-```eof
