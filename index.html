@@ -232,9 +232,13 @@
             <button type="button" onclick="window.skipWord()" class="btn-3d w-full py-4 bg-amber-500 text-white font-game text-xl rounded-2xl border-b-6 border-amber-700 shadow-lg">Bỏ qua / Tiếp (Next) ➡️</button>
         </div>
         
-        <div id="game-post-game-menu" class="w-full max-w-sm flex-col items-center hidden mt-4 gap-4 pop-in">
-             <h4 class="text-4xl font-game text-amber-500 mb-4 text-center">Tuyệt vời! +5 ⭐</h4>
-             <button type="button" id="btn-next-level" onclick="window.advanceToNextLevel()" class="btn-3d w-full bg-emerald-500 text-white font-game text-2xl py-5 rounded-3xl border-b-8 border-emerald-700 shadow-xl hidden">➡️ Cấp tiếp theo</button>
+        <!-- Post-Lesson Extended Progression Menu -->
+        <div id="game-post-game-menu" class="w-full max-w-sm flex-col items-center hidden mt-4 gap-4 pop-in bg-white p-6 rounded-[2.5rem] border-4 border-amber-300 shadow-2xl">
+             <h4 class="text-3xl font-game text-amber-600 text-center">🎉 Hoàn Thành Cấp Độ!</h4>
+             <p class="text-sm font-bold text-gray-500 text-center">Bạn đã nhận +5 ⭐. Muốn học tiếp như thế nào?</p>
+             <button type="button" onclick="window.restartSameLessonWithNewWords()" class="btn-3d w-full bg-blue-500 text-white font-game text-lg py-3 rounded-2xl border-b-4 border-blue-700 shadow-md">🔄 Học Thêm Từ Mới (New Words)</button>
+             <button type="button" id="btn-next-level" onclick="window.advanceToNextLevel()" class="btn-3d w-full bg-emerald-500 text-white font-game text-lg py-3 rounded-2xl border-b-4 border-emerald-700 shadow-md">⬆️ Thử Cấp Tiếp Theo (Next Level)</button>
+             <button type="button" onclick="window.exitGame()" class="btn-3d w-full bg-gray-200 text-gray-700 font-game text-base py-3 rounded-2xl">🏠 Về Trang Chủ (Dashboard)</button>
         </div>
     </div>
 
@@ -329,7 +333,6 @@
             error: () => { playTone(300, 'sawtooth', 0.2, 0.1); setTimeout(()=>playTone(250, 'sawtooth', 0.2, 0.1), 150); }
         };
 
-        // Perfectly Matched Alphabet Datasets: Emoji + Word starting with that exact letter
         const ALPHABET_VI = [
             {char: 'A', emoji: '🍎', word: 'Áo'}, {char: 'Ă', emoji: '🌙', word: 'Ăn'}, {char: 'Â', emoji: '🥞', word: 'Ấm'}, {char: 'B', emoji: '🎈', word: 'Bóng'},
             {char: 'C', emoji: '🐱', word: 'Con mèo'}, {char: 'D', emoji: '🎒', word: 'Dép'}, {char: 'Đ', emoji: '🚂', word: 'Đèn'}, {char: 'E', emoji: '🐘', word: 'Em bé'},
@@ -357,7 +360,7 @@
                     { emoji: '🐶', text: 'Con chó màu vàng đang vẫy đuôi.', prompt: 'Con vật trong tranh là gì?', options: ['Con chó', 'Con mèo', 'Con chim'], correct: 0 },
                     { emoji: '🍎', text: 'Quả táo đỏ mọng trên cành cây.', prompt: 'Đây là loại quả gì?', options: ['Quả táo', 'Quả chuối', 'Quả cam'], correct: 0 },
                     { emoji: '🚗', text: 'Chiếc ô tô màu đỏ chạy trên đường.', prompt: 'Phương tiện này là gì?', options: ['Xe ô tô', 'Xe đạp', 'Tàu hỏa'], correct: 0 },
-                    { emoji: '🏠', text: 'Ng ngôi nhà nhỏ màu vàng có khu vườn xinh.', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Bệnh viện', 'Trường học'], correct: 0 }
+                    { emoji: '🏠', text: 'Ngôi nhà nhỏ màu vàng có khu vườn xinh.', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Bệnh viện', 'Trường học'], correct: 0 }
                 ],
                 intermediate: [
                     { emoji: '🌅', text: 'Buổi sáng bình minh trên biển, ông mặt trời đỏ rực nhô lên từ phía xa chiếu những tia nắng vàng óng ánh xuống mặt nước lăn tăn sóng.', prompt: 'Cảnh tượng trong tranh diễn ra vào lúc nào?', options: ['Buổi sáng bình minh', 'Buổi trưa nắng gắt', 'Đêm trăng sáng'], correct: 0 },
@@ -391,6 +394,7 @@
         };
 
         const VOCAB_DATABASE = [
+            // Animals (15 words)
             { id: 'dog', vi: 'Chó', es: 'Perro', emoji: '🐶', cat: 'animals', lvl: 1 },
             { id: 'cat', vi: 'Mèo', es: 'Gato', emoji: '🐱', cat: 'animals', lvl: 1 },
             { id: 'bird', vi: 'Chim', es: 'Pájaro', emoji: '🐦', cat: 'animals', lvl: 1 },
@@ -401,9 +405,13 @@
             { id: 'duck', vi: 'Vịt', es: 'Pato', emoji: '🦆', cat: 'animals', lvl: 2 },
             { id: 'mouse', vi: 'Chuột', es: 'Ratón', emoji: '🐭', cat: 'animals', lvl: 3 },
             { id: 'horse', vi: 'Ngựa', es: 'Caballo', emoji: '🐴', cat: 'animals', lvl: 3 },
-            { id: 'elephant', vi: 'Voi', es: 'Elefante', emoji: '🐘', cat: 'animals', lvl: 3 },
-            { id: 'tiger', vi: 'Hổ', es: 'Tigre', emoji: '🐅', cat: 'animals', lvl: 3 },
+            { id: 'elephant', vi: 'Voi', es: 'Elefante', emoji: '🐘', cat: 'animals', lvl: 4 },
+            { id: 'tiger', vi: 'Hổ', es: 'Tigre', emoji: '🐅', cat: 'animals', lvl: 4 },
+            { id: 'lion', vi: 'Sư tử', es: 'León', emoji: '🦁', cat: 'animals', lvl: 5 },
+            { id: 'monkey', vi: 'Khỉ', es: 'Mono', emoji: '🐵', cat: 'animals', lvl: 6 },
+            { id: 'snake', vi: 'Rắn', es: 'Serpiente', emoji: '🐍', cat: 'animals', lvl: 7 },
             
+            // Food (15 words)
             { id: 'water', vi: 'Nước', es: 'Agua', emoji: '💧', cat: 'food', lvl: 1 },
             { id: 'milk', vi: 'Sữa', es: 'Leche', emoji: '🥛', cat: 'food', lvl: 1 },
             { id: 'rice', vi: 'Cơm', es: 'Arroz', emoji: '🍚', cat: 'food', lvl: 1 },
@@ -414,59 +422,63 @@
             { id: 'egg', vi: 'Trứng', es: 'Huevo', emoji: '🥚', cat: 'food', lvl: 2 },
             { id: 'orange', vi: 'Cam', es: 'Naranja', emoji: '🍊', cat: 'food', lvl: 3 },
             { id: 'grape', vi: 'Nho', es: 'Uva', emoji: '🍇', cat: 'food', lvl: 3 },
-            { id: 'soup', vi: 'Súp/Phở', es: 'Sopa', emoji: '🍲', cat: 'food', lvl: 3 },
-            { id: 'cake', vi: 'Bánh', es: 'Pastel', emoji: '🍰', cat: 'food', lvl: 3 },
+            { id: 'soup', vi: 'Súp/Phở', es: 'Sopa', emoji: '🍲', cat: 'food', lvl: 4 },
+            { id: 'cake', vi: 'Bánh', es: 'Pastel', emoji: '🍰', cat: 'food', lvl: 5 },
+            { id: 'cheese', vi: 'Phô mai', es: 'Queso', emoji: '🧀', cat: 'food', lvl: 6 },
+            { id: 'honey', vi: 'Mật ong', es: 'Miel', emoji: '🍯', cat: 'food', lvl: 7 },
             
+            // Colors & Shapes (14 words)
             { id: 'red', vi: 'Đỏ', es: 'Rojo', emoji: '🔴', cat: 'colors', lvl: 1 },
             { id: 'blue', vi: 'Xanh dương', es: 'Azul', emoji: '🔵', cat: 'colors', lvl: 1 },
             { id: 'yellow', vi: 'Vàng', es: 'Amarillo', emoji: '🟡', cat: 'colors', lvl: 1 },
             { id: 'green', vi: 'Xanh lá', es: 'Verde', emoji: '🟢', cat: 'colors', lvl: 1 },
             { id: 'black', vi: 'Đen', es: 'Negro', emoji: '⚫', cat: 'colors', lvl: 2 },
             { id: 'white', vi: 'Trắng', es: 'Blanco', emoji: '⚪', cat: 'colors', lvl: 2 },
-            { id: 'circle', vi: 'Tròn', es: 'Círculo', emoji: '⭕', cat: 'colors', lvl: 2 },
-            { id: 'square', vi: 'Vuông', es: 'Cuadrado', emoji: '🟩', cat: 'colors', lvl: 2 },
-            { id: 'purple', vi: 'Tím', es: 'Morado', emoji: '🟣', cat: 'colors', lvl: 3 },
-            { id: 'orange_col', vi: 'Cam (màu)', es: 'Naranja', emoji: '🟠', cat: 'colors', lvl: 3 },
+            { id: 'circle', vi: 'Tròn', es: 'Círculo', emoji: '⭕', cat: 'colors', lvl: 3 },
+            { id: 'square', vi: 'Vuông', es: 'Cuadrado', emoji: '🟩', cat: 'colors', lvl: 4 },
+            { id: 'purple', vi: 'Tím', es: 'Morado', emoji: '🟣', cat: 'colors', lvl: 5 },
+            { id: 'orange_col', vi: 'Cam (màu)', es: 'Naranja', emoji: '🟠', cat: 'colors', lvl: 6 },
             
+            // Numbers (14 words)
             { id: 'num1', vi: 'Một', es: 'Uno', emoji: '1️⃣', cat: 'numbers', lvl: 1 },
             { id: 'num2', vi: 'Hai', es: 'Dos', emoji: '2️⃣', cat: 'numbers', lvl: 1 },
             { id: 'num3', vi: 'Ba', es: 'Tres', emoji: '3️⃣', cat: 'numbers', lvl: 1 },
             { id: 'num4', vi: 'Bốn', es: 'Cuatro', emoji: '4️⃣', cat: 'numbers', lvl: 1 },
             { id: 'num5', vi: 'Năm', es: 'Cinco', emoji: '5️⃣', cat: 'numbers', lvl: 2 },
-            { id: 'num6', vi: 'Sáu', es: 'Seis', emoji: '6️⃣', cat: 'numbers', lvl: 2 },
-            { id: 'num7', vi: 'Bảy', es: 'Siete', emoji: '7️⃣', cat: 'numbers', lvl: 2 },
-            { id: 'num8', vi: 'Tám', es: 'Ocho', emoji: '8️⃣', cat: 'numbers', lvl: 2 },
-            { id: 'num9', vi: 'Chín', es: 'Nueve', emoji: '9️⃣', cat: 'numbers', lvl: 3 },
-            { id: 'num10', vi: 'Mười', es: 'Diez', emoji: '🔟', cat: 'numbers', lvl: 3 },
+            { id: 'num6', vi: 'Sáu', es: 'Seis', emoji: '6️⃣', cat: 'numbers', lvl: 3 },
+            { id: 'num7', vi: 'Bảy', es: 'Siete', emoji: '7️⃣', cat: 'numbers', lvl: 4 },
+            { id: 'num8', vi: 'Tám', es: 'Ocho', emoji: '8️⃣', cat: 'numbers', lvl: 5 },
+            { id: 'num9', vi: 'Chín', es: 'Nueve', emoji: '9️⃣', cat: 'numbers', lvl: 6 },
+            { id: 'num10', vi: 'Mười', es: 'Diez', emoji: '🔟', cat: 'numbers', lvl: 7 },
 
+            // Body (12 words)
             { id: 'eye', vi: 'Mắt', es: 'Ojo', emoji: '👁️', cat: 'body', lvl: 1 },
             { id: 'nose', vi: 'Mũi', es: 'Nariz', emoji: '👃', cat: 'body', lvl: 1 },
             { id: 'mouth', vi: 'Miệng', es: 'Boca', emoji: '👄', cat: 'body', lvl: 1 },
-            { id: 'ear', vi: 'Tai', es: 'Oreja', emoji: '👂', cat: 'body', lvl: 1 },
-            { id: 'hand', vi: 'Tay', es: 'Mano', emoji: '✋', cat: 'body', lvl: 2 },
-            { id: 'foot', vi: 'Chân', es: 'Pie', emoji: '🦶', cat: 'body', lvl: 2 },
-            { id: 'head', vi: 'Đầu', es: 'Cabeza', emoji: '👤', cat: 'body', lvl: 2 },
-            { id: 'hair', vi: 'Tóc', es: 'Pelo', emoji: '💇', cat: 'body', lvl: 2 },
-            { id: 'tooth', vi: 'Răng', es: 'Diente', emoji: '🦷', cat: 'body', lvl: 3 },
-            { id: 'tongue', vi: 'Lưỡi', es: 'Lengua', emoji: '👅', cat: 'body', lvl: 3 },
+            { id: 'ear', vi: 'Tai', es: 'Oreja', emoji: '👂', cat: 'body', lvl: 2 },
+            { id: 'hand', vi: 'Tay', es: 'Mano', emoji: '✋', cat: 'body', lvl: 3 },
+            { id: 'foot', vi: 'Chân', es: 'Pie', emoji: '🦶', cat: 'body', lvl: 4 },
+            { id: 'head', vi: 'Đầu', es: 'Cabeza', emoji: '👤', cat: 'body', lvl: 5 },
+            { id: 'hair', vi: 'Tóc', es: 'Pelo', emoji: '💇', cat: 'body', lvl: 6 },
+            { id: 'tooth', vi: 'Răng', es: 'Diente', emoji: '🦷', cat: 'body', lvl: 7 },
             
+            // Home (12 words)
             { id: 'house', vi: 'Nhà', es: 'Casa', emoji: '🏠', cat: 'home', lvl: 1 },
             { id: 'bed', vi: 'Giường', es: 'Cama', emoji: '🛏️', cat: 'home', lvl: 1 },
-            { id: 'door', vi: 'Cửa', es: 'Puerta', emoji: '🚪', cat: 'home', lvl: 1 },
-            { id: 'table', vi: 'Bàn', es: 'Mesa', emoji: '🪑', cat: 'home', lvl: 1 },
-            { id: 'chair', vi: 'Ghế', es: 'Silla', emoji: '🪑', cat: 'home', lvl: 2 },
-            { id: 'tv', vi: 'Tivi', es: 'Televisión', emoji: '📺', cat: 'home', lvl: 2 },
-            { id: 'book', vi: 'Sách', es: 'Libro', emoji: '📖', cat: 'home', lvl: 2 },
-            { id: 'pen', vi: 'Bút', es: 'Bolígrafo', emoji: '🖊️', cat: 'home', lvl: 2 },
-            { id: 'mom', vi: 'Mẹ', es: 'Mamá', emoji: '👩', cat: 'home', lvl: 3 },
-            { id: 'dad', vi: 'Ba', es: 'Papá', emoji: '👨', cat: 'home', lvl: 3 },
+            { id: 'door', vi: 'Cửa', es: 'Puerta', emoji: '🚪', cat: 'home', lvl: 2 },
+            { id: 'table', vi: 'Bàn', es: 'Mesa', emoji: '🪑', cat: 'home', lvl: 3 },
+            { id: 'chair', vi: 'Ghế', es: 'Silla', emoji: '🪑', cat: 'home', lvl: 4 },
+            { id: 'tv', vi: 'Tivi', es: 'Televisión', emoji: '📺', cat: 'home', lvl: 5 },
+            { id: 'book', vi: 'Sách', es: 'Libro', emoji: '📖', cat: 'home', lvl: 6 },
+            { id: 'pen', vi: 'Bút', es: 'Bolígrafo', emoji: '🖊️', cat: 'home', lvl: 7 },
             
+            // Vehicles (10 words)
             { id: 'car', vi: 'Xe ô tô', es: 'Coche', emoji: '🚗', cat: 'vehicles', lvl: 1 },
             { id: 'bike', vi: 'Xe đạp', es: 'Bicicleta', emoji: '🚲', cat: 'vehicles', lvl: 1 },
-            { id: 'bus', vi: 'Xe buýt', es: 'Autobús', emoji: '🚌', cat: 'vehicles', lvl: 2 },
-            { id: 'train', vi: 'Tàu hỏa', es: 'Tren', emoji: '🚂', cat: 'vehicles', lvl: 2 },
-            { id: 'plane', vi: 'Máy bay', es: 'Avión', emoji: '✈️', cat: 'vehicles', lvl: 3 },
-            { id: 'boat', vi: 'Thuyền', es: 'Barco', emoji: '⛵', cat: 'vehicles', lvl: 3 }
+            { id: 'bus', vi: 'Xe buýt', es: 'Autobús', emoji: '🚌', cat: 'vehicles', lvl: 3 },
+            { id: 'train', vi: 'Tàu hỏa', es: 'Tren', emoji: '🚂', cat: 'vehicles', lvl: 4 },
+            { id: 'plane', vi: 'Máy bay', es: 'Avión', emoji: '✈️', cat: 'vehicles', lvl: 6 },
+            { id: 'boat', vi: 'Thuyền', es: 'Barco', emoji: '⛵', cat: 'vehicles', lvl: 7 }
         ];
 
         const TOPICS_CONFIG = [
@@ -485,7 +497,22 @@
             TOPICS_CONFIG.forEach(topic => {
                 const words = VOCAB_DATABASE.filter(w => w.cat === topic.id);
                 if(words.length === 0) return;
-                const levels = { beginner: words.filter(w=>w.lvl===1), intermediate: words.filter(w=>w.lvl===2), advanced: words.filter(w=>w.lvl===3) };
+                // Generate 7 progressive levels
+                const levels = {
+                    level1: words.filter(w=>w.lvl===1),
+                    level2: words.filter(w=>w.lvl===2),
+                    level3: words.filter(w=>w.lvl===3),
+                    level4: words.filter(w=>w.lvl===4),
+                    level5: words.filter(w=>w.lvl===5),
+                    level6: words.filter(w=>w.lvl===6),
+                    level7: words.filter(w=>w.lvl===7)
+                };
+                // Fallback fill if any level is empty
+                Object.keys(levels).forEach((lvlKey, idx) => {
+                    if(levels[lvlKey].length === 0) {
+                        levels[lvlKey] = [words[idx % words.length]];
+                    }
+                });
                 curriculum.push({ id: topic.id, vi: topic.vi, es: topic.es, emoji: topic.emoji, levels });
             });
         }
@@ -595,7 +622,6 @@
             activeAlphabet.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'btn-3d bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 flex flex-col items-center justify-center cursor-pointer';
-                // Pronounce just the letter/sound (item.char) instead of the full word
                 card.onclick = () => window.speakText(item.char, currentLang === 'es' ? 'es-ES' : 'vi-VN');
                 card.innerHTML = `<span class="text-3xl font-game text-amber-800">${item.char}</span><span class="text-2xl mt-1">${item.emoji}</span><span class="text-[10px] font-bold text-gray-500 mt-0.5">${item.word}</span>`;
                 grid.appendChild(card);
@@ -693,15 +719,15 @@
                 sec.className = 'bg-white rounded-[2rem] p-6 shadow-md border-2 border-amber-100 mb-4';
                 sec.innerHTML = `<h3 class="text-2xl font-game text-gray-800 mb-4 flex items-center gap-2"><span class="text-3xl">${topic.emoji}</span> ${topic[currentLang]}</h3>`;
                 
-                const grid = document.createElement('div'); grid.className = 'grid grid-cols-3 gap-3';
-                ['beginner', 'intermediate', 'advanced'].forEach(lvl => {
-                    if(!topic.levels[lvl] || topic.levels[lvl].length === 0) return;
-                    const isDone = currentProfile && currentProfile.progress[topic.id] && currentProfile.progress[topic.id][lvl];
+                const grid = document.createElement('div'); grid.className = 'grid grid-cols-4 sm:grid-cols-7 gap-2';
+                ['level1', 'level2', 'level3', 'level4', 'level5', 'level6', 'level7'].forEach((lvlKey, lIdx) => {
+                    if(!topic.levels[lvlKey] || topic.levels[lvlKey].length === 0) return;
+                    const isDone = currentProfile && currentProfile.progress[topic.id] && currentProfile.progress[topic.id][lvlKey];
                     const btn = document.createElement('button');
                     btn.type = 'button';
-                    btn.className = `btn-3d p-3 rounded-2xl flex flex-col items-center justify-center border-b-4 ${isDone ? 'bg-emerald-100 border-emerald-400 text-emerald-800' : 'bg-amber-100 border-amber-300 text-amber-800'}`;
-                    btn.onclick = () => window.startLesson(topic.id, lvl, topic.levels[lvl]);
-                    btn.innerHTML = `<span class="text-3xl mb-1">${isDone?'⭐':topic.levels[lvl][0].emoji}</span><span class="text-[10px] font-black uppercase tracking-wide">${lvl.substring(0,3)}</span>`;
+                    btn.className = `btn-3d p-2 rounded-2xl flex flex-col items-center justify-center border-b-4 ${isDone ? 'bg-emerald-100 border-emerald-400 text-emerald-800' : 'bg-amber-100 border-amber-300 text-amber-800'}`;
+                    btn.onclick = () => window.startLesson(topic.id, lvlKey, topic.levels[lvlKey]);
+                    btn.innerHTML = `<span class="text-2xl mb-1">${isDone?'⭐':topic.levels[lvlKey][0].emoji}</span><span class="text-[10px] font-black uppercase tracking-wide">L${lIdx+1}</span>`;
                     grid.appendChild(btn);
                 });
                 sec.appendChild(grid); mapContainer.appendChild(sec);
@@ -871,19 +897,32 @@
                 if(skipBtn) skipBtn.classList.add('hidden');
                 if(postMenu) postMenu.classList.remove('hidden');
                 
-                const lvls = ['beginner', 'intermediate', 'advanced'];
-                const curIdx = lvls.indexOf(currentLessonData.levelId);
-                const hasNext = curIdx < 2 && curriculum.find(t => t.id === currentLessonData.weekId).levels[lvls[curIdx+1]];
+                const levelKeys = ['level1', 'level2', 'level3', 'level4', 'level5', 'level6', 'level7'];
+                const curIdx = levelKeys.indexOf(currentLessonData.levelId);
+                const hasNext = curIdx < levelKeys.length - 1 && curriculum.find(t => t.id === currentLessonData.weekId).levels[levelKeys[curIdx+1]];
                 const nextBtn = document.getElementById('btn-next-level');
                 if(nextBtn) nextBtn.style.display = hasNext ? 'block' : 'none';
             } else { loadLessonCard(); }
         };
 
+        window.restartSameLessonWithNewWords = function() {
+            const topic = curriculum.find(t => t.id === currentLessonData.weekId);
+            if(topic) {
+                const words = [...topic.levels[currentLessonData.levelId]].sort(() => 0.5 - Math.random());
+                window.startLesson(currentLessonData.weekId, currentLessonData.levelId, words);
+            }
+        };
+
         window.advanceToNextLevel = function() {
-            const lvls = ['beginner', 'intermediate', 'advanced'];
-            const nextLvl = lvls[lvls.indexOf(currentLessonData.levelId)+1];
-            const words = curriculum.find(t => t.id === currentLessonData.weekId).levels[nextLvl];
-            window.startLesson(currentLessonData.weekId, nextLvl, words);
+            const levelKeys = ['level1', 'level2', 'level3', 'level4', 'level5', 'level6', 'level7'];
+            const curIdx = levelKeys.indexOf(currentLessonData.levelId);
+            if(curIdx < levelKeys.length - 1) {
+                const nextLvl = levelKeys[curIdx + 1];
+                const words = curriculum.find(t => t.id === currentLessonData.weekId).levels[nextLvl];
+                window.startLesson(currentLessonData.weekId, nextLvl, words);
+            } else {
+                window.exitGame();
+            }
         };
 
         function fireConfetti() {
@@ -1164,3 +1203,4 @@
     </script>
 </body>
 </html>
+```eof
