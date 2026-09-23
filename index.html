@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Vui Học">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪷</text></svg>">
     
-    <title>Fun Language Learning - Bilingual Platform</title>
+    <title>Vui Học - Bilingual Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
     
@@ -73,9 +73,6 @@
         @keyframes wobble { 0% { margin-left: -20px; } 100% { margin-left: 20px; } }
         .pop-particle { position: absolute; width: 15px; height: 15px; border-radius: 50%; animation: explode 0.5s ease-out forwards; pointer-events: none; }
         @keyframes explode { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
-
-        .spell-slot { background: rgba(255,255,255,0.9); box-shadow: inset 0 4px 6px rgba(0,0,0,0.1); }
-        .spell-btn { cursor: pointer; touch-action: manipulation; transition: all 0.15s; user-select: none; }
 
         canvas { display: block; width: 100%; height: 100%; touch-action: none; }
     </style>
@@ -274,20 +271,17 @@
         <div id="balloon-area"></div>
     </div>
 
-    <!-- Screen: Wooden Block Spelling -->
-    <div id="screen-spelling" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-amber-100 hidden overflow-y-auto">
-        <div class="w-full max-w-2xl flex justify-between items-center p-6 z-10">
-            <button type="button" onclick="window.exitSpelling()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-500 font-game shadow-md">Thoát</button>
+    <!-- Screen: Rebuilt Multiple Choice Spelling Game (Xếp Chữ) -->
+    <div id="screen-spelling" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-purple-50 hidden overflow-y-auto pt-6 px-4">
+        <div class="w-full max-w-xl flex justify-between items-center mb-6">
+            <button type="button" onclick="window.exitSpelling()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-500 font-game text-lg border-2 border-red-200">Thoát</button>
             <div class="bg-purple-500 px-6 py-3 rounded-2xl text-white font-game text-xl shadow-md border-2 border-purple-400">Điểm: <span id="spelling-score">0</span></div>
         </div>
-        <div class="flex-1 flex flex-col items-center justify-center w-full max-w-2xl px-4 pb-12">
-            <div class="bg-white rounded-[3rem] p-8 border-8 border-purple-300 shadow-2xl flex flex-col items-center mb-8 pop-in">
-                <span id="spelling-emoji" class="text-8xl mb-2">🐶</span>
-                <button type="button" onclick="window.playSpellingAudio()" id="spelling-audio-btn" class="btn-3d mt-2 px-6 py-2.5 bg-purple-600 text-white font-game rounded-2xl text-sm shadow-md">🔊 Nghe Từ</button>
-            </div>
-            
-            <div id="spelling-slots" class="flex gap-2 sm:gap-3 mb-10 flex-wrap justify-center p-4 bg-amber-900/10 rounded-3xl w-full"></div>
-            <div id="spelling-bank" class="flex gap-3 sm:gap-4 flex-wrap justify-center w-full"></div>
+        <div class="bg-white rounded-[3rem] p-8 border-8 border-purple-300 shadow-2xl w-full max-w-lg flex flex-col items-center mb-6 pop-in text-center">
+            <span id="spell-emoji" class="text-8xl mb-4 block floating">🐶</span>
+            <button type="button" onclick="window.playSpellPromptAudio()" class="btn-3d px-6 py-3 bg-purple-600 text-white font-game rounded-2xl text-base shadow-md mb-6 flex items-center gap-2 mx-auto">🔊 Nghe Từ Này</button>
+            <h3 class="text-2xl font-game text-purple-900 mb-6">Chọn cách viết đúng của từ trên:</h3>
+            <div id="spell-options" class="w-full flex flex-col gap-3"></div>
         </div>
     </div>
 
@@ -335,8 +329,8 @@
         };
 
         const ALPHABET_VI = [
-            {char: 'A', emoji: '🍎', word: 'Áo'}, {char: 'Ă', emoji: '🌙', word: 'Ăn'}, {char: 'Â', emoji: '🥞', word: 'Ấm'}, {char: 'B', emoji: ' bút', word: 'Bút'},
-            {char: 'C', emoji: '🐟', word: 'Cá'}, {char: 'D', emoji: '🎒', word: 'Dép'}, {char: 'Đ', emoji: '🚂', word: 'Đèn'}, {char: 'E', emoji: '🐘', word: 'Em'},
+            {char: 'A', emoji: '🍎', word: 'Áo'}, {char: 'Ă', emoji: '🌙', word: 'Ăn'}, {char: 'Â', emoji: '🥞', word: 'Ấm'}, {char: 'B', emoji: '🎈', word: 'Bút'},
+            {char: 'C', emoji: '🐱', word: 'Cá'}, {char: 'D', emoji: '🎒', word: 'Dép'}, {char: 'Đ', emoji: '🚂', word: 'Đèn'}, {char: 'E', emoji: '🐘', word: 'Em'},
             {char: 'Ê', emoji: '🛏️', word: 'Êm'}, {char: 'G', emoji: '🐓', word: 'Gà'}, {char: 'H', emoji: '🏠', word: 'Hành'}, {char: 'I', emoji: '📌', word: 'In'},
             {char: 'K', emoji: '🪁', word: 'Kẹo'}, {char: 'L', emoji: '🦁', word: 'Lá'}, {char: 'M', emoji: '🐵', word: 'Mèo'}, {char: 'N', emoji: '🍌', word: 'Nhà'},
             {char: 'O', emoji: '⭕', word: 'Ong'}, {char: 'Ô', emoji: '☂️', word: 'Ô tô'}, {char: 'Ơ', emoji: '🦋', word: 'Ớt'}, {char: 'P', emoji: '🎹', word: 'Phở'},
@@ -346,7 +340,7 @@
 
         const ALPHABET_ES = [
             {char: 'A', emoji: '🌳', word: 'Árbol'}, {char: 'B', emoji: '⛵', word: 'Barco'}, {char: 'C', emoji: '🏠', word: 'Casa'}, {char: 'Ch', emoji: '🍫', word: 'Chocolate'},
-            {char: 'D', emoji: '🎒', _word: 'Dedo'}, {char: 'E', emoji: '🐘', word: 'Elefante'}, {char: 'F', emoji: '🔥', word: 'Fuego'}, {char: 'G', emoji: '🦒', word: 'Gato'},
+            {char: 'D', emoji: '🎒', word: 'Dedo'}, {char: 'E', emoji: '🐘', word: 'Elefante'}, {char: 'F', emoji: '🔥', word: 'Fuego'}, {char: 'G', emoji: '🦒', word: 'Gato'},
             {char: 'H', emoji: '🍃', word: 'Hojas'}, {char: 'I', emoji: '📌', word: 'Isla'}, {char: 'J', emoji: '🦒', word: 'Jirafa'}, {char: 'K', emoji: '🪁', word: 'Koala'},
             {char: 'L', emoji: '🦁', word: 'León'}, {char: 'Ll', emoji: '🦙', word: 'Llama'}, {char: 'M', emoji: '🐵', word: 'Mono'}, {char: 'N', emoji: '🍌', word: 'Naranja'},
             {char: 'Ñ', emoji: '🪅', word: 'Ñandú'}, {char: 'O', emoji: '⭕', word: 'Oso'}, {char: 'P', emoji: '🎹', word: 'Perro'}, {char: 'Q', emoji: '👑', word: 'Queso'},
@@ -716,7 +710,6 @@
             if(!window.speechSynthesis) return;
             window.speechSynthesis.cancel();
             
-            // Explicitly set language code for Spanish and Vietnamese to prevent browser accent mismatches
             const targetLang = forceLang || (currentLang === 'es' ? 'es-ES' : 'vi-VN');
             const utt = new SpeechSynthesisUtterance(txt);
             utt.lang = targetLang;
@@ -1031,61 +1024,49 @@
         }
         window.playBalloonAudio = () => { if(balTarget) window.speakText(balTarget[currentLang]); };
 
-        // Rebuilt Spelling Game
-        let spellScore = 0, spellTarget = null, spellArr = [], spellIdx = 0;
-        window.startSpellingGame = () => { window.showScreen('spelling'); spellScore = 0; const s = document.getElementById('spelling-score'); if(s) s.innerText='0'; loadSpellWord(); };
+        // Multiple Choice Spelling Game (Xếp Chữ)
+        let spellScore = 0, spellTarget = null;
+        window.startSpellingGame = () => { window.showScreen('spelling'); spellScore = 0; const s = document.getElementById('spelling-score'); if(s) s.innerText='0'; loadMultipleChoiceSpell(); };
         window.exitSpelling = () => window.showScreen('dashboard');
 
-        function loadSpellWord() {
+        function loadMultipleChoiceSpell() {
             spellTarget = VOCAB_DATABASE[Math.floor(Math.random()*VOCAB_DATABASE.length)];
-            const emojiEl = document.getElementById('spelling-emoji');
+            const emojiEl = document.getElementById('spell-emoji');
             if(emojiEl) emojiEl.innerText = spellTarget.emoji;
-            spellArr = spellTarget[currentLang].toUpperCase().split('');
-            spellIdx = 0;
+            window.speakText(spellTarget[currentLang]);
 
-            const slots = document.getElementById('spelling-slots'); 
-            const bank = document.getElementById('spelling-bank'); 
-            if(!slots || !bank) return;
-            slots.innerHTML = ''; bank.innerHTML = '';
+            const optionsContainer = document.getElementById('spell-options');
+            if(!optionsContainer) return;
+            optionsContainer.innerHTML = '';
 
-            spellArr.forEach((c, i) => {
-                const s = document.createElement('div');
-                s.className = 'spell-slot w-12 h-14 sm:w-14 sm:h-16 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-game text-amber-900/35';
-                s.innerText = c; s.id = `sslop-${i}`;
-                slots.appendChild(s);
-            });
+            let choices = [spellTarget[currentLang]];
+            while(choices.length < 3) {
+                const rand = VOCAB_DATABASE[Math.floor(Math.random()*VOCAB_DATABASE.length)][currentLang];
+                if(!choices.includes(rand)) choices.push(rand);
+            }
+            choices.sort(() => 0.5 - Math.random());
 
-            [...spellArr].sort(()=>0.5-Math.random()).forEach((c) => {
-                const b = document.createElement('button');
-                b.type = 'button';
-                b.className = 'spell-btn btn-3d w-12 h-14 sm:w-14 sm:h-16 bg-amber-400 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-game text-amber-900 border-b-4 border-amber-600';
-                b.innerText = c;
-                
-                b.onclick = () => {
-                    if(c === spellArr[spellIdx]) {
-                        window.playSound.blip();
-                        b.style.visibility = 'hidden';
-                        const slot = document.getElementById(`sslop-${spellIdx}`);
-                        if(slot) {
-                            slot.className = 'spell-slot w-12 h-14 sm:w-14 sm:h-16 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-game text-white bg-green-500 border-b-4 border-green-700 pop-in';
-                        }
-                        spellIdx++;
-                        if(spellIdx >= spellArr.length) {
-                            window.playSound.success(); fireConfetti();
-                            spellScore++; 
-                            const sEl = document.getElementById('spelling-score');
-                            if(sEl) sEl.innerText = spellScore;
-                            setTimeout(loadSpellWord, 1500);
-                        }
+            choices.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn-3d w-full p-4 bg-purple-100 border-2 border-purple-300 rounded-2xl text-purple-900 font-game text-2xl text-center';
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    if(opt === spellTarget[currentLang]) {
+                        window.playSound.success(); fireConfetti();
+                        spellScore++;
+                        const sEl = document.getElementById('spelling-score');
+                        if(sEl) sEl.innerText = spellScore;
+                        setTimeout(loadMultipleChoiceSpell, 1000);
                     } else {
-                        window.playSound.error(); b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'), 400);
+                        window.playSound.error();
+                        btn.classList.add('shake'); setTimeout(()=>btn.classList.remove('shake'), 400);
                     }
                 };
-
-                bank.appendChild(b);
+                optionsContainer.appendChild(btn);
             });
         }
-        window.playSpellingAudio = () => { if(spellTarget) window.speakText(spellTarget[currentLang]); };
+        window.playSpellPromptAudio = () => { if(spellTarget) window.speakText(spellTarget[currentLang]); };
 
         // Writing
         let wCanvas, wCtx, isDrawing = false, wTarget = null;
