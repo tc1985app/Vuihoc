@@ -38,16 +38,13 @@
         .screen-container { transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 1; transform: scale(1); }
         .screen-hidden { opacity: 0 !important; transform: scale(0.95) !important; pointer-events: none; position: absolute; }
 
-        /* Robust Interactive 3D Buttons */
         .btn-3d {
-            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.1s;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 8px 0px rgba(0,0,0,0.15), 0 15px 20px rgba(0,0,0,0.1);
             transform: translateY(0); cursor: pointer; touch-action: manipulation;
-            position: relative;
         }
-        .btn-3d:active, .btn-pressed {
-            transform: translateY(6px) !important; 
-            box-shadow: 0 2px 0px rgba(0,0,0,0.15), 0 5px 5px rgba(0,0,0,0.1) !important;
+        .btn-3d:active {
+            transform: translateY(8px) !important; box-shadow: 0 0px 0px rgba(0,0,0,0.15), 0 5px 5px rgba(0,0,0,0.1) !important;
         }
 
         .floating { animation: float 3s ease-in-out infinite; }
@@ -89,7 +86,7 @@
     <!-- Profile Edit Modal -->
     <div id="profile-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[160] flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full border-4 border-amber-400 shadow-2xl card-pop text-left">
-            <h3 id="profile-modal-title" class="text-2xl font-game mb-6 text-gray-800 border-b-2 pb-2">✏️ Chỉnh Sửa Hồ Sơ</h3>
+            <h3 class="text-2xl font-game mb-6 text-gray-800 border-b-2 pb-2">✏️ Chỉnh Sửa Hồ Sơ</h3>
             <input type="hidden" id="prof-edit-id" value="">
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2">Tên (Name):</label>
@@ -115,10 +112,10 @@
                 <input type="checkbox" id="dark-mode-toggle" class="w-6 h-6 cursor-pointer" onclick="window.toggleDarkMode(this.checked)">
             </div>
             <div class="mb-4">
-                <button type="button" onclick="window.openProfileModalForCurrent()" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-black py-3 rounded-xl border-2 border-blue-300 text-sm mb-2">✏️ Đổi Tên Hồ Sơ (Edit Profile Name)</button>
+                <button type="button" onclick="window.openProfileModalForCurrent()" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-black py-3 rounded-xl border-2 border-blue-300 text-sm mb-2">✏️ Đổi Tên & Avatar</button>
             </div>
             <div class="mb-6">
-                <button type="button" onclick="window.resetProgress()" class="w-full bg-red-100 hover:bg-red-200 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm">🔄 Đặt Lại Điểm & Tiến Trình (Reset Stars)</button>
+                <button type="button" onclick="window.resetProgress()" class="w-full bg-red-100 hover:bg-red-200 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm">🔄 Đặt Lại Điểm & Tiến Trình</button>
             </div>
             <button type="button" onclick="window.closeSettings()" class="btn-3d w-full bg-amber-600 text-white font-game py-3 rounded-2xl border-b-4 border-amber-800 text-lg text-center">Đóng (Close)</button>
         </div>
@@ -379,16 +376,10 @@
 
         window.showScreen = function(screenName) {
             if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-            document.querySelectorAll('.screen-container').forEach(el => {
-                if(el) el.classList.add('screen-hidden', 'hidden');
-            });
+            document.querySelectorAll('.screen-container').forEach(el => el.classList.add('screen-hidden', 'hidden'));
             setTimeout(() => {
                 const target = document.getElementById(`screen-${screenName}`);
-                if (target) { 
-                    target.classList.remove('hidden'); 
-                    void target.offsetWidth; 
-                    target.classList.remove('screen-hidden'); 
-                }
+                if (target) { target.classList.remove('hidden'); void target.offsetWidth; target.classList.remove('screen-hidden'); }
                 if(screenName === 'slicer') startSlicerCanvas();
                 if(screenName === 'balloon') startBalloonCanvas();
                 if(screenName === 'spelling') startSpellingGame();
@@ -917,3 +908,4 @@
     </script>
 </body>
 </html>
+```eof
