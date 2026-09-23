@@ -68,8 +68,8 @@
         .pop-particle { position: absolute; width: 15px; height: 15px; border-radius: 50%; animation: explode 0.5s ease-out forwards; pointer-events: none; }
         @keyframes explode { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
 
-        .spell-slot { background: rgba(255,255,255,0.5); box-shadow: inset 0 4px 6px rgba(0,0,0,0.1); }
-        .spell-block { cursor: pointer; touch-action: none; transition: all 0.2s; }
+        .spell-slot { background: rgba(255,255,255,0.7); box-shadow: inset 0 4px 6px rgba(0,0,0,0.1); }
+        .spell-block { cursor: pointer; touch-action: manipulation; transition: all 0.2s; user-select: none; }
 
         canvas { display: block; width: 100%; height: 100%; touch-action: none; }
     </style>
@@ -365,7 +365,6 @@
                 const btn = document.createElement('div');
                 btn.className = 'btn-3d w-40 h-48 bg-white rounded-3xl border-4 border-amber-300 flex flex-col items-center justify-center cursor-pointer';
                 
-                // Unified touch and click support
                 const handleSelect = (e) => { e.preventDefault(); window.selectProfile(p); };
                 btn.addEventListener('click', handleSelect);
                 btn.addEventListener('touchend', handleSelect);
@@ -593,7 +592,7 @@
             requestAnimationFrame(slicerLoop);
         }
 
-        // Balloon Pop - Fixed emoji rendering (No more silhouette bug)
+        // Balloon
         let balRun = false, balScore = 0, balTarget = null;
         window.startBalloonGame = () => { window.showScreen('balloon'); balRun = true; balScore = 0; document.getElementById('balloon-score').innerText='0'; nextBalloonRound(); };
         window.exitBalloon = () => { balRun = false; window.showScreen('dashboard'); };
@@ -651,7 +650,7 @@
         }
         window.playBalloonAudio = () => window.speakText(balTarget[currentLang]);
 
-        // Spelling
+        // Spelling (Xếp Chữ) - Fixed touch and click responsiveness
         let spellScore = 0, spellTarget = null, spellArr = [], spellIdx = 0;
         window.startSpellingGame = () => { window.showScreen('spelling'); spellScore = 0; document.getElementById('spelling-score').innerText='0'; loadSpellWord(); };
         window.exitSpelling = () => window.showScreen('dashboard');
@@ -667,7 +666,7 @@
 
             spellArr.forEach((c, i) => {
                 const s = document.createElement('div');
-                s.className = 'spell-slot w-14 h-16 rounded-2xl flex items-center justify-center text-3xl font-game text-amber-900/20';
+                s.className = 'spell-slot w-14 h-16 rounded-2xl flex items-center justify-center text-3xl font-game text-amber-900/30';
                 s.innerText = c; s.id = `sslop-${i}`;
                 slots.appendChild(s);
             });
@@ -677,7 +676,7 @@
                 b.className = 'spell-block btn-3d w-14 h-16 bg-amber-400 rounded-2xl flex items-center justify-center text-3xl font-game text-amber-900 border-b-4 border-amber-600';
                 b.innerText = c; b.id = `sblk-${i}`;
                 
-                const handleBlockClick = (e) => {
+                const handleBlockAction = (e) => {
                     e.preventDefault();
                     if(c === spellArr[spellIdx]) {
                         window.playSound.blip();
@@ -694,8 +693,9 @@
                         window.playSound.error(); b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'), 400);
                     }
                 };
-                b.addEventListener('click', handleBlockClick);
-                b.addEventListener('touchend', handleBlockClick);
+
+                b.addEventListener('click', handleBlockAction);
+                b.addEventListener('touchend', handleBlockAction);
 
                 bank.appendChild(b);
             });
