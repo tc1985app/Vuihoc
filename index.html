@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- Apple Web App Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Vui Học Bilingual">
@@ -11,10 +10,7 @@
     
     <title>Vui Học Bilingual Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Embedded Google Fonts with full character support -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
         body {
@@ -175,7 +171,17 @@
             <div id="sentence-slots" class="flex flex-wrap gap-2 justify-center min-h-[70px] bg-emerald-950 p-4 rounded-2xl w-full border-2 border-emerald-700 mb-6 items-center"></div>
             <div id="sentence-word-bank" class="flex flex-wrap gap-3 justify-center w-full"></div>
         </div>
-        <button type="button" onclick="window.checkSentenceAnswer()" class="bubbly-button w-full max-w-xs bg-amber-500 text-amber-950 font-black text-xl py-4 rounded-2xl border-b-4 border-amber-700 shadow-xl">Kiểm Tra 🌟</button>
+        
+        <div id="sentence-check-btn-container" class="w-full max-w-xs flex flex-col items-center">
+             <button type="button" id="btn-check-sentence" onclick="window.checkSentenceAnswer()" class="bubbly-button w-full bg-amber-500 text-amber-950 font-black text-xl py-4 rounded-2xl border-b-4 border-amber-700 shadow-xl">Kiểm Tra 🌟</button>
+        </div>
+        
+        <!-- Post-Game Challenge Menu -->
+        <div id="sentence-post-game-menu" class="w-full max-w-xs flex-col items-center hidden mt-4 gap-3">
+             <h4 class="text-2xl font-black text-amber-300 mb-2">Tuyệt vời! +3 ⭐</h4>
+             <button type="button" onclick="window.startSentenceGame()" class="bubbly-button w-full bg-indigo-500 text-white font-black text-lg py-4 rounded-2xl border-b-4 border-indigo-700 shadow-xl">🔀 Chơi Trộn Lại (Shuffle Mode)</button>
+             <button type="button" onclick="window.exitSentenceGame()" class="bubbly-button w-full bg-emerald-700 text-white font-black text-lg py-3 rounded-2xl shadow-xl">⬅️ Về Màn Hình Chính</button>
+        </div>
     </div>
 
     <!-- Screen 1: Profiles -->
@@ -235,6 +241,13 @@
         <button type="button" id="mic-btn" onclick="window.toggleListening()" class="bubbly-button w-24 h-24 sm:w-28 sm:h-28 bg-red-500 rounded-full flex items-center justify-center mb-6 border-4 border-red-700 shadow-lg text-4xl">🎤</button>
         <p id="speech-feedback" class="text-lg font-bold h-8 text-gray-600 px-4">Bấm mic để nói theo</p>
         <button type="button" onclick="window.skipWord()" class="bubbly-button mt-4 px-6 py-3 bg-gray-200 text-gray-700 font-bold rounded-2xl text-sm">Bỏ qua ➡️</button>
+        
+        <!-- Post-Game Challenge Menu -->
+        <div id="game-post-game-menu" class="w-full max-w-xs flex-col items-center hidden mt-4 gap-3">
+             <h4 class="text-2xl font-black text-amber-600 mb-2">Tuyệt vời! +2 ⭐</h4>
+             <button type="button" id="btn-next-level" onclick="window.advanceToNextLevel()" class="bubbly-button w-full bg-indigo-500 text-white font-black text-lg py-4 rounded-2xl border-b-4 border-indigo-700 shadow-xl hidden">➡️ Cấp độ tiếp theo</button>
+             <button type="button" onclick="window.exitGame()" class="bubbly-button w-full bg-emerald-700 text-white font-black text-lg py-3 rounded-2xl shadow-xl">⬅️ Về Màn Hình Chính</button>
+        </div>
     </div>
 
     <!-- Screen 4: Test Quiz -->
@@ -367,50 +380,84 @@
         const blendingExamplesVi = [
             { consonant: 'C', vowel: 'hó', target: 'Chó', meaning: 'The dog' },
             { consonant: 'M', vowel: 'èo', target: 'Mèo', meaning: 'The cat' },
-            { consonant: 'Ph', vowel: 'ở', target: 'Phở', meaning: 'Pho soup' }
+            { consonant: 'Ph', vowel: 'ở', target: 'Phở', meaning: 'Pho soup' },
+            { consonant: 'B', vowel: 'ò', target: 'Bò', meaning: 'The cow' },
+            { consonant: 'C', vowel: 'á', target: 'Cá', meaning: 'The fish' },
+            { consonant: 'G', vowel: 'à', target: 'Gà', meaning: 'The chicken' },
+            { consonant: 'L', vowel: 'ợn', target: 'Lợn', meaning: 'The pig' },
+            { consonant: 'B', vowel: 'àn', target: 'Bàn', meaning: 'The table' },
+            { consonant: 'G', vowel: 'hế', target: 'Ghế', meaning: 'The chair' },
+            { consonant: 'T', vowel: 'ivi', target: 'Tivi', meaning: 'The TV' },
+            { consonant: 'Đ', vowel: 'èn', target: 'Đèn', meaning: 'The lamp' },
+            { consonant: 'C', vowel: 'ửa', target: 'Cửa', meaning: 'The door' },
+            { consonant: 'S', vowel: 'ách', target: 'Sách', meaning: 'The book' },
+            { consonant: 'B', vowel: 'út', target: 'Bút', meaning: 'The pen' },
+            { consonant: 'M', vowel: 'ũ', target: 'Mũ', meaning: 'The hat' }
         ];
 
         const blendingExamplesEs = [
             { consonant: 'Pe', vowel: 'rro', target: 'Perro', meaning: 'The dog' },
             { consonant: 'Ga', vowel: 'to', target: 'Gato', meaning: 'The cat' },
-            { consonant: 'So', vowel: 'pa', target: 'Sopa', meaning: 'Soup' }
+            { consonant: 'So', vowel: 'pa', target: 'Sopa', meaning: 'Soup' },
+            { consonant: 'Va', vowel: 'ca', target: 'Vaca', meaning: 'The cow' },
+            { consonant: 'Pe', vowel: 'z', target: 'Pez', meaning: 'The fish' },
+            { consonant: 'Po', vowel: 'llo', target: 'Pollo', meaning: 'The chicken' },
+            { consonant: 'Ce', vowel: 'rdo', target: 'Cerdo', meaning: 'The pig' },
+            { consonant: 'Me', vowel: 'sa', target: 'Mesa', meaning: 'The table' },
+            { consonant: 'Si', vowel: 'lla', target: 'Silla', meaning: 'The chair' },
+            { consonant: 'Te', vowel: 'le', target: 'Tele', meaning: 'The TV' },
+            { consonant: 'Lu', vowel: 'z', target: 'Luz', meaning: 'The light' },
+            { consonant: 'Pue', vowel: 'rta', target: 'Puerta', meaning: 'The door' },
+            { consonant: 'Li', vowel: 'bro', target: 'Libro', meaning: 'The book' },
+            { consonant: 'Bo', vowel: 'li', target: 'Boli', meaning: 'The pen' },
+            { consonant: 'Go', vowel: 'rra', target: 'Gorra', meaning: 'The hat' }
         ];
 
-        const interactiveReadingLevels = {
-            vi: [
-                {
-                    title: "Cấp độ 1: Ghép Câu Đơn",
-                    icon: "🧩",
-                    challenges: [
-                        { words: ["Con", "chó", "màu", "vàng"], target: "Con chó màu vàng", meaning: "The dog is yellow." },
-                        { words: ["Mẹ", "nấu", "phở", "ngon"], target: "Mẹ nấu phở ngon", meaning: "Mom cooks delicious pho." }
-                    ]
-                },
-                {
-                    title: "Cấp độ 2: Đọc Hiểu Thực Đơn",
-                    icon: "🍜",
-                    challenges: [
-                        { question: "Giá của Phở Bò Đặc Biệt là bao nhiêu?", options: ["35k", "25k", "65k"], correct: 2, text: "MENU QUÁN:\n- Phở Bò: 65k\n- Bánh Mì: 35k" }
-                    ]
-                }
-            ],
-            es: [
-                {
-                    title: "Nivel 1: Constructor de Oraciones",
-                    icon: "🧩",
-                    challenges: [
-                        { words: ["El", "perro", "es", "marrón"], target: "El perro es marrón", meaning: "The dog is brown." },
-                        { words: ["Mamá", "cocina", "sopa", "rica"], target: "Mamá cocina sopa rica", meaning: "Mom cooks rich soup." }
-                    ]
-                },
-                {
-                    title: "Nivel 2: Lectura de Menú",
-                    icon: "🌮",
-                    challenges: [
-                        { question: "¿Cuánto cuesta la Sopa Pho?", options: ["$9", "$3", "$12"], correct: 2, text: "MENÚ:\n- Sopa Pho: $12\n- Tacos: $9" }
-                    ]
-                }
-            ]
+        const interactiveReadingPool = {
+            vi: {
+                beginner: [
+                    { words: ["Con", "chó", "màu", "vàng"], target: "Con chó màu vàng", meaning: "The dog is yellow." },
+                    { words: ["Con", "mèo", "thích", "ngủ"], target: "Con mèo thích ngủ", meaning: "The cat likes to sleep." },
+                    { words: ["Bé", "thích", "ăn", "phở"], target: "Bé thích ăn phở", meaning: "The baby likes eating pho." },
+                    { words: ["Trời", "hôm", "nay", "đẹp"], target: "Trời hôm nay đẹp", meaning: "The sky is beautiful today." },
+                    { words: ["Mẹ", "đi", "chợ", "mua", "cá"], target: "Mẹ đi chợ mua cá", meaning: "Mom goes to the market to buy fish." }
+                ],
+                intermediate: [
+                    { question: "Màu nào là màu của con chó trong câu: 'Con chó màu vàng đang chạy'?", options: ["Vàng", "Đỏ", "Xanh"], correct: 0, text: "Con chó màu vàng đang chạy." },
+                    { question: "Ai thích ăn phở trong câu: 'Bé Lan thích ăn phở bò'?", options: ["Lan", "Mẹ", "Ba"], correct: 0, text: "Bé Lan thích ăn phở bò." },
+                    { question: "Giá của Bánh Mì là bao nhiêu?", options: ["35k", "25k", "65k"], correct: 1, text: "MENU QUÁN:\n- Phở Bò: 65k\n- Bánh Mì: 25k" },
+                    { words: ["Gia", "đình", "tôi", "rất", "hạnh", "phúc"], target: "Gia đình tôi rất hạnh phúc", meaning: "My family is very happy." },
+                    { words: ["Hôm", "nay", "trời", "mưa", "to"], target: "Hôm nay trời mưa to", meaning: "It is raining heavily today." }
+                ],
+                advanced: [
+                    { question: "Điều gì làm nên giá trị của văn hóa Việt Nam?", options: ["Sự đa dạng", "Sự đồng nhất", "Sự hiện đại"], correct: 0, text: "Sự đa dạng là một trong những yếu tố quan trọng nhất làm nên giá trị của văn hóa Việt Nam." },
+                    { question: "Món ăn nào được nhắc đến như một biểu tượng của ẩm thực Việt Nam?", options: ["Phở", "Bánh Mì", "Bún Chả"], correct: 0, text: "Phở thường được xem là một biểu tượng ẩm thực truyền thống của Việt Nam." },
+                    { words: ["Bảo", "tồn", "di", "sản", "văn", "hóa", "là", "rất", "quan", "trọng"], target: "Bảo tồn di sản văn hóa là rất quan trọng", meaning: "Preserving cultural heritage is very important." },
+                    { words: ["Giáo", "dục", "đóng", "vai", "trò", "then", "chốt"], target: "Giáo dục đóng vai trò then chốt", meaning: "Education plays a key role." }
+                ]
+            },
+            es: {
+                beginner: [
+                    { words: ["El", "perro", "es", "marrón"], target: "El perro es marrón", meaning: "The dog is brown." },
+                    { words: ["El", "gato", "duerme", "mucho"], target: "El gato duerme mucho", meaning: "The cat sleeps a lot." },
+                    { words: ["Me", "gusta", "la", "sopa"], target: "Me gusta la sopa", meaning: "I like soup." },
+                    { words: ["El", "sol", "es", "amarillo"], target: "El sol es amarillo", meaning: "The sun is yellow." },
+                    { words: ["Mi", "mamá", "es", "bonita"], target: "Mi mamá es bonita", meaning: "My mom is pretty." }
+                ],
+                intermediate: [
+                    { question: "¿De qué color es el perro en la oración: 'El perro es marrón y corre rápido'?", options: ["Marrón", "Rojo", "Azul"], correct: 0, text: "El perro es marrón y corre rápido." },
+                    { question: "¿A quién le gusta la sopa en la oración: 'A María le gusta la sopa'?", options: ["María", "Juan", "Pedro"], correct: 0, text: "A María le gusta la sopa." },
+                    { question: "¿Cuánto cuestan los Tacos?", options: ["$9", "$3", "$12"], correct: 0, text: "MENÚ:\n- Sopa Pho: $12\n- Tacos: $9" },
+                    { words: ["Mi", "familia", "es", "muy", "feliz"], target: "Mi familia es muy feliz", meaning: "My family is very happy." },
+                    { words: ["Hoy", "llueve", "mucho"], target: "Hoy llueve mucho", meaning: "It is raining a lot today." }
+                ],
+                advanced: [
+                    { question: "¿Qué factor es importante en la cultura hispana?", options: ["La diversidad", "La homogeneidad", "La tecnología"], correct: 0, text: "La diversidad es un factor fundamental en la cultura hispana." },
+                    { question: "¿Qué plato es un símbolo de la gastronomía hispana?", options: ["Paella", "Hamburguesa", "Pizza"], correct: 0, text: "La Paella es considerada un símbolo de la gastronomía hispana." },
+                    { words: ["Preservar", "el", "patrimonio", "cultural", "es", "muy", "importante"], target: "Preservar el patrimonio cultural es muy importante", meaning: "Preserving cultural heritage is very important." },
+                    { words: ["La", "educación", "juega", "un", "papel", "clave"], target: "La educación juega un papel clave", meaning: "Education plays a key role." }
+                ]
+            }
         };
 
         const curriculum = [
@@ -420,17 +467,17 @@
             { 
                 id: 'week1', vi: 'Văn hóa & Động vật', es: 'Cultura y Animales', eng: 'Culture & Animals', emoji: '🪷', 
                 levels: { 
-                    beginner: [ { vi: 'Chó', es: 'Perro', emoji: '🐶' }, { vi: 'Mèo', es: 'Gato', emoji: '🐱' } ], 
-                    intermediate: [ { vi: 'Con chó', es: 'El perro', emoji: '🐕' }, { vi: 'Con mèo', es: 'El gato', emoji: '🐈' } ], 
-                    advanced: [ { vi: 'Truyền thống', es: 'Tradición', emoji: '🏮' }, { vi: 'Di sản văn hóa', es: 'Patrimonio', emoji: '🏛️' } ] 
+                    beginner: [ { vi: 'Chó', es: 'Perro', emoji: '🐶' }, { vi: 'Mèo', es: 'Gato', emoji: '🐱' }, { vi: 'Chim', es: 'Pájaro', emoji: '🐦' }, { vi: 'Cá', es: 'Pez', emoji: '🐟' } ], 
+                    intermediate: [ { vi: 'Con chó', es: 'El perro', emoji: '🐕' }, { vi: 'Con mèo', es: 'El gato', emoji: '🐈' }, { vi: 'Con chim', es: 'El pájaro', emoji: '🦅' }, { vi: 'Con cá', es: 'El pez', emoji: '🐠' } ], 
+                    advanced: [ { vi: 'Truyền thống', es: 'Tradición', emoji: '🏮' }, { vi: 'Di sản văn hóa', es: 'Patrimonio', emoji: '🏛️' }, { vi: 'Đa dạng sinh học', es: 'Biodiversidad', emoji: '🌿' } ] 
                 } 
             },
             { 
                 id: 'week2', vi: 'Ẩm thực & Đời sống', es: 'Gastronomía y Vida', eng: 'Food & Daily Life', emoji: '🍜', 
                 levels: { 
-                    beginner: [ { vi: 'Phở', es: 'Sopa Phở', emoji: '🍲' }, { vi: 'Cơm', es: 'Arroz', emoji: '🍚' } ], 
-                    intermediate: [ { vi: 'Bánh mì', es: 'Pan vietnamita', emoji: '🥖' }, { vi: 'Cà phê', es: 'Café', emoji: '☕' } ], 
-                    advanced: [ { vi: 'Ẩm thực ba miền', es: 'Gastronomía regional', emoji: '🥢' } ] 
+                    beginner: [ { vi: 'Phở', es: 'Sopa Phở', emoji: '🍲' }, { vi: 'Cơm', es: 'Arroz', emoji: '🍚' }, { vi: 'Thịt', es: 'Carne', emoji: '🥩' }, { vi: 'Rau', es: 'Verdura', emoji: '🥬' } ], 
+                    intermediate: [ { vi: 'Bánh mì', es: 'Pan vietnamita', emoji: '🥖' }, { vi: 'Cà phê', es: 'Café', emoji: '☕' }, { vi: 'Trà', es: 'Té', emoji: '🍵' }, { vi: 'Sữa', es: 'Leche', emoji: '🥛' } ], 
+                    advanced: [ { vi: 'Ẩm thực ba miền', es: 'Gastronomía regional', emoji: '🥢' }, { vi: 'Thói quen ăn uống', es: 'Hábitos alimenticios', emoji: '🍽️' } ] 
                 } 
             }
         ];
@@ -638,24 +685,11 @@
             if(currentProfile) renderDashboard();
         }
 
-        window.speakText = function(txt, langCode) {
+        window.speakTitle = function(txt) {
             if(window.speechSynthesis) {
                 window.speechSynthesis.cancel();
                 const utt = new SpeechSynthesisUtterance(txt);
-                utt.lang = langCode;
-
-                // iOS Fallback: Explicitly find and assign the correct language voice
-                if (availableVoices.length > 0) {
-                    const exactVoice = availableVoices.find(v => v.lang === langCode);
-                    if (exactVoice) {
-                        utt.voice = exactVoice;
-                    } else {
-                        // Fallback to broader language code if exact match fails (e.g., 'es-ES' -> 'es')
-                        const broadVoice = availableVoices.find(v => v.lang.startsWith(langCode.substring(0, 2)));
-                        if (broadVoice) utt.voice = broadVoice;
-                    }
-                }
-                
+                utt.lang = currentLang === 'es' ? 'es-ES' : 'vi-VN';
                 window.speechSynthesis.speak(utt);
             }
         };
@@ -762,36 +796,78 @@
             `;
         }
 
-        let sentenceLevelIdx = 0;
+        window.speakText = function(txt, langCode) {
+            if(window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+                const utt = new SpeechSynthesisUtterance(txt);
+                utt.lang = langCode;
+
+                // iOS Fallback: Explicitly find and assign the correct language voice
+                if (availableVoices.length > 0) {
+                    const exactVoice = availableVoices.find(v => v.lang === langCode);
+                    if (exactVoice) {
+                        utt.voice = exactVoice;
+                    } else {
+                        // Fallback to broader language code if exact match fails (e.g., 'es-ES' -> 'es')
+                        const broadVoice = availableVoices.find(v => v.lang.startsWith(langCode.substring(0, 2)));
+                        if (broadVoice) utt.voice = broadVoice;
+                    }
+                }
+                
+                window.speechSynthesis.speak(utt);
+            }
+        };
+
         let sentenceChallengeIdx = 0;
         let selectedSentenceTokens = [];
         let availableSentenceTokens = [];
+        let currentChallengeSet = [];
 
         window.startSentenceGame = function() {
-            sentenceLevelIdx = 0; sentenceChallengeIdx = 0;
+            document.getElementById('sentence-post-game-menu').classList.add('hidden');
+            document.getElementById('sentence-check-btn-container').classList.remove('hidden');
+            
+            // Get user's level, default to beginner
+            const userLevel = currentProfile ? currentProfile.difficulty : 'beginner';
+            const pool = interactiveReadingPool[currentLang][userLevel] || interactiveReadingPool[currentLang]['beginner'];
+            
+            // Shuffle and pick 3 challenges
+            currentChallengeSet = [...pool].sort(() => 0.5 - Math.random()).slice(0, 3);
+            sentenceChallengeIdx = 0;
+            
+            document.getElementById('sentence-game-level-title').innerText = currentLang === 'es' ? `Nivel: ${userLevel}` : `Mức độ: ${userLevel}`;
+            
             loadSentenceChallenge();
             window.showScreen('sentence-game');
         };
         window.exitSentenceGame = function() { renderDashboard(); window.showScreen('dashboard'); };
 
         function loadSentenceChallenge() {
-            const levels = interactiveReadingLevels[currentLang];
-            if (sentenceLevelIdx >= levels.length) {
+            if (sentenceChallengeIdx >= currentChallengeSet.length) {
                 fireConfetti();
-                alert(currentLang === 'es' ? '¡Increíble! +3 ⭐!' : 'Tuyệt vời! +3 ⭐!');
-                if(!currentProfile.progress['sentence_game']) currentProfile.progress['sentence_game'] = {};
-                currentProfile.progress['sentence_game']['completed'] = true;
-                currentProfile.stars += 3; saveProfiles();
-                window.exitSentenceGame();
+                
+                if(currentProfile) {
+                    if(!currentProfile.progress['sentence_game']) currentProfile.progress['sentence_game'] = {};
+                    currentProfile.progress['sentence_game']['completed'] = true;
+                    currentProfile.stars += 3; 
+                    saveProfiles();
+                }
+                
+                document.getElementById('sentence-check-btn-container').classList.add('hidden');
+                document.getElementById('sentence-post-game-menu').classList.remove('hidden');
+                document.getElementById('sentence-slots').innerHTML = '';
+                document.getElementById('sentence-word-bank').innerHTML = '';
+                document.getElementById('sentence-instruction').innerText = currentLang === 'es' ? '¡Reto Completado!' : 'Thử Thách Hoàn Thành!';
+                document.getElementById('sentence-target-meaning').innerText = '';
+                document.getElementById('sentence-progress').innerText = `${sentenceChallengeIdx} / ${currentChallengeSet.length}`;
                 return;
             }
 
-            const currentLevelData = levels[sentenceLevelIdx];
-            const challenge = currentLevelData.challenges[sentenceChallengeIdx];
+            const challenge = currentChallengeSet[sentenceChallengeIdx];
 
-            document.getElementById('sentence-game-level-title').innerText = `${currentLevelData.icon} ${currentLevelData.title}`;
-            document.getElementById('sentence-progress').innerText = `Mức ${sentenceLevelIdx + 1} - ${sentenceChallengeIdx + 1}/${currentLevelData.challenges.length}`;
+            document.getElementById('sentence-progress').innerText = `${sentenceChallengeIdx + 1} / ${currentChallengeSet.length}`;
             document.getElementById('sentence-target-meaning').innerText = challenge.meaning ? `💡 "${challenge.meaning}"` : `❓ ${challenge.question}`;
+            document.getElementById('sentence-instruction').innerText = challenge.words ? (currentLang === 'es' ? 'Forma la oración correcta:' : 'Ghép các từ theo thứ tự đúng:') : (currentLang === 'es' ? 'Responde a la pregunta:' : 'Trả lời câu hỏi sau:');
 
             const slots = document.getElementById('sentence-slots');
             const bank = document.getElementById('sentence-word-bank');
@@ -810,7 +886,9 @@
                     btn.innerText = `${optIdx + 1}. ${opt}`;
                     btn.onclick = () => {
                         if (optIdx === challenge.correct) {
-                            fireConfetti(); advanceSentenceChallenge();
+                            fireConfetti(); 
+                            sentenceChallengeIdx++;
+                            setTimeout(loadSentenceChallenge, 800);
                         } else {
                             btn.classList.add('shake'); setTimeout(() => btn.classList.remove('shake'), 400);
                         }
@@ -857,26 +935,18 @@
         }
 
         window.checkSentenceAnswer = function() {
-            const currentLevelData = interactiveReadingLevels[currentLang][sentenceLevelIdx];
-            const challenge = currentLevelData.challenges[sentenceChallengeIdx];
-            if (challenge.words) {
+            const challenge = currentChallengeSet[sentenceChallengeIdx];
+            if (challenge && challenge.words) {
                 if (selectedSentenceTokens.join(' ') === challenge.target) {
-                    fireConfetti(); advanceSentenceChallenge();
+                    fireConfetti(); 
+                    sentenceChallengeIdx++;
+                    setTimeout(loadSentenceChallenge, 800);
                 } else {
                     document.getElementById('sentence-slots').classList.add('shake');
                     setTimeout(() => document.getElementById('sentence-slots').classList.remove('shake'), 400);
                 }
             }
         };
-
-        function advanceSentenceChallenge() {
-            const currentLevelData = interactiveReadingLevels[currentLang][sentenceLevelIdx];
-            sentenceChallengeIdx++;
-            if (sentenceChallengeIdx >= currentLevelData.challenges.length) {
-                sentenceChallengeIdx = 0; sentenceLevelIdx++;
-            }
-            loadSentenceChallenge();
-        }
 
         window.openAlphabetModal = function() {
             const grid = document.getElementById('alphabet-grid'); grid.innerHTML = '';
@@ -899,12 +969,35 @@
         window.startLesson = function(weekId, levelId, vocabData) {
             currentGameContext = { weekId, levelId }; currentLessonVocab = [...vocabData]; currentWordIndex = 0; currentStreak = 0;
             document.getElementById('game-streak').innerText = currentStreak;
+            
+            // Hide post-game menu, show mic
+            document.getElementById('game-post-game-menu').classList.add('hidden');
+            document.getElementById('mic-btn').classList.remove('hidden');
+            document.getElementById('speech-feedback').classList.remove('hidden');
+            document.querySelector('#screen-game button[onclick="window.skipWord()"]').classList.remove('hidden');
+            
             window.showScreen('game'); loadGameCard();
         };
+        
+        window.advanceToNextLevel = function() {
+            const levels = ['beginner', 'intermediate', 'advanced'];
+            const currentIndex = levels.indexOf(currentGameContext.levelId);
+            
+            if(currentIndex !== -1 && currentIndex < levels.length - 1) {
+                const nextLevel = levels[currentIndex + 1];
+                const weekData = curriculum.find(w => w.id === currentGameContext.weekId);
+                
+                if(weekData && weekData.levels[nextLevel]) {
+                    window.startLesson(currentGameContext.weekId, nextLevel, weekData.levels[nextLevel]);
+                }
+            }
+        };
+
         window.exitGame = function() {
             if (recognition && isListening) { try { recognition.stop(); } catch(e){} }
             renderDashboard(); window.showScreen('dashboard');
         };
+        
         function loadGameCard() {
             const item = currentLessonVocab[currentWordIndex];
             document.getElementById('game-progress').innerText = `${currentWordIndex + 1} / ${currentLessonVocab.length}`;
@@ -960,7 +1053,26 @@
                 currentProfile.progress[currentGameContext.weekId][currentGameContext.levelId] = true;
                 currentProfile.stars += 2; saveProfiles();
             }
-            setTimeout(() => window.exitGame(), 1500);
+            
+            // Check if there is a next level
+            const levels = ['beginner', 'intermediate', 'advanced'];
+            const currentIndex = levels.indexOf(currentGameContext.levelId);
+            const hasNextLevel = currentIndex !== -1 && currentIndex < levels.length - 1 && curriculum.find(w => w.id === currentGameContext.weekId).levels[levels[currentIndex + 1]];
+
+            // Hide Game UI, Show Post Game Menu
+            document.getElementById('mic-btn').classList.add('hidden');
+            document.getElementById('speech-feedback').classList.add('hidden');
+            document.querySelector('#screen-game button[onclick="window.skipWord()"]').classList.add('hidden');
+            
+            const postMenu = document.getElementById('game-post-game-menu');
+            postMenu.classList.remove('hidden');
+            
+            const btnNext = document.getElementById('btn-next-level');
+            if(hasNextLevel) {
+                btnNext.classList.remove('hidden');
+            } else {
+                btnNext.classList.add('hidden');
+            }
         }
 
         let testQuestions = []; let testIndex = 0;
@@ -1215,3 +1327,4 @@
     </script>
 </body>
 </html>
+```eof
