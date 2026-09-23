@@ -355,21 +355,18 @@
             {char: 'Y', emoji: '⛵', word: 'I griega'}, {char: 'Z', emoji: '🦊', word: 'Zeta'}
         ];
 
-        // Complex, Dynamic Picture & Paragraph Description Data (Adaptive to Proficiency)
         const DESCRIBE_DATA = {
             vi: {
                 beginner: [
                     { emoji: '🐶', text: 'Con chó màu vàng đang vẫy đuôi.', prompt: 'Con vật trong tranh là gì?', options: ['Con chó', 'Con mèo', 'Con chim'], correct: 0 },
                     { emoji: '🍎', text: 'Quả táo đỏ mọng trên cành cây.', prompt: 'Đây là loại quả gì?', options: ['Quả táo', 'Quả chuối', 'Quả cam'], correct: 0 },
                     { emoji: '🚗', text: 'Chiếc ô tô màu đỏ chạy trên đường.', prompt: 'Phương tiện này là gì?', options: ['Xe ô tô', 'Xe đạp', 'Tàu hỏa'], correct: 0 },
-                    { emoji: '🏠', text: 'Ngôi nhà nhỏ màu vàng có khu vườn xinh.', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Bệnh viện', 'Trường học'], correct: 0 },
-                    { emoji: '🐱', text: 'Con mèo mướp đang nằm sưởi nắng.', prompt: 'Con vật trong tranh là gì?', options: ['Con mèo', 'Con chó', 'Con heo'], correct: 0 }
+                    { emoji: '🏠', text: 'Ngôi nhà nhỏ màu vàng có khu vườn xinh.', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Bệnh viện', 'Trường học'], correct: 0 }
                 ],
                 intermediate: [
                     { emoji: '🌅', text: 'Buổi sáng bình minh trên biển, ông mặt trời đỏ rực nhô lên từ phía xa chiếu những tia nắng vàng óng ánh xuống mặt nước lăn tăn sóng.', prompt: 'Cảnh tượng trong tranh diễn ra vào lúc nào?', options: ['Buổi sáng bình minh', 'Buổi trưa nắng gắt', 'Đêm trăng sáng'], correct: 0 },
                     { emoji: '🚲', text: 'Bé An đạp chiếc xe đạp màu xanh dương qua con đường làng rợp bóng tre xanh mát vào mỗi buổi chiều.', prompt: 'Bé An đang làm gì vào buổi chiều?', options: ['Đạp xe đạp qua đường làng', 'Chạy bộ công viên', 'Đi học vẽ tranh'], correct: 0 },
-                    { emoji: '🍜', text: 'Tô phở bò nóng hổi khói nghi ngút đặt trên bàn, kèm theo đĩa rau thơm tươi ngon và vài lát chanh tươi.', prompt: 'Món ăn được miêu tả là gì?', options: ['Tô phở bò nóng hổi', 'Bún chả giò', 'Mì ý sốt cà chua'], correct: 0 },
-                    { emoji: '🌳', text: 'Khu vườn cổ tích xanh mướt có rất nhiều loài hoa đua nhau khoe sắc và những chú bướm rực rỡ bay lượn.', prompt: 'Khu vườn có đặc điểm gì?', options: ['Hoa khoe sắc và bướm bay', 'Cây cối khô héo', 'Tuyết trắng phủ kín'], correct: 0 }
+                    { emoji: '🍜', text: 'Tô phở bò nóng hổi khói nghi ngút đặt trên bàn, kèm theo đĩa rau thơm tươi ngon và vài lát chanh tươi.', prompt: 'Món ăn được miêu tả là gì?', options: ['Tô phở bò nóng hổi', 'Bún chả giò', 'Mì ý sốt cà chua'], correct: 0 }
                 ],
                 advanced: [
                     { emoji: '🏰', text: 'Lâu đài cổ kính nằm sừng sững trên đỉnh đồi cao, bao bọc bởi tường đá rêu phong và những cánh rừng nguyên sinh bạt ngàn sương mù bao phủ suốt bốn mùa.', prompt: 'Đặc điểm nào KHÔNG đúng với lâu đài trong đoạn văn?', options: ['Nằm ở thung lũng ngập tràn nắng', 'Nằm sừng sững trên đỉnh đồi cao', 'Bao bọc bởi tường đá rêu phong'], correct: 0 },
@@ -382,14 +379,12 @@
                     { emoji: '🐶', text: 'El perro marrón mueve su cola.', prompt: '¿Qué animal aparece en la imagen?', options: ['El perro', 'El gato', 'El pájaro'], correct: 0 },
                     { emoji: '🍎', text: 'La manzana roja cuelga del árbol.', prompt: '¿Qué fruta es esta?', options: ['La manzana', 'El plátano', 'La uva'], correct: 0 },
                     { emoji: '🚗', text: 'El coche rojo viaja por la calle.', prompt: '¿Qué vehículo es este?', options: ['El coche', 'La bicicleta', 'El avión'], correct: 0 },
-                    { emoji: '🏠', prompt: 'La pequeña casa amarilla con jardín.', prompt: '¿Qué lugar es este?', options: ['La casa', 'La escuela', 'El hospital'], correct: 0 },
-                    { emoji: '🐱', text: 'El gato duerme bajo el sol.', prompt: '¿Qué animal es este?', options: ['El gato', 'El perro', 'El ratón'], correct: 0 }
+                    { emoji: '🏠', text: 'La pequeña casa amarilla con jardín.', prompt: '¿Qué lugar es este?', options: ['La casa', 'La escuela', 'El hospital'], correct: 0 }
                 ],
                 intermediate: [
                     { emoji: '🌅', text: 'El amanecer en el mar muestra al sol brillante iluminando las suaves olas doradas de la mañana.', prompt: '¿En qué momento del día ocurre la escena?', options: ['Amanecer en la mañana', 'Mediodía soleado', 'Noche estrellada'], correct: 0 },
                     { emoji: '🚲', text: 'Sofía monta su bicicleta azul por el camino rodeado de árboles verdes todas las tardes.', prompt: '¿Qué hace Sofía todas las tardes?', options: ['Monta su bicicleta por el camino', 'Juega al fútbol', 'Pinta cuadros'], correct: 0 },
-                    { emoji: '🍜', text: 'Un plato de sopa caliente y deliciosa acompañada de hierbas frescas y limón.', prompt: '¿Qué platillo se describe?', options: ['Una sopa caliente y deliciosa', 'Pan con queso', 'Ensalada verde'], correct: 0 },
-                    { emoji: '🌳', text: 'Un jardín mágico lleno de flores coloridas y mariposas que vuelan alegremente.', prompt: '¿Cómo es el jardín?', options: ['Lleno de flores y mariposas', 'Seco y sin vida', 'Cubierto de nieve'], correct: 0 }
+                    { emoji: '🍜', text: 'Un plato de sopa caliente y deliciosa acompañada de hierbas frescas y limón.', prompt: '¿Qué platillo se describe?', options: ['Una sopa caliente y deliciosa', 'Pan con queso', 'Ensalada verde'], correct: 0 }
                 ],
                 advanced: [
                     { emoji: '🏰', text: 'El antiguo castillo se alza majestuoso sobre una colina alta, rodeado de murallas de piedra y bosques misteriosos cubiertos de neblina.', prompt: '¿Qué característica describe mejor al castillo?', options: ['Se alza majestuoso sobre una colina alta', 'Está en la playa tropical', 'Es una cabaña moderna'], correct: 0 },
@@ -705,6 +700,7 @@
             });
         }
 
+        // Improved Tablet Accent Matcher for Speech Synthesis
         window.speakText = function(txt, forceLang) {
             if(!window.speechSynthesis) return;
             window.speechSynthesis.cancel();
@@ -714,13 +710,17 @@
             utt.lang = targetLang;
             
             let voices = window.speechSynthesis.getVoices();
-            let voice = voices.find(v => v.lang === targetLang) || voices.find(v => v.lang.startsWith(targetLang.substring(0, 2)));
-            if(voice) utt.voice = voice;
+            let prefix = targetLang.substring(0, 2).toLowerCase();
             
+            // Search for exact regional voice first, then broad language prefix
+            let voice = voices.find(v => v.lang.toLowerCase() === targetLang.toLowerCase()) || 
+                        voices.find(v => v.lang.toLowerCase().startsWith(prefix));
+            
+            if(voice) utt.voice = voice;
             window.speechSynthesis.speak(utt);
         };
 
-        // Picture Description Game (Dynamic & Adaptive)
+        // Picture Description Game (Adaptive & Dynamic)
         let descList = [];
         let descIdx = 0;
         window.startDescribeGame = function() {
@@ -735,7 +735,7 @@
 
         window.playDescAudio = function() {
             const q = descList[descIdx];
-            if(q) window.speakText(q.text || q.prompt);
+            if(q) window.speakText(q.text);
         };
 
         function loadDescribeCard() {
@@ -754,9 +754,9 @@
             const q = descList[descIdx];
             document.getElementById('desc-game-progress').innerText = `${descIdx + 1} / ${descList.length}`;
             document.getElementById('desc-game-emoji').innerText = q.emoji;
-            document.getElementById('desc-paragraph-text').innerText = q.text || q.prompt;
+            document.getElementById('desc-paragraph-text').innerText = q.text;
             document.getElementById('desc-game-prompt').innerText = q.prompt;
-            window.speakText(q.text || q.prompt);
+            window.speakText(q.text);
 
             const optContainer = document.getElementById('desc-game-options');
             optContainer.innerHTML = '';
