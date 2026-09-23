@@ -35,7 +35,7 @@
         .btn-3d {
             transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 8px 0px rgba(0,0,0,0.15), 0 15px 20px rgba(0,0,0,0.1);
-            transform: translateY(0); cursor: pointer;
+            transform: translateY(0); cursor: pointer; touch-action: manipulation;
         }
         .btn-3d:active {
             transform: translateY(8px); box-shadow: 0 0px 0px rgba(0,0,0,0.15), 0 5px 5px rgba(0,0,0,0.1);
@@ -68,7 +68,7 @@
         .pop-particle { position: absolute; width: 15px; height: 15px; border-radius: 50%; animation: explode 0.5s ease-out forwards; pointer-events: none; }
         @keyframes explode { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
 
-        .spell-slot { background: rgba(255,255,255,0.7); box-shadow: inset 0 4px 6px rgba(0,0,0,0.1); }
+        .spell-slot { background: rgba(255,255,255,0.8); box-shadow: inset 0 4px 6px rgba(0,0,0,0.1); }
         .spell-block { cursor: pointer; touch-action: manipulation; transition: all 0.2s; user-select: none; }
 
         canvas { display: block; width: 100%; height: 100%; touch-action: none; }
@@ -366,8 +366,7 @@
                 btn.className = 'btn-3d w-40 h-48 bg-white rounded-3xl border-4 border-amber-300 flex flex-col items-center justify-center cursor-pointer';
                 
                 const handleSelect = (e) => { e.preventDefault(); window.selectProfile(p); };
-                btn.addEventListener('click', handleSelect);
-                btn.addEventListener('touchend', handleSelect);
+                btn.addEventListener('pointerdown', handleSelect);
 
                 btn.innerHTML = `<span class="text-6xl mb-2">${p.emoji}</span><span class="font-game text-xl">${p.name}</span><span class="text-amber-500 font-bold mt-1">⭐ ${p.stars || 0}</span>`;
                 container.appendChild(btn);
@@ -413,8 +412,7 @@
                     btn.className = `btn-3d p-3 rounded-2xl flex flex-col items-center justify-center border-b-4 ${isDone ? 'bg-emerald-100 border-emerald-400 text-emerald-800' : 'bg-amber-100 border-amber-300 text-amber-800'}`;
                     
                     const triggerLesson = (e) => { e.preventDefault(); window.startLesson(topic.id, lvl, topic.levels[lvl]); };
-                    btn.addEventListener('click', triggerLesson);
-                    btn.addEventListener('touchend', triggerLesson);
+                    btn.addEventListener('pointerdown', triggerLesson);
 
                     btn.innerHTML = `<span class="text-3xl mb-1">${isDone?'⭐':topic.levels[lvl][0].emoji}</span><span class="text-[10px] font-black uppercase tracking-wide">${lvl.substring(0,3)}</span>`;
                     grid.appendChild(btn);
@@ -622,7 +620,7 @@
                 `;
 
                 const handlePop = (e) => {
-                    e.stopPropagation();
+                    e.preventDefault();
                     if(w.id === balTarget.id) {
                         window.playSound.pop(); fireConfetti();
                         balScore++; document.getElementById('balloon-score').innerText = balScore;
@@ -642,15 +640,13 @@
                 };
                 
                 bw.addEventListener('pointerdown', handlePop);
-                bw.addEventListener('touchend', handlePop);
-                
                 bw.addEventListener('animationend', (e) => { if(e.animationName === 'floatUp') { bw.remove(); if(w.id === balTarget.id && balRun) nextBalloonRound(); } });
                 area.appendChild(bw);
             });
         }
         window.playBalloonAudio = () => window.speakText(balTarget[currentLang]);
 
-        // Spelling (Xếp Chữ) - Fixed touch and click responsiveness
+        // Spelling (Xếp Chữ) - Robust pointerdown handling
         let spellScore = 0, spellTarget = null, spellArr = [], spellIdx = 0;
         window.startSpellingGame = () => { window.showScreen('spelling'); spellScore = 0; document.getElementById('spelling-score').innerText='0'; loadSpellWord(); };
         window.exitSpelling = () => window.showScreen('dashboard');
@@ -666,7 +662,7 @@
 
             spellArr.forEach((c, i) => {
                 const s = document.createElement('div');
-                s.className = 'spell-slot w-14 h-16 rounded-2xl flex items-center justify-center text-3xl font-game text-amber-900/30';
+                s.className = 'spell-slot w-14 h-16 rounded-2xl flex items-center justify-center text-3xl font-game text-amber-900/35';
                 s.innerText = c; s.id = `sslop-${i}`;
                 slots.appendChild(s);
             });
@@ -694,8 +690,7 @@
                     }
                 };
 
-                b.addEventListener('click', handleBlockAction);
-                b.addEventListener('touchend', handleBlockAction);
+                b.addEventListener('pointerdown', handleBlockAction);
 
                 bank.appendChild(b);
             });
@@ -743,4 +738,3 @@
     </script>
 </body>
 </html>
-```eof
