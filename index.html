@@ -74,6 +74,14 @@
         .pop-particle { position: absolute; width: 15px; height: 15px; border-radius: 50%; animation: explode 0.5s ease-out forwards; pointer-events: none; }
         @keyframes explode { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
 
+        /* Memory Match Cards */
+        .memory-card { perspective: 1000px; cursor: pointer; height: 110px; }
+        .memory-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.4s; transform-style: preserve-3d; }
+        .memory-card.flipped .memory-card-inner { transform: rotateY(180deg); }
+        .memory-card-front, .memory-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-weight: 900; box-shadow: 0 6px 0px rgba(0,0,0,0.1); border: 3px solid #d8b4fe; }
+        .memory-card-front { background: #9333ea; color: white; font-size: 2rem; }
+        .memory-card-back { background: white; color: #581c87; transform: rotateY(180deg); font-size: 1.1rem; padding: 4px; }
+
         canvas { display: block; width: 100%; height: 100%; touch-action: none; }
     </style>
 </head>
@@ -146,7 +154,7 @@
             <p class="text-sm sm:text-xl text-gray-500 font-bold mb-6 tracking-wide uppercase">Bilingual 1000+ Words</p>
         </header>
         <div id="profiles-container" class="flex flex-wrap justify-center gap-6 w-full mb-8"></div>
-        <button type="button" onclick="window.createProfile()" id="add-profile-btn" class="btn-3d px-8 py-4 bg-amber-500 text-white font-game text-xl rounded-[2rem] border-4 border-amber-600">➕ Thêm Hồ Sơ (Add Profile)</button>
+        <button type="button" onclick="window.createProfile()" id="add-profile-btn" class="btn-3d px-8 py-4 bg-amber-500 text-white font-game text-xl rounded-[2rem] border-4 border-amber-600">➕ Thêm Tên Người Dùng (Add User)</button>
     </div>
 
     <!-- Screen 2: Dashboard -->
@@ -600,7 +608,7 @@
         window.closeAlphabetModal = function() { document.getElementById('alphabet-modal').classList.add('hidden'); };
 
         window.createProfile = function() {
-            const name = prompt(currentLang === 'es' ? '¿Nombre del niño(a)?' : "Tên của bé? (Child's Name):", "Bé " + Math.floor(Math.random()*100));
+            const name = prompt(currentLang === 'es' ? '¿Nombre del usuario?' : "Tên người dùng mới? (User Name):", "User " + Math.floor(Math.random()*100));
             if(name) {
                 const p = { id: Date.now().toString(), name, emoji: ['👦','👧','🐯','🐱','🦊','🐼'][Math.floor(Math.random()*6)], level: 'beginner', stars: 0, progress: {} };
                 let profiles = JSON.parse(localStorage.getItem('vuihoc_modern_profiles') || '[]');
@@ -672,7 +680,7 @@
             if(descSubtitle) descSubtitle.innerText = lang === 'es' ? 'Describe Pictures' : 'Describe Pictures';
             if(alphaBtn) alphaBtn.innerText = lang === 'es' ? 'Explorar' : 'Khám Phá';
             if(descBtn) descBtn.innerText = lang === 'es' ? 'Desafío' : 'Thử Thách';
-            if(addProfileBtn) addProfileBtn.innerText = lang === 'es' ? '➕ Añadir Perfil (Add Profile)' : '➕ Thêm Hồ Sơ (Add Profile)';
+            if(addProfileBtn) addProfileBtn.innerText = lang === 'es' ? '➕ Añadir Usuario (Add User)' : '➕ Thêm Tên Người Dùng (Add User)';
 
             renderDashboard();
         };
@@ -1149,3 +1157,4 @@
     </script>
 </body>
 </html>
+```eof
