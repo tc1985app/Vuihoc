@@ -293,7 +293,7 @@
     </div>
 
     <script type="module">
-        let profiles = JSON.parse(localStorage.getItem('vuihoc_react_profiles_v28') || 'null') || [
+        let profiles = JSON.parse(localStorage.getItem('vuihoc_react_profiles_v29') || 'null') || [
             { id: '1', name: 'An', emoji: '🐯', lang: 'vi', level: 'beginner', stars: 15, progress: {} },
             { id: '2', name: 'Sofia', emoji: '🌸', lang: 'es', level: 'intermediate', stars: 28, progress: {} }
         ];
@@ -309,7 +309,7 @@
         let turnTimerInterval = null;
 
         function saveProfiles() {
-            localStorage.setItem('vuihoc_react_profiles_v28', JSON.stringify(profiles));
+            localStorage.setItem('vuihoc_react_profiles_v29', JSON.stringify(profiles));
         }
 
         const UI_TEXT = {
@@ -587,7 +587,7 @@
             window.renderDashboardMap();
         };
 
-        // Complete 7 Categories with rich 4-6 items per level
+        // Fully Populated 7 Categories with rich 4-6 items per level
         const TOPICS = [
             { 
                 id: 'animals', vi: 'Động Vật', es: 'Animales', emoji: '🦁',
@@ -605,19 +605,31 @@
                         { vi: 'Gấu', es: 'Oso', img: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Hươu cao cổ', es: 'Jirafa', img: 'https://images.unsplash.com/photo-1534567153574-2b12153a87f0?auto=format&fit=crop&w=600&q=80' }],
                     4: [{ vi: 'Thỏ', es: 'Conejo', img: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Sóc', es: 'Ardilla', img: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=600&q=80' }],
-                    5: [{ vi: 'Rùa', es: 'Tortuga', img: 'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=600&q=80' }],
-                    6: [{ vi: 'Cá voi', es: 'Ballena', img: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80' }],
-                    7: [{ vi: 'Đại bàng', es: 'Águila', img: 'https://images.unsplash.com/photo-1611689342806-0863700ce1e4?auto=format&fit=crop&w=600&q=80' }]
+                        { vi: 'Sóc', es: 'Ardilla', img: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Cáo', es: 'Zorro', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Sói', es: 'Lobo', img: 'https://images.unsplash.com/photo-1561731216-c3a4d99437d5?auto=format&fit=crop&w=600&q=80' }],
+                    5: [{ vi: 'Rùa', es: 'Tortuga', img: 'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Ếch', es: 'Rana', img: 'https://images.unsplash.com/photo-1534067783941-51c9c23ecefd?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Rắn', es: 'Serpiente', img: 'https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?auto=format&fit=crop&w=600&q=80' }],
+                    6: [{ vi: 'Cá voi', es: 'Ballena', img: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Cá mập', es: 'Tiburón', img: 'https://images.unsplash.com/photo-1560275619-4d6236189f06?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Cá heo', es: 'Delfín', img: 'https://images.unsplash.com/photo-1570455855949-a34e40a049f7?auto=format&fit=crop&w=600&q=80' }],
+                    7: [{ vi: 'Đại bàng', es: 'Águila', img: 'https://images.unsplash.com/photo-1611689342806-0863700ce1e4?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Cú mèo', es: 'Búho', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=600&q=80' }]
                 }
             },
             { 
                 id: 'food', vi: 'Ẩm Thực', es: 'Comida', emoji: '🍜',
                 levels: {
                     1: [{ vi: 'Táo', es: 'Manzana', img: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Chuối', es: 'Plátano', img: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=600&q=80' }],
-                    2: [{ vi: 'Phở', es: 'Sopa', img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80' }],
-                    3: [{ vi: 'Bánh ngọt', es: 'Pastel', img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80' }],
+                        { vi: 'Chuối', es: 'Plátano', img: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Bánh mì', es: 'Pan', img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Nước', es: 'Agua', img: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=600&q=80' }],
+                    2: [{ vi: 'Phở', es: 'Sopa', img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Cam', es: 'Naranja', img: 'https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Trứng', es: 'Huevo', img: 'https://images.unsplash.com/photo-1516467508483-a7212febe31a?auto=format&fit=crop&w=600&q=80' }],
+                    3: [{ vi: 'Bánh ngọt', es: 'Pastel', img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Phô mai', es: 'Queso', img: 'https://images.unsplash.com/photo-1452195100486-9cc805987862?auto=format&fit=crop&w=600&q=80' }],
                     4: [{ vi: 'Dưa hấu', es: 'Sandía', img: 'https://images.unsplash.com/photo-1587049352847-4a222e784d38?auto=format&fit=crop&w=600&q=80' }],
                     5: [{ vi: 'Cà chua', es: 'Tomate', img: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=600&q=80' }],
                     6: [{ vi: 'Pizza', es: 'Pizza', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80' }],
@@ -816,7 +828,7 @@
         };
 
         window.skipWord = function() {
-            if (currentLessonWordIdx + 1 < currentActiveLesson.words.length) {
+            if (currentLessonWordIdx < currentActiveLesson.words.length - 1) {
                 currentLessonWordIdx++;
                 window.loadLessonCard();
             } else {
