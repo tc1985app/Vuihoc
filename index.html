@@ -101,13 +101,16 @@
                     <option value="both">🌍 Song ngữ (Both / Bilingual)</option>
                 </select>
             </div>
-            <div class="mb-6">
+            <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2">Cấp độ (Proficiency Level):</label>
                 <select id="prof-level" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold">
                     <option value="beginner">👶 Mới học (Beginner)</option>
                     <option value="intermediate">👦 Cơ bản (Intermediate)</option>
                     <option value="advanced">🎓 Nâng cao (Advanced)</option>
                 </select>
+            </div>
+            <div class="mb-6">
+                <button type="button" onclick="window.deleteCurrentProfile()" class="w-full bg-red-100 hover:bg-red-200 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm">🗑️ Xóa Hồ Sơ Này (Delete Profile)</button>
             </div>
             <div class="flex gap-3">
                 <button type="button" onclick="window.closeProfileModal()" class="btn-3d flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-2xl">Hủy</button>
@@ -125,7 +128,7 @@
                 <input type="checkbox" id="dark-mode-toggle" class="w-6 h-6 cursor-pointer" onclick="window.toggleDarkMode(this.checked)">
             </div>
             <div class="mb-4">
-                <button type="button" onclick="window.openProfileModalForCurrent()" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-black py-3 rounded-xl border-2 border-blue-300 text-sm mb-2">✏️ Đổi Tên, Ngôn Ngữ & Cấp Độ</button>
+                <button type="button" onclick="window.openProfileModalForCurrent()" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-black py-3 rounded-xl border-2 border-blue-300 text-sm mb-2">✏️ Đổi Tên, Avatar & Cấp Độ</button>
             </div>
             <div class="mb-6">
                 <button type="button" onclick="window.resetProgress()" class="w-full bg-red-100 hover:bg-red-200 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm">🔄 Đặt Lại Điểm & Tiến Trình</button>
@@ -168,7 +171,7 @@
                     <span class="text-amber-500 font-black text-sm bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200">⭐ <span id="dash-stars">0</span></span>
                 </div>
             </div>
-            <button type="button" onclick="window.openSettings()" class="btn-3d px-3 py-2.5 bg-gray-100 rounded-2xl text-gray-700 font-bold text-sm">⚙️</button>
+            <button type="button" onclick="window.openProfileModalForCurrent()" class="btn-3d px-3 py-2.5 bg-blue-50 text-blue-600 rounded-2xl font-bold text-sm border-2 border-blue-200 shadow-sm" title="Chỉnh sửa hồ sơ">✏️ Sửa</button>
         </div>
         
         <div id="language-switcher-container" class="flex bg-gray-200 rounded-3xl p-1.5 mb-8 shadow-inner border-2 border-gray-300 w-full max-w-sm">
@@ -249,7 +252,7 @@
         </div>
     </div>
 
-    <!-- Screen 4: Dynamic Complex Picture Description Game (Extended & Randomized) -->
+    <!-- Screen 4: Dynamic Complex Picture Description Game -->
     <div id="screen-describe" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-teal-50 hidden overflow-y-auto pt-8 px-4 pb-12">
         <div class="w-full max-w-xl flex justify-between items-center mb-6">
             <button type="button" onclick="window.exitDescribeGame()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-500 font-game text-lg border-2 border-red-200">Thoát</button>
@@ -361,7 +364,6 @@
             {char: 'Y', emoji: '⛵', word: 'Yoyo'}, {char: 'Z', emoji: '🦊', word: 'Zorro'}
         ];
 
-        // Expanded Dynamic Picture Description Game Data across levels
         const DESCRIBE_DATA = {
             vi: {
                 beginner: [
@@ -371,7 +373,8 @@
                     { emoji: '🏠', text: 'Ngôi nhà nhỏ màu vàng có khu vườn xinh.', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Bệnh viện', 'Trường học'], correct: 0 },
                     { emoji: '🐱', text: 'Con mèo mướp đang nằm sưởi nắng.', prompt: 'Con vật trong tranh là gì?', options: ['Con mèo', 'Con chó', 'Con heo'], correct: 0 },
                     { emoji: '🍌', text: 'Nải chuối chín vàng thơm ngọt.', prompt: 'Đây là quả gì?', options: ['Quả chuối', 'Quả táo', 'Quả lê'], correct: 0 },
-                    { emoji: '🐟', text: 'Chú cá nhỏ bơi lội tung tăng trong hồ.', prompt: 'Con vật trong tranh là gì?', options: ['Con cá', 'Con chim', 'Con ếch'], correct: 0 }
+                    { emoji: '🐟', text: 'Chú cá nhỏ bơi lội tung tăng trong hồ.', prompt: 'Con vật trong tranh là gì?', options: ['Con cá', 'Con chim', 'Con ếch'], correct: 0 },
+                    { emoji: '🚲', text: 'Chiếc xe đạp nhỏ màu xanh.', prompt: 'Phương tiện này là gì?', options: ['Xe đạp', 'Ô tô', 'Máy bay'], correct: 0 }
                 ],
                 intermediate: [
                     { emoji: '🌅', text: 'Buổi sáng bình minh trên biển, ông mặt trời đỏ rực nhô lên từ phía xa chiếu những tia nắng vàng óng ánh xuống mặt nước lăn tăn sóng.', prompt: 'Cảnh tượng trong tranh diễn ra vào lúc nào?', options: ['Buổi sáng bình minh', 'Buổi trưa nắng gắt', 'Đêm trăng sáng'], correct: 0 },
@@ -603,6 +606,19 @@
             const modal = document.getElementById('profile-modal');
             if(modal) modal.classList.add('hidden');
         };
+        window.deleteCurrentProfile = function() {
+            const idEl = document.getElementById('prof-edit-id');
+            if(!idEl) return;
+            const id = idEl.value;
+            if(confirm("Bạn có chắc chắn muốn xóa hồ sơ người dùng này không?")) {
+                let saved = JSON.parse(localStorage.getItem('vuihoc_modern_profiles') || '[]');
+                saved = saved.filter(p => p.id !== id);
+                localStorage.setItem('vuihoc_modern_profiles', JSON.stringify(saved));
+                window.closeProfileModal();
+                loadProfiles();
+                window.showScreen('profiles');
+            }
+        };
         window.saveProfileData = function() {
             const idEl = document.getElementById('prof-edit-id');
             const nameEl = document.getElementById('prof-name');
@@ -685,7 +701,7 @@
             if(p.lang && p.lang !== 'both') {
                 currentLang = p.lang;
                 const sw = document.getElementById('language-switcher-container');
-                if(sw) sw.style.display = 'none'; // Hide switcher if profile is locked to single language
+                if(sw) sw.style.display = 'none';
             } else {
                 const sw = document.getElementById('language-switcher-container');
                 if(sw) sw.style.display = 'flex';
