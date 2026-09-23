@@ -38,13 +38,16 @@
         .screen-container { transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 1; transform: scale(1); }
         .screen-hidden { opacity: 0 !important; transform: scale(0.95) !important; pointer-events: none; position: absolute; }
 
+        /* Robust Interactive 3D Buttons */
         .btn-3d {
-            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.1s;
             box-shadow: 0 8px 0px rgba(0,0,0,0.15), 0 15px 20px rgba(0,0,0,0.1);
             transform: translateY(0); cursor: pointer; touch-action: manipulation;
+            position: relative;
         }
-        .btn-3d:active {
-            transform: translateY(8px); box-shadow: 0 0px 0px rgba(0,0,0,0.15), 0 5px 5px rgba(0,0,0,0.1);
+        .btn-3d:active, .btn-pressed {
+            transform: translateY(6px) !important; 
+            box-shadow: 0 2px 0px rgba(0,0,0,0.15), 0 5px 5px rgba(0,0,0,0.1) !important;
         }
 
         .floating { animation: float 3s ease-in-out infinite; }
@@ -83,6 +86,26 @@
 <body id="app-body" class="min-h-screen flex flex-col items-center p-3 sm:p-6 cultural-bg">
     <div id="confetti-container"></div>
 
+    <!-- Profile Edit Modal -->
+    <div id="profile-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[160] flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full border-4 border-amber-400 shadow-2xl card-pop text-left">
+            <h3 id="profile-modal-title" class="text-2xl font-game mb-6 text-gray-800 border-b-2 pb-2">✏️ Chỉnh Sửa Hồ Sơ</h3>
+            <input type="hidden" id="prof-edit-id" value="">
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">Tên (Name):</label>
+                <input type="text" id="prof-name" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold" placeholder="VD: An, Sofia...">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">Biểu tượng (Emoji):</label>
+                <input type="text" id="prof-emoji" maxlength="2" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold text-2xl text-center" placeholder="🐯">
+            </div>
+            <div class="flex gap-3">
+                <button type="button" onclick="window.closeProfileModal()" class="btn-3d flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-2xl">Hủy</button>
+                <button type="button" onclick="window.saveProfileData()" class="btn-3d flex-1 bg-amber-600 text-white font-game py-3 rounded-2xl shadow-md">Lưu</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Settings Modal -->
     <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[150] flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full border-4 border-amber-400 shadow-2xl card-pop text-left">
@@ -91,8 +114,11 @@
                 <label class="text-gray-700 font-bold">Ban đêm (Dark Mode):</label>
                 <input type="checkbox" id="dark-mode-toggle" class="w-6 h-6 cursor-pointer" onclick="window.toggleDarkMode(this.checked)">
             </div>
+            <div class="mb-4">
+                <button type="button" onclick="window.openProfileModalForCurrent()" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-black py-3 rounded-xl border-2 border-blue-300 text-sm mb-2">✏️ Đổi Tên Hồ Sơ (Edit Profile Name)</button>
+            </div>
             <div class="mb-6">
-                <button type="button" onclick="window.resetProgress()" class="w-full bg-red-100 hover:bg-red-200 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm">🔄 Đặt Lại Tiến Trình (Reset Progress)</button>
+                <button type="button" onclick="window.resetProgress()" class="w-full bg-red-100 hover:bg-red-200 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm">🔄 Đặt Lại Điểm & Tiến Trình (Reset Stars)</button>
             </div>
             <button type="button" onclick="window.closeSettings()" class="btn-3d w-full bg-amber-600 text-white font-game py-3 rounded-2xl border-b-4 border-amber-800 text-lg text-center">Đóng (Close)</button>
         </div>
@@ -353,10 +379,16 @@
 
         window.showScreen = function(screenName) {
             if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-            document.querySelectorAll('.screen-container').forEach(el => el.classList.add('screen-hidden', 'hidden'));
+            document.querySelectorAll('.screen-container').forEach(el => {
+                if(el) el.classList.add('screen-hidden', 'hidden');
+            });
             setTimeout(() => {
                 const target = document.getElementById(`screen-${screenName}`);
-                if (target) { target.classList.remove('hidden'); void target.offsetWidth; target.classList.remove('screen-hidden'); }
+                if (target) { 
+                    target.classList.remove('hidden'); 
+                    void target.offsetWidth; 
+                    target.classList.remove('screen-hidden'); 
+                }
                 if(screenName === 'slicer') startSlicerCanvas();
                 if(screenName === 'balloon') startBalloonCanvas();
                 if(screenName === 'spelling') startSpellingGame();
@@ -365,10 +397,15 @@
         };
 
         window.openSettings = function() {
-            document.getElementById('dark-mode-toggle').checked = document.body.classList.contains('dark-mode');
-            document.getElementById('settings-modal').classList.remove('hidden');
+            const toggle = document.getElementById('dark-mode-toggle');
+            if(toggle) toggle.checked = document.body.classList.contains('dark-mode');
+            const modal = document.getElementById('settings-modal');
+            if(modal) modal.classList.remove('hidden');
         };
-        window.closeSettings = function() { document.getElementById('settings-modal').classList.add('hidden'); };
+        window.closeSettings = function() {
+            const modal = document.getElementById('settings-modal');
+            if(modal) modal.classList.add('hidden');
+        };
         window.toggleDarkMode = function(isDark) {
             if(isDark) document.body.classList.add('dark-mode');
             else document.body.classList.remove('dark-mode');
@@ -379,9 +416,53 @@
                 let saved = JSON.parse(localStorage.getItem('vuihoc_modern_profiles') || '[]');
                 const idx = saved.findIndex(p => p.id === currentProfile.id);
                 if(idx > -1) { saved[idx] = currentProfile; localStorage.setItem('vuihoc_modern_profiles', JSON.stringify(saved)); }
-                document.getElementById('dash-stars').innerText = '0';
+                const starsEl = document.getElementById('dash-stars');
+                if(starsEl) starsEl.innerText = '0';
                 renderDashboard(); window.closeSettings();
             }
+        };
+
+        window.openProfileModalForCurrent = function() {
+            if(!currentProfile) return;
+            const idEl = document.getElementById('prof-edit-id');
+            const nameEl = document.getElementById('prof-name');
+            const emojiEl = document.getElementById('prof-emoji');
+            const modal = document.getElementById('profile-modal');
+            
+            if(idEl) idEl.value = currentProfile.id;
+            if(nameEl) nameEl.value = currentProfile.name;
+            if(emojiEl) emojiEl.value = currentProfile.emoji;
+            window.closeSettings();
+            if(modal) modal.classList.remove('hidden');
+        };
+        window.closeProfileModal = function() {
+            const modal = document.getElementById('profile-modal');
+            if(modal) modal.classList.add('hidden');
+        };
+        window.saveProfileData = function() {
+            const idEl = document.getElementById('prof-edit-id');
+            const nameEl = document.getElementById('prof-name');
+            const emojiEl = document.getElementById('prof-emoji');
+            if(!idEl || !nameEl || !emojiEl) return;
+            
+            const id = idEl.value;
+            const name = nameEl.value.trim();
+            const emoji = emojiEl.value.trim() || '👦';
+            if(!name) { alert('Vui lòng nhập tên!'); return; }
+            
+            let saved = JSON.parse(localStorage.getItem('vuihoc_modern_profiles') || '[]');
+            const idx = saved.findIndex(p => p.id === id);
+            if(idx > -1) {
+                saved[idx].name = name;
+                saved[idx].emoji = emoji;
+                localStorage.setItem('vuihoc_modern_profiles', JSON.stringify(saved));
+                currentProfile = saved[idx];
+                const nameElDash = document.getElementById('dash-name');
+                const avatarElDash = document.getElementById('dash-avatar');
+                if(nameElDash) nameElDash.innerText = currentProfile.name;
+                if(avatarElDash) avatarElDash.innerText = currentProfile.emoji;
+            }
+            window.closeProfileModal();
         };
 
         window.createProfile = function() {
@@ -403,7 +484,9 @@
                 ];
                 localStorage.setItem('vuihoc_modern_profiles', JSON.stringify(saved));
             }
-            const container = document.getElementById('profiles-container'); container.innerHTML = '';
+            const container = document.getElementById('profiles-container'); 
+            if(!container) return;
+            container.innerHTML = '';
             saved.forEach(p => {
                 const btn = document.createElement('div');
                 btn.className = 'btn-3d w-40 h-48 bg-white rounded-3xl border-4 border-amber-300 flex flex-col items-center justify-center cursor-pointer';
@@ -415,29 +498,43 @@
 
         window.selectProfile = function(p) {
             currentProfile = p;
-            document.getElementById('dash-name').innerText = p.name;
-            document.getElementById('dash-avatar').innerText = p.emoji;
-            document.getElementById('dash-stars').innerText = p.stars || 0;
+            const nameEl = document.getElementById('dash-name');
+            const avatarEl = document.getElementById('dash-avatar');
+            const starsEl = document.getElementById('dash-stars');
+            if(nameEl) nameEl.innerText = p.name;
+            if(avatarEl) avatarEl.innerText = p.emoji;
+            if(starsEl) starsEl.innerText = p.stars || 0;
             renderDashboard(); window.showScreen('dashboard');
         };
 
         window.toggleLanguage = function(lang) {
             currentLang = lang;
-            document.getElementById('lang-vi').className = `lang-switch flex-1 py-3 rounded-2xl text-lg font-game transition-all ${lang==='vi'?'bg-amber-500 text-white shadow-md':'text-gray-500'}`;
-            document.getElementById('lang-es').className = `lang-switch flex-1 py-3 rounded-2xl text-lg font-game transition-all ${lang==='es'?'bg-amber-500 text-white shadow-md':'text-gray-500'}`;
+            const btnVi = document.getElementById('lang-vi');
+            const btnEs = document.getElementById('lang-es');
+            if(btnVi) btnVi.className = `lang-switch flex-1 py-3 rounded-2xl text-lg font-game transition-all ${lang==='vi'?'bg-amber-500 text-white shadow-md':'text-gray-500'}`;
+            if(btnEs) btnEs.className = `lang-switch flex-1 py-3 rounded-2xl text-lg font-game transition-all ${lang==='es'?'bg-amber-500 text-white shadow-md':'text-gray-500'}`;
             
-            document.getElementById('arcade-title').innerText = lang === 'es' ? '🎮 Zona de Juegos (Arcade)' : '🎮 Khu Vui Chơi (Arcade)';
-            document.getElementById('arcade-btn-slicer').innerText = lang === 'es' ? 'Cortar Palabras' : 'Chém Từ';
-            document.getElementById('arcade-btn-balloon').innerText = lang === 'es' ? 'Globos' : 'Bắt Bóng';
-            document.getElementById('arcade-btn-spelling').innerText = lang === 'es' ? 'Deletrear' : 'Xếp Chữ';
-            document.getElementById('arcade-btn-writing').innerText = lang === 'es' ? 'Escribir' : 'Tập Viết';
-            document.getElementById('curriculum-title').innerText = lang === 'es' ? '📚 Mapa de Aprendizaje' : '📚 Bản đồ Học Tập';
+            const arcadeTitle = document.getElementById('arcade-title');
+            const btnSlicer = document.getElementById('arcade-btn-slicer');
+            const btnBalloon = document.getElementById('arcade-btn-balloon');
+            const btnSpelling = document.getElementById('arcade-btn-spelling');
+            const btnWriting = document.getElementById('arcade-btn-writing');
+            const currTitle = document.getElementById('curriculum-title');
+
+            if(arcadeTitle) arcadeTitle.innerText = lang === 'es' ? '🎮 Zona de Juegos (Arcade)' : '🎮 Khu Vui Chơi (Arcade)';
+            if(btnSlicer) btnSlicer.innerText = lang === 'es' ? 'Cortar Palabras' : 'Chém Từ';
+            if(btnBalloon) btnBalloon.innerText = lang === 'es' ? 'Globos' : 'Bắt Bóng';
+            if(btnSpelling) btnSpelling.innerText = lang === 'es' ? 'Deletrear' : 'Xếp Chữ';
+            if(btnWriting) btnWriting.innerText = lang === 'es' ? 'Escribir' : 'Tập Viết';
+            if(currTitle) currTitle.innerText = lang === 'es' ? '📚 Mapa de Aprendizaje' : '📚 Bản đồ Học Tập';
 
             renderDashboard();
         };
 
         function renderDashboard() {
-            const mapContainer = document.getElementById('lessons-map'); mapContainer.innerHTML = '';
+            const mapContainer = document.getElementById('lessons-map'); 
+            if(!mapContainer) return;
+            mapContainer.innerHTML = '';
             curriculum.forEach(topic => {
                 const sec = document.createElement('div');
                 sec.className = 'bg-white rounded-[2rem] p-6 shadow-md border-2 border-amber-100 mb-4';
@@ -446,7 +543,7 @@
                 const grid = document.createElement('div'); grid.className = 'grid grid-cols-3 gap-3';
                 ['beginner', 'intermediate', 'advanced'].forEach(lvl => {
                     if(!topic.levels[lvl] || topic.levels[lvl].length === 0) return;
-                    const isDone = currentProfile.progress[topic.id] && currentProfile.progress[topic.id][lvl];
+                    const isDone = currentProfile && currentProfile.progress[topic.id] && currentProfile.progress[topic.id][lvl];
                     const btn = document.createElement('button');
                     btn.type = 'button';
                     btn.className = `btn-3d p-3 rounded-2xl flex flex-col items-center justify-center border-b-4 ${isDone ? 'bg-emerald-100 border-emerald-400 text-emerald-800' : 'bg-amber-100 border-amber-300 text-amber-800'}`;
@@ -475,18 +572,29 @@
         let currentLessonData = { weekId: null, levelId: null, words: [], idx: 0 };
         window.startLesson = function(weekId, levelId, words) {
             currentLessonData = { weekId, levelId, words: [...words], idx: 0 };
-            document.getElementById('game-post-game-menu').classList.add('hidden');
-            document.getElementById('mic-btn').classList.remove('hidden');
-            document.querySelector('#screen-game button[onclick="window.skipWord()"]').classList.remove('hidden');
-            window.showScreen('game'); loadLessonCard();
+            const postMenu = document.getElementById('game-post-game-menu');
+            const micBtn = document.getElementById('mic-btn');
+            const skipBtn = document.querySelector('#screen-game button[onclick="window.skipWord()"]');
+            
+            if(postMenu) postMenu.classList.add('hidden');
+            if(micBtn) micBtn.classList.remove('hidden');
+            if(skipBtn) skipBtn.classList.remove('hidden');
+            
+            window.showScreen('game'); 
+            loadLessonCard();
         };
 
         function loadLessonCard() {
             const w = currentLessonData.words[currentLessonData.idx];
-            document.getElementById('game-progress').innerText = `${currentLessonData.idx + 1} / ${currentLessonData.words.length}`;
-            document.getElementById('active-emoji').innerText = w.emoji;
-            document.getElementById('active-word').innerText = w[currentLang];
-            document.getElementById('speech-feedback').innerText = currentLang === 'es' ? 'Toca el micrófono y repite' : 'Bấm mic để đọc theo';
+            const prog = document.getElementById('game-progress');
+            const emoji = document.getElementById('active-emoji');
+            const word = document.getElementById('active-word');
+            const feed = document.getElementById('speech-feedback');
+
+            if(prog) prog.innerText = `${currentLessonData.idx + 1} / ${currentLessonData.words.length}`;
+            if(emoji) emoji.innerText = w.emoji;
+            if(word) word.innerText = w[currentLang];
+            if(feed) feed.innerText = currentLang === 'es' ? 'Toca el micrófono y repite' : 'Bấm mic để đọc theo';
             setTimeout(() => window.playCurrentWordAudio(), 400);
         }
         window.playCurrentWordAudio = () => window.speakText(currentLessonData.words[currentLessonData.idx][currentLang]);
@@ -497,20 +605,26 @@
             if(!SR) return alert('Speech recognition not supported on this browser.');
             const rec = new SR(); rec.lang = currentLang === 'es' ? 'es-ES' : 'vi-VN';
             
-            rec.onstart = () => { document.getElementById('mic-btn').classList.add('animate-pulse'); document.getElementById('speech-feedback').innerText = currentLang === 'es' ? 'Escuchando... 🎤' : 'Đang nghe... 🎤'; };
+            const micBtn = document.getElementById('mic-btn');
+            const feed = document.getElementById('speech-feedback');
+
+            rec.onstart = () => { 
+                if(micBtn) micBtn.classList.add('animate-pulse'); 
+                if(feed) feed.innerText = currentLang === 'es' ? 'Escuchando... 🎤' : 'Đang nghe... 🎤'; 
+            };
             rec.onresult = (e) => {
                 const said = e.results[0][0].transcript.toLowerCase();
                 const target = currentLessonData.words[currentLessonData.idx][currentLang].toLowerCase();
                 if(said.includes(target) || target.includes(said)) {
                     window.playSound.success(); fireConfetti();
-                    document.getElementById('speech-feedback').innerText = "¡Excelente! ⭐";
+                    if(feed) feed.innerText = "¡Excelente! ⭐";
                     setTimeout(window.skipWord, 1200);
                 } else {
                     window.playSound.error();
-                    document.getElementById('speech-feedback').innerText = currentLang === 'es' ? `Escuché: "${said}". ¡Inténtalo de nuevo!` : `Nghe: "${said}". Lại nhé!`;
+                    if(feed) feed.innerText = currentLang === 'es' ? `Escuché: "${said}". ¡Inténtalo de nuevo!` : `Nghe: "${said}". Lại nhé!`;
                 }
             };
-            rec.onend = () => document.getElementById('mic-btn').classList.remove('animate-pulse');
+            rec.onend = () => { if(micBtn) micBtn.classList.remove('animate-pulse'); };
             rec.start();
         };
 
@@ -523,19 +637,24 @@
                 if(!currentProfile.progress[currentLessonData.weekId][currentLessonData.levelId]) {
                     currentProfile.progress[currentLessonData.weekId][currentLessonData.levelId] = true;
                     currentProfile.stars += 5; 
-                    let saved = JSON.parse(localStorage.getItem('vuihoc_modern_profiles'));
+                    let saved = JSON.parse(localStorage.getItem('vuihoc_modern_profiles') || '[]');
                     const idx = saved.findIndex(p => p.id === currentProfile.id);
                     if(idx > -1) { saved[idx] = currentProfile; localStorage.setItem('vuihoc_modern_profiles', JSON.stringify(saved)); }
                 }
                 
-                document.getElementById('mic-btn').classList.add('hidden');
-                document.querySelector('#screen-game button[onclick="window.skipWord()"]').classList.add('hidden');
-                document.getElementById('game-post-game-menu').classList.remove('hidden');
+                const micBtn = document.getElementById('mic-btn');
+                const skipBtn = document.querySelector('#screen-game button[onclick="window.skipWord()"]');
+                const postMenu = document.getElementById('game-post-game-menu');
+                
+                if(micBtn) micBtn.classList.add('hidden');
+                if(skipBtn) skipBtn.classList.add('hidden');
+                if(postMenu) postMenu.classList.remove('hidden');
                 
                 const lvls = ['beginner', 'intermediate', 'advanced'];
                 const curIdx = lvls.indexOf(currentLessonData.levelId);
                 const hasNext = curIdx < 2 && curriculum.find(t => t.id === currentLessonData.weekId).levels[lvls[curIdx+1]];
-                document.getElementById('btn-next-level').style.display = hasNext ? 'block' : 'none';
+                const nextBtn = document.getElementById('btn-next-level');
+                if(nextBtn) nextBtn.style.display = hasNext ? 'block' : 'none';
             } else { loadLessonCard(); }
         };
 
@@ -548,6 +667,7 @@
 
         function fireConfetti() {
             const c = document.getElementById('confetti-container');
+            if(!c) return;
             for(let i=0; i<60; i++) {
                 const p = document.createElement('div'); p.className = 'confetti'; 
                 p.style.left = Math.random()*100+'vw'; p.style.backgroundColor = ['#f59e0b','#ef4444','#3b82f6','#10b981','#a855f7'][Math.floor(Math.random()*5)];
@@ -562,10 +682,13 @@
         window.exitSlicer = function() { slcRun = false; window.showScreen('dashboard'); };
         
         function startSlicerCanvas() {
-            sCan = document.getElementById('slicer-canvas'); sCtx = sCan.getContext('2d');
+            sCan = document.getElementById('slicer-canvas'); 
+            if(!sCan) return;
+            sCtx = sCan.getContext('2d');
             sCan.width = window.innerWidth; sCan.height = window.innerHeight;
             slcRun = true; sScore = 0; sFruits = []; sParticles = []; sTrail = [];
-            document.getElementById('slicer-score').innerText = '0';
+            const scoreEl = document.getElementById('slicer-score');
+            if(scoreEl) scoreEl.innerText = '0';
             
             const handleMove = (e) => {
                 if(!slcRun) return; e.preventDefault();
@@ -575,7 +698,8 @@
                 
                 sFruits.forEach(f => {
                     if(!f.sliced && Math.hypot(x - f.x, y - f.y) < 60) {
-                        f.sliced = true; window.playSound.slice(); sScore++; document.getElementById('slicer-score').innerText = sScore;
+                        f.sliced = true; window.playSound.slice(); sScore++; 
+                        if(scoreEl) scoreEl.innerText = sScore;
                         for(let i=0; i<15; i++) sParticles.push({x: f.x, y: f.y, vx: (Math.random()-0.5)*15, vy: (Math.random()-0.5)*15, life: 1, c: `hsl(${Math.random()*360},100%,50%)`});
                     }
                 });
@@ -585,7 +709,7 @@
         }
 
         function slicerLoop() {
-            if(!slcRun) return; sCtx.fillStyle = '#0f172a'; sCtx.fillRect(0,0,sCan.width, sCan.height);
+            if(!slcRun || !sCtx) return; sCtx.fillStyle = '#0f172a'; sCtx.fillRect(0,0,sCan.width, sCan.height);
             
             if(Math.random() < 0.03) {
                 const w = VOCAB_DATABASE[Math.floor(Math.random()*VOCAB_DATABASE.length)];
@@ -629,16 +753,19 @@
 
         // Balloon
         let balRun = false, balScore = 0, balTarget = null;
-        window.startBalloonGame = () => { window.showScreen('balloon'); balRun = true; balScore = 0; document.getElementById('balloon-score').innerText='0'; nextBalloonRound(); };
+        window.startBalloonGame = () => { window.showScreen('balloon'); balRun = true; balScore = 0; const s = document.getElementById('balloon-score'); if(s) s.innerText='0'; nextBalloonRound(); };
         window.exitBalloon = () => { balRun = false; window.showScreen('dashboard'); };
         
         function nextBalloonRound() {
             if(!balRun) return;
-            const area = document.getElementById('balloon-area'); area.innerHTML = '';
+            const area = document.getElementById('balloon-area'); 
+            if(!area) return;
+            area.innerHTML = '';
             
             const sample = [...VOCAB_DATABASE].sort(()=>0.5-Math.random()).slice(0,3);
             balTarget = sample[0];
-            document.getElementById('balloon-target-text').innerText = balTarget[currentLang];
+            const targetText = document.getElementById('balloon-target-text');
+            if(targetText) targetText.innerText = balTarget[currentLang];
             window.speakText(balTarget[currentLang]);
 
             [...sample].sort(()=>0.5-Math.random()).forEach((w, i) => {
@@ -660,7 +787,9 @@
                     e.stopPropagation();
                     if(w.id === balTarget.id) {
                         window.playSound.pop(); fireConfetti();
-                        balScore++; document.getElementById('balloon-score').innerText = balScore;
+                        balScore++; 
+                        const sEl = document.getElementById('balloon-score');
+                        if(sEl) sEl.innerText = balScore;
                         
                         const rect = bw.getBoundingClientRect();
                         for(let j=0; j<12; j++) {
@@ -683,21 +812,24 @@
                 area.appendChild(bw);
             });
         }
-        window.playBalloonAudio = () => window.speakText(balTarget[currentLang]);
+        window.playBalloonAudio = () => { if(balTarget) window.speakText(balTarget[currentLang]); };
 
-        // Spelling (Xếp Chữ)
+        // Spelling
         let spellScore = 0, spellTarget = null, spellArr = [], spellIdx = 0;
-        window.startSpellingGame = () => { window.showScreen('spelling'); spellScore = 0; document.getElementById('spelling-score').innerText='0'; loadSpellWord(); };
+        window.startSpellingGame = () => { window.showScreen('spelling'); spellScore = 0; const s = document.getElementById('spelling-score'); if(s) s.innerText='0'; loadSpellWord(); };
         window.exitSpelling = () => window.showScreen('dashboard');
 
         function loadSpellWord() {
             spellTarget = VOCAB_DATABASE[Math.floor(Math.random()*VOCAB_DATABASE.length)];
-            document.getElementById('spelling-emoji').innerText = spellTarget.emoji;
+            const emojiEl = document.getElementById('spelling-emoji');
+            if(emojiEl) emojiEl.innerText = spellTarget.emoji;
             spellArr = spellTarget[currentLang].toUpperCase().split('');
             spellIdx = 0;
 
-            const slots = document.getElementById('spelling-slots'); slots.innerHTML = '';
-            const bank = document.getElementById('spelling-bank'); bank.innerHTML = '';
+            const slots = document.getElementById('spelling-slots'); 
+            const bank = document.getElementById('spelling-bank'); 
+            if(!slots || !bank) return;
+            slots.innerHTML = ''; bank.innerHTML = '';
 
             spellArr.forEach((c, i) => {
                 const s = document.createElement('div');
@@ -717,11 +849,15 @@
                         window.playSound.blip();
                         b.style.visibility = 'hidden';
                         const slot = document.getElementById(`sslop-${spellIdx}`);
-                        slot.className = 'spell-slot w-14 h-16 rounded-2xl flex items-center justify-center text-3xl font-game text-white bg-green-500 border-b-4 border-green-700 pop-in';
+                        if(slot) {
+                            slot.className = 'spell-slot w-14 h-16 rounded-2xl flex items-center justify-center text-3xl font-game text-white bg-green-500 border-b-4 border-green-700 pop-in';
+                        }
                         spellIdx++;
                         if(spellIdx >= spellArr.length) {
                             window.playSound.success(); fireConfetti();
-                            spellScore++; document.getElementById('spelling-score').innerText = spellScore;
+                            spellScore++; 
+                            const sEl = document.getElementById('spelling-score');
+                            if(sEl) sEl.innerText = spellScore;
                             setTimeout(loadSpellWord, 1500);
                         }
                     } else {
@@ -735,7 +871,7 @@
                 bank.appendChild(b);
             });
         }
-        window.playSpellingAudio = () => window.speakText(spellTarget[currentLang]);
+        window.playSpellingAudio = () => { if(spellTarget) window.speakText(spellTarget[currentLang]); };
 
         // Writing
         let wCanvas, wCtx, isDrawing = false, wTarget = null;
@@ -743,7 +879,9 @@
         window.exitWriting = () => window.showScreen('dashboard');
         
         function initWritingCanvas() {
-            wCanvas = document.getElementById('writing-canvas'); wCtx = wCanvas.getContext('2d');
+            wCanvas = document.getElementById('writing-canvas'); 
+            if(!wCanvas) return;
+            wCtx = wCanvas.getContext('2d');
             const rect = wCanvas.parentElement.getBoundingClientRect(); wCanvas.width = rect.width; wCanvas.height = rect.height;
             
             wCanvas.addEventListener('pointerdown', wStart); wCanvas.addEventListener('pointermove', wDraw);
@@ -753,6 +891,7 @@
         }
 
         window.clearWritingCanvas = function() {
+            if(!wCtx || !wCanvas) return;
             wCtx.clearRect(0,0,wCanvas.width, wCanvas.height);
             wCtx.strokeStyle = 'rgba(255,255,255,0.1)'; wCtx.lineWidth = 4; wCtx.setLineDash([15, 15]);
             wCtx.beginPath(); wCtx.moveTo(40, wCanvas.height/2); wCtx.lineTo(wCanvas.width-40, wCanvas.height/2); wCtx.stroke(); wCtx.setLineDash([]);
@@ -778,4 +917,3 @@
     </script>
 </body>
 </html>
-```eof
