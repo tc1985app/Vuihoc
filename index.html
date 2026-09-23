@@ -74,14 +74,6 @@
         .pop-particle { position: absolute; width: 15px; height: 15px; border-radius: 50%; animation: explode 0.5s ease-out forwards; pointer-events: none; }
         @keyframes explode { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
 
-        /* Memory Match Cards */
-        .memory-card { perspective: 1000px; cursor: pointer; height: 110px; }
-        .memory-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.4s; transform-style: preserve-3d; }
-        .memory-card.flipped .memory-card-inner { transform: rotateY(180deg); }
-        .memory-card-front, .memory-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-weight: 900; box-shadow: 0 6px 0px rgba(0,0,0,0.1); border: 3px solid #d8b4fe; }
-        .memory-card-front { background: #9333ea; color: white; font-size: 2rem; }
-        .memory-card-back { background: white; color: #581c87; transform: rotateY(180deg); font-size: 1.1rem; padding: 4px; }
-
         canvas { display: block; width: 100%; height: 100%; touch-action: none; }
     </style>
 </head>
@@ -279,7 +271,7 @@
         <div id="balloon-area"></div>
     </div>
 
-    <!-- Screen: Memory Match (Lật Hình Tìm Cặp) -->
+    <!-- Screen: Robust Standard Memory Match Game -->
     <div id="screen-memory" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-purple-50 hidden overflow-y-auto pt-6 px-4 pb-12">
         <div class="w-full max-w-xl flex justify-between items-center mb-6">
             <button type="button" onclick="window.exitMemoryGame()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-500 font-game text-lg border-2 border-red-200">Thoát</button>
@@ -361,7 +353,7 @@
                     { emoji: '🐶', text: 'Con chó màu vàng đang vẫy đuôi.', prompt: 'Con vật trong tranh là gì?', options: ['Con chó', 'Con mèo', 'Con chim'], correct: 0 },
                     { emoji: '🍎', text: 'Quả táo đỏ mọng trên cành cây.', prompt: 'Đây là loại quả gì?', options: ['Quả táo', 'Quả chuối', 'Quả cam'], correct: 0 },
                     { emoji: '🚗', text: 'Chiếc ô tô màu đỏ chạy trên đường.', prompt: 'Phương tiện này là gì?', options: ['Xe ô tô', 'Xe đạp', 'Tàu hỏa'], correct: 0 },
-                    { emoji: '🏠', text: 'Ngôi nhà nhỏ màu vàng có khu vườn xinh.', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Bệnh viện', 'Trường học'], correct: 0 }
+                    { emoji: '🏠', text: 'Ng ngôi nhà nhỏ màu vàng có khu vườn xinh.', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Bệnh viện', 'Trường học'], correct: 0 }
                 ],
                 intermediate: [
                     { emoji: '🌅', text: 'Buổi sáng bình minh trên biển, ông mặt trời đỏ rực nhô lên từ phía xa chiếu những tia nắng vàng óng ánh xuống mặt nước lăn tăn sóng.', prompt: 'Cảnh tượng trong tranh diễn ra vào lúc nào?', options: ['Buổi sáng bình minh', 'Buổi trưa nắng gắt', 'Đêm trăng sáng'], correct: 0 },
@@ -700,7 +692,6 @@
             });
         }
 
-        // Improved Tablet Accent Matcher for Speech Synthesis
         window.speakText = function(txt, forceLang) {
             if(!window.speechSynthesis) return;
             window.speechSynthesis.cancel();
@@ -710,17 +701,13 @@
             utt.lang = targetLang;
             
             let voices = window.speechSynthesis.getVoices();
-            let prefix = targetLang.substring(0, 2).toLowerCase();
-            
-            // Search for exact regional voice first, then broad language prefix
-            let voice = voices.find(v => v.lang.toLowerCase() === targetLang.toLowerCase()) || 
-                        voices.find(v => v.lang.toLowerCase().startsWith(prefix));
-            
+            let voice = voices.find(v => v.lang === targetLang) || voices.find(v => v.lang.startsWith(targetLang.substring(0, 2)));
             if(voice) utt.voice = voice;
+            
             window.speechSynthesis.speak(utt);
         };
 
-        // Picture Description Game (Adaptive & Dynamic)
+        // Picture Description Game (Robust & Dynamic)
         let descList = [];
         let descIdx = 0;
         window.startDescribeGame = function() {
@@ -1027,12 +1014,13 @@
         }
         window.playBalloonAudio = () => { if(balTarget) window.speakText(balTarget[currentLang]); };
 
-        // Memory Match Game
+        // Robust Standard Memory Match Game
         let memoryScore = 0, firstCard = null, lockBoard = false;
         window.startMemoryGame = () => {
             window.showScreen('memory');
             memoryScore = 0;
-            document.getElementById('memory-score').innerText = '0';
+            const mScore = document.getElementById('memory-score');
+            if(mScore) mScore.innerText = '0';
             loadMemoryCards();
         };
         window.exitMemoryGame = () => window.showScreen('dashboard');
@@ -1054,18 +1042,16 @@
 
             cardsData.forEach(card => {
                 const cardEl = document.createElement('div');
-                cardEl.className = 'memory-card';
+                cardEl.className = 'bg-purple-200 rounded-2xl h-24 flex items-center justify-center text-3xl font-game cursor-pointer border-4 border-purple-400 shadow-md transition-all active:scale-95';
                 cardEl.dataset.id = card.id;
-                cardEl.innerHTML = `
-                    <div class="memory-card-inner">
-                        <div class="memory-card-front">❓</div>
-                        <div class="memory-card-back">${card.content}</div>
-                    </div>
-                `;
+                cardEl.dataset.revealed = 'false';
+                cardEl.innerText = '❓';
 
                 cardEl.onclick = () => {
-                    if (lockBoard || cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) return;
-                    cardEl.classList.add('flipped');
+                    if (lockBoard || cardEl.dataset.revealed === 'true' || cardEl.classList.contains('matched')) return;
+                    cardEl.dataset.revealed = 'true';
+                    cardEl.classList.add('bg-white', 'text-purple-900', 'pop-in');
+                    cardEl.innerText = card.content;
                     window.playSound.blip();
 
                     if (!firstCard) {
@@ -1078,11 +1064,12 @@
                     if(card.type === 'text') window.speakText(card.content);
 
                     if (firstCard.dataset.id === secondCard.dataset.id) {
-                        firstCard.classList.add('matched');
-                        secondCard.classList.add('matched');
+                        firstCard.classList.add('bg-green-300', 'border-green-500', 'matched');
+                        secondCard.classList.add('bg-green-300', 'border-green-500', 'matched');
                         firstCard = null;
                         memoryScore++;
-                        document.getElementById('memory-score').innerText = memoryScore;
+                        const mScore = document.getElementById('memory-score');
+                        if(mScore) mScore.innerText = memoryScore;
                         window.playSound.success();
 
                         if (memoryScore === 4) {
@@ -1092,8 +1079,14 @@
                     } else {
                         lockBoard = true;
                         setTimeout(() => {
-                            firstCard.classList.remove('flipped');
-                            secondCard.classList.remove('flipped');
+                            firstCard.dataset.revealed = 'false';
+                            firstCard.classList.remove('bg-white', 'text-purple-900', 'pop-in');
+                            firstCard.innerText = '❓';
+
+                            secondCard.dataset.revealed = 'false';
+                            secondCard.classList.remove('bg-white', 'text-purple-900', 'pop-in');
+                            secondCard.innerText = '❓';
+
                             firstCard = null;
                             lockBoard = false;
                         }, 900);
