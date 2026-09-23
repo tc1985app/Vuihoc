@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Apple Web App Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Vui Học Bilingual">
@@ -320,6 +321,15 @@
         let recognition = null;
         let isListening = false;
         let currentStreak = 0;
+        let availableVoices = [];
+
+        // Fetch voices asynchronously to support iOS/Safari
+        function loadVoices() {
+            availableVoices = window.speechSynthesis.getVoices();
+        }
+        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+        }
 
         const vietnameseAlphabet = [
             { char: 'A', emoji: '🍎' }, { char: 'Ă', emoji: '🌙' }, { char: 'Â', emoji: '🥞' }, { char: 'B', emoji: '🎈' },
@@ -628,11 +638,24 @@
             if(currentProfile) renderDashboard();
         }
 
-        window.speakTitle = function(txt) {
+        window.speakText = function(txt, langCode) {
             if(window.speechSynthesis) {
                 window.speechSynthesis.cancel();
                 const utt = new SpeechSynthesisUtterance(txt);
-                utt.lang = currentLang === 'es' ? 'es-ES' : 'vi-VN';
+                utt.lang = langCode;
+
+                // iOS Fallback: Explicitly find and assign the correct language voice
+                if (availableVoices.length > 0) {
+                    const exactVoice = availableVoices.find(v => v.lang === langCode);
+                    if (exactVoice) {
+                        utt.voice = exactVoice;
+                    } else {
+                        // Fallback to broader language code if exact match fails (e.g., 'es-ES' -> 'es')
+                        const broadVoice = availableVoices.find(v => v.lang.startsWith(langCode.substring(0, 2)));
+                        if (broadVoice) utt.voice = broadVoice;
+                    }
+                }
+                
                 window.speechSynthesis.speak(utt);
             }
         };
@@ -738,15 +761,6 @@
                 <p class="text-base font-bold text-gray-600 italic">💡 ${item.meaning}</p>
             `;
         }
-
-        window.speakText = function(txt, langCode) {
-            if(window.speechSynthesis) {
-                window.speechSynthesis.cancel();
-                const utt = new SpeechSynthesisUtterance(txt);
-                utt.lang = langCode;
-                window.speechSynthesis.speak(utt);
-            }
-        };
 
         let sentenceLevelIdx = 0;
         let sentenceChallengeIdx = 0;
@@ -900,10 +914,7 @@
         }
         window.playCurrentWordAudio = function() {
             const item = currentLessonVocab[currentWordIndex]; if(!item) return;
-            window.speechSynthesis.cancel();
-            const utt = new SpeechSynthesisUtterance(item[currentLang]);
-            utt.lang = currentLang === 'es' ? 'es-ES' : 'vi-VN';
-            window.speechSynthesis.speak(utt);
+            window.speakText(item[currentLang], currentLang === 'es' ? 'es-ES' : 'vi-VN');
         }
         window.toggleListening = function() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1086,9 +1097,7 @@
         }
         window.playBalloonAudio = function() {
             if(balloonTarget) {
-                const utt = new SpeechSynthesisUtterance(balloonTarget[currentLang]);
-                utt.lang = currentLang === 'es' ? 'es-ES' : 'vi-VN';
-                window.speechSynthesis.speak(utt);
+                window.speakText(balloonTarget[currentLang], currentLang === 'es' ? 'es-ES' : 'vi-VN');
             }
         }
 
@@ -1141,9 +1150,7 @@
         }
         window.playSpellingAudio = function() {
             if(spellingTarget) {
-                const utt = new SpeechSynthesisUtterance(spellingTarget[currentLang]);
-                utt.lang = currentLang === 'es' ? 'es-ES' : 'vi-VN';
-                window.speechSynthesis.speak(utt);
+                window.speakText(spellingTarget[currentLang], currentLang === 'es' ? 'es-ES' : 'vi-VN');
             }
         }
 
