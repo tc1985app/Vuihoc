@@ -10,7 +10,7 @@
     
     <title>Vui Học - Bilingual Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -20,9 +20,9 @@
             font-family: 'Nunito', system-ui, sans-serif !important;
             background-color: var(--bg-light); color: #1f2937;
             overflow-x: hidden; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
-            user-select: none; -webkit-user-select: none; /* Prevent text selection in games */
+            user-select: none; -webkit-user-select: none;
         }
-        h1, h2, h3, .font-game { font-family: 'Fredoka One', 'Nunito', cursive !important; letter-spacing: 1px; }
+        h1, h2, h3, .font-game { font-family: 'Nunito', sans-serif !important; font-weight: 900; letter-spacing: 0.5px; }
 
         .cultural-bg {
             background-image: radial-gradient(#e5e7eb 2px, transparent 2px), radial-gradient(#e5e7eb 2px, transparent 2px);
@@ -32,7 +32,6 @@
         .screen-container { transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 1; transform: scale(1); }
         .screen-hidden { opacity: 0 !important; transform: scale(0.95) !important; pointer-events: none; position: absolute; }
 
-        /* 3D Button Styles for Kids */
         .btn-3d {
             transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 8px 0px rgba(0,0,0,0.15), 0 15px 20px rgba(0,0,0,0.1);
@@ -42,7 +41,6 @@
             transform: translateY(8px); box-shadow: 0 0px 0px rgba(0,0,0,0.15), 0 5px 5px rgba(0,0,0,0.1);
         }
 
-        /* Animations */
         .floating { animation: float 3s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
         .pop-in { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
@@ -50,12 +48,10 @@
         .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
         @keyframes shake { 10%, 90% { transform: translate3d(-3px, 0, 0); } 20%, 80% { transform: translate3d(5px, 0, 0); } }
 
-        /* Confetti */
         #confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 9999; overflow: hidden; }
         .confetti { position: absolute; width: 12px; height: 24px; animation: fall 3s linear forwards; }
         @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
 
-        /* Balloon Game CSS */
         #balloon-area { position: absolute; inset: 0; z-index: 20; overflow: hidden; }
         .balloon-wrapper { position: absolute; cursor: pointer; display: flex; flex-direction: column; items-center; animation: floatUp var(--speed) ease-in forwards, wobble 3s ease-in-out infinite alternate; pointer-events: auto; }
         .balloon-body {
@@ -72,11 +68,9 @@
         .pop-particle { position: absolute; width: 15px; height: 15px; border-radius: 50%; animation: explode 0.5s ease-out forwards; pointer-events: none; }
         @keyframes explode { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
 
-        /* Spelling Game */
         .spell-slot { background: rgba(255,255,255,0.5); box-shadow: inset 0 4px 6px rgba(0,0,0,0.1); }
         .spell-block { cursor: pointer; touch-action: none; transition: all 0.2s; }
 
-        /* Canvas Games */
         canvas { display: block; width: 100%; height: 100%; touch-action: none; }
     </style>
 </head>
@@ -116,25 +110,25 @@
 
         <!-- Mini Games Grid (The Arcade) -->
         <div class="w-full bg-blue-50/80 backdrop-blur-sm rounded-[2rem] p-6 border-4 border-blue-200 shadow-xl mb-10">
-            <h2 class="text-2xl font-game text-blue-800 mb-4 text-center">🎮 Khu Vui Chơi (Arcade)</h2>
+            <h2 id="arcade-title" class="text-2xl font-game text-blue-800 mb-4 text-center">🎮 Khu Vui Chơi (Arcade)</h2>
             <div class="grid grid-cols-2 gap-4">
                 <button type="button" onclick="window.startSlicerGame()" class="btn-3d py-6 bg-orange-500 text-white rounded-3xl border-b-[6px] border-orange-700 flex flex-col items-center">
-                    <span class="text-4xl mb-2">🍉</span><span class="font-game text-lg">Chém Từ</span>
+                    <span class="text-4xl mb-2">🍉</span><span id="arcade-btn-slicer" class="font-game text-lg">Chém Từ</span>
                 </button>
                 <button type="button" onclick="window.startBalloonGame()" class="btn-3d py-6 bg-sky-500 text-white rounded-3xl border-b-[6px] border-sky-700 flex flex-col items-center">
-                    <span class="text-4xl mb-2">🎈</span><span class="font-game text-lg">Bắt Bóng</span>
+                    <span class="text-4xl mb-2">🎈</span><span id="arcade-btn-balloon" class="font-game text-lg">Bắt Bóng</span>
                 </button>
                 <button type="button" onclick="window.startSpellingGame()" class="btn-3d py-6 bg-purple-500 text-white rounded-3xl border-b-[6px] border-purple-700 flex flex-col items-center">
-                    <span class="text-4xl mb-2">🔤</span><span class="font-game text-lg">Xếp Chữ</span>
+                    <span class="text-4xl mb-2">🔤</span><span id="arcade-btn-spelling" class="font-game text-lg">Xếp Chữ</span>
                 </button>
                 <button type="button" onclick="window.startWritingGame()" class="btn-3d py-6 bg-teal-500 text-white rounded-3xl border-b-[6px] border-teal-700 flex flex-col items-center">
-                    <span class="text-4xl mb-2">✍️</span><span class="font-game text-lg">Tập Viết</span>
+                    <span class="text-4xl mb-2">✍️</span><span id="arcade-btn-writing" class="font-game text-lg">Tập Viết</span>
                 </button>
             </div>
         </div>
 
-        <!-- Curriculum Map (Auto-generated from 1000+ DB) -->
-        <h2 class="text-3xl font-game text-amber-800 mb-6 text-center">📚 Bản đồ Học Tập</h2>
+        <!-- Curriculum Map -->
+        <h2 id="curriculum-title" class="text-3xl font-game text-amber-800 mb-6 text-center">📚 Bản đồ Học Tập</h2>
         <div id="lessons-map" class="w-full flex flex-col gap-6"></div>
     </div>
 
@@ -212,11 +206,9 @@
     </div>
 
     <script type="module">
-        // --- CORE STATE ---
         let currentProfile = null;
         let currentLang = 'vi';
         
-        // --- CUSTOM AUDIO SYNTHESIZER (No external files needed) ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playTone(freq, type, duration, vol=0.1) {
             if(!audioCtx) return;
@@ -237,63 +229,87 @@
             error: () => { playTone(300, 'sawtooth', 0.2, 0.1); setTimeout(()=>playTone(250, 'sawtooth', 0.2, 0.1), 150); }
         };
 
-        // --- MASSIVE VOCABULARY DATABASE (Built to scale to 1000+ words) ---
-        // Categories: animals, food, colors, numbers, family, body, home, actions, nature, clothes
         const VOCAB_DATABASE = [
-            // Animals (30+)
-            { id: 'dog', vi: 'Chó', es: 'Perro', emoji: '🐶', cat: 'animals', lvl: 1 }, { id: 'cat', vi: 'Mèo', es: 'Gato', emoji: '🐱', cat: 'animals', lvl: 1 },
-            { id: 'bird', vi: 'Chim', es: 'Pájaro', emoji: '🐦', cat: 'animals', lvl: 1 }, { id: 'fish', vi: 'Cá', es: 'Pez', emoji: '🐟', cat: 'animals', lvl: 1 },
-            { id: 'cow', vi: 'Bò', es: 'Vaca', emoji: '🐮', cat: 'animals', lvl: 1 }, { id: 'pig', vi: 'Lợn', es: 'Cerdo', emoji: '🐷', cat: 'animals', lvl: 1 },
-            { id: 'chicken', vi: 'Gà', es: 'Pollo', emoji: '🐔', cat: 'animals', lvl: 1 }, { id: 'duck', vi: 'Vịt', es: 'Pato', emoji: '🦆', cat: 'animals', lvl: 1 },
-            { id: 'mouse', vi: 'Chuột', es: 'Ratón', emoji: '🐭', cat: 'animals', lvl: 2 }, { id: 'horse', vi: 'Ngựa', es: 'Caballo', emoji: '🐴', cat: 'animals', lvl: 2 },
-            { id: 'elephant', vi: 'Voi', es: 'Elefante', emoji: '🐘', cat: 'animals', lvl: 2 }, { id: 'tiger', vi: 'Hổ', es: 'Tigre', emoji: '🐅', cat: 'animals', lvl: 2 },
-            { id: 'lion', vi: 'Sư tử', es: 'León', emoji: '🦁', cat: 'animals', lvl: 2 }, { id: 'monkey', vi: 'Khỉ', es: 'Mono', emoji: '🐒', cat: 'animals', lvl: 2 },
-            { id: 'snake', vi: 'Rắn', es: 'Serpiente', emoji: '🐍', cat: 'animals', lvl: 3 }, { id: 'bear', vi: 'Gấu', es: 'Oso', emoji: '🐻', cat: 'animals', lvl: 3 },
+            { id: 'dog', vi: 'Chó', es: 'Perro', emoji: '🐶', cat: 'animals', lvl: 1 },
+            { id: 'cat', vi: 'Mèo', es: 'Gato', emoji: '🐱', cat: 'animals', lvl: 1 },
+            { id: 'bird', vi: 'Chim', es: 'Pájaro', emoji: '🐦', cat: 'animals', lvl: 1 },
+            { id: 'fish', vi: 'Cá', es: 'Pez', emoji: '🐟', cat: 'animals', lvl: 1 },
+            { id: 'cow', vi: 'Bò', es: 'Vaca', emoji: '🐮', cat: 'animals', lvl: 1 },
+            { id: 'pig', vi: 'Lợn', es: 'Cerdo', emoji: '🐷', cat: 'animals', lvl: 1 },
+            { id: 'chicken', vi: 'Gà', es: 'Pollo', emoji: '🐔', cat: 'animals', lvl: 1 },
+            { id: 'duck', vi: 'Vịt', es: 'Pato', emoji: '🦆', cat: 'animals', lvl: 1 },
+            { id: 'mouse', vi: 'Chuột', es: 'Ratón', emoji: '🐭', cat: 'animals', lvl: 2 },
+            { id: 'horse', vi: 'Ngựa', es: 'Caballo', emoji: '🐴', cat: 'animals', lvl: 2 },
+            { id: 'elephant', vi: 'Voi', es: 'Elefante', emoji: '🐘', cat: 'animals', lvl: 2 },
+            { id: 'tiger', vi: 'Hổ', es: 'Tigre', emoji: '🐅', cat: 'animals', lvl: 2 },
+            { id: 'lion', vi: 'Sư tử', es: 'León', emoji: '🦁', cat: 'animals', lvl: 2 },
+            { id: 'monkey', vi: 'Khỉ', es: 'Mono', emoji: '🐒', cat: 'animals', lvl: 2 },
+            { id: 'snake', vi: 'Rắn', es: 'Serpiente', emoji: '🐍', cat: 'animals', lvl: 3 },
+            { id: 'bear', vi: 'Gấu', es: 'Oso', emoji: '🐻', cat: 'animals', lvl: 3 },
             
-            // Food (30+)
-            { id: 'water', vi: 'Nước', es: 'Agua', emoji: '💧', cat: 'food', lvl: 1 }, { id: 'milk', vi: 'Sữa', es: 'Leche', emoji: '🥛', cat: 'food', lvl: 1 },
-            { id: 'rice', vi: 'Cơm', es: 'Arroz', emoji: '🍚', cat: 'food', lvl: 1 }, { id: 'bread', vi: 'Bánh mì', es: 'Pan', emoji: '🥖', cat: 'food', lvl: 1 },
-            { id: 'apple', vi: 'Táo', es: 'Manzana', emoji: '🍎', cat: 'food', lvl: 1 }, { id: 'banana', vi: 'Chuối', es: 'Plátano', emoji: '🍌', cat: 'food', lvl: 1 },
-            { id: 'meat', vi: 'Thịt', es: 'Carne', emoji: '🥩', cat: 'food', lvl: 2 }, { id: 'fish_food', vi: 'Cá (ăn)', es: 'Pescado', emoji: '🐟', cat: 'food', lvl: 2 },
-            { id: 'egg', vi: 'Trứng', es: 'Huevo', emoji: '🥚', cat: 'food', lvl: 2 }, { id: 'cheese', vi: 'Phô mai', es: 'Queso', emoji: '🧀', cat: 'food', lvl: 2 },
-            { id: 'orange', vi: 'Cam', es: 'Naranja', emoji: '🍊', cat: 'food', lvl: 2 }, { id: 'grape', vi: 'Nho', es: 'Uva', emoji: '🍇', cat: 'food', lvl: 2 },
-            { id: 'soup', vi: 'Súp/Phở', es: 'Sopa', emoji: '🍲', cat: 'food', lvl: 3 }, { id: 'cake', vi: 'Bánh', es: 'Pastel', emoji: '🍰', cat: 'food', lvl: 3 },
+            { id: 'water', vi: 'Nước', es: 'Agua', emoji: '💧', cat: 'food', lvl: 1 },
+            { id: 'milk', vi: 'Sữa', es: 'Leche', emoji: '🥛', cat: 'food', lvl: 1 },
+            { id: 'rice', vi: 'Cơm', es: 'Arroz', emoji: '🍚', cat: 'food', lvl: 1 },
+            { id: 'bread', vi: 'Bánh mì', es: 'Pan', emoji: '🥖', cat: 'food', lvl: 1 },
+            { id: 'apple', vi: 'Táo', es: 'Manzana', emoji: '🍎', cat: 'food', lvl: 1 },
+            { id: 'banana', vi: 'Chuối', es: 'Plátano', emoji: '🍌', cat: 'food', lvl: 1 },
+            { id: 'meat', vi: 'Thịt', es: 'Carne', emoji: '🥩', cat: 'food', lvl: 2 },
+            { id: 'fish_food', vi: 'Cá (ăn)', es: 'Pescado', emoji: '🐟', cat: 'food', lvl: 2 },
+            { id: 'egg', vi: 'Trứng', es: 'Huevo', emoji: '🥚', cat: 'food', lvl: 2 },
+            { id: 'cheese', vi: 'Phô mai', es: 'Queso', emoji: '🧀', cat: 'food', lvl: 2 },
+            { id: 'orange', vi: 'Cam', es: 'Naranja', emoji: '🍊', cat: 'food', lvl: 2 },
+            { id: 'grape', vi: 'Nho', es: 'Uva', emoji: '🍇', cat: 'food', lvl: 2 },
+            { id: 'soup', vi: 'Súp/Phở', es: 'Sopa', emoji: '🍲', cat: 'food', lvl: 3 },
+            { id: 'cake', vi: 'Bánh', es: 'Pastel', emoji: '🍰', cat: 'food', lvl: 3 },
             
-            // Colors & Shapes (20+)
-            { id: 'red', vi: 'Đỏ', es: 'Rojo', emoji: '🔴', cat: 'colors', lvl: 1 }, { id: 'blue', vi: 'Xanh dương', es: 'Azul', emoji: '🔵', cat: 'colors', lvl: 1 },
-            { id: 'yellow', vi: 'Vàng', es: 'Amarillo', emoji: '🟡', cat: 'colors', lvl: 1 }, { id: 'green', vi: 'Xanh lá', es: 'Verde', emoji: '🟢', cat: 'colors', lvl: 1 },
-            { id: 'black', vi: 'Đen', es: 'Negro', emoji: '⚫', cat: 'colors', lvl: 2 }, { id: 'white', vi: 'Trắng', es: 'Blanco', emoji: '⚪', cat: 'colors', lvl: 2 },
-            { id: 'circle', vi: 'Tròn', es: 'Círculo', emoji: '⭕', cat: 'colors', lvl: 2 }, { id: 'square', vi: 'Vuông', es: 'Cuadrado', emoji: '🟩', cat: 'colors', lvl: 2 },
-            { id: 'purple', vi: 'Tím', es: 'Morado', emoji: '🟣', cat: 'colors', lvl: 3 }, { id: 'orange_col', vi: 'Cam (màu)', es: 'Naranja', emoji: '🟠', cat: 'colors', lvl: 3 },
+            { id: 'red', vi: 'Đỏ', es: 'Rojo', emoji: '🔴', cat: 'colors', lvl: 1 },
+            { id: 'blue', vi: 'Xanh dương', es: 'Azul', emoji: '🔵', cat: 'colors', lvl: 1 },
+            { id: 'yellow', vi: 'Vàng', es: 'Amarillo', emoji: '🟡', cat: 'colors', lvl: 1 },
+            { id: 'green', vi: 'Xanh lá', es: 'Verde', emoji: '🟢', cat: 'colors', lvl: 1 },
+            { id: 'black', vi: 'Đen', es: 'Negro', emoji: '⚫', cat: 'colors', lvl: 2 },
+            { id: 'white', vi: 'Trắng', es: 'Blanco', emoji: '⚪', cat: 'colors', lvl: 2 },
+            { id: 'circle', vi: 'Tròn', es: 'Círculo', emoji: '⭕', cat: 'colors', lvl: 2 },
+            { id: 'square', vi: 'Vuông', es: 'Cuadrado', emoji: '🟩', cat: 'colors', lvl: 2 },
+            { id: 'purple', vi: 'Tím', es: 'Morado', emoji: '🟣', cat: 'colors', lvl: 3 },
+            { id: 'orange_col', vi: 'Cam (màu)', es: 'Naranja', emoji: '🟠', cat: 'colors', lvl: 3 },
             
-            // Numbers (15)
-            { id: 'num1', vi: 'Một', es: 'Uno', emoji: '1️⃣', cat: 'numbers', lvl: 1 }, { id: 'num2', vi: 'Hai', es: 'Dos', emoji: '2️⃣', cat: 'numbers', lvl: 1 },
-            { id: 'num3', vi: 'Ba', es: 'Tres', emoji: '3️⃣', cat: 'numbers', lvl: 1 }, { id: 'num4', vi: 'Bốn', es: 'Cuatro', emoji: '4️⃣', cat: 'numbers', lvl: 1 },
-            { id: 'num5', vi: 'Năm', es: 'Cinco', emoji: '5️⃣', cat: 'numbers', lvl: 2 }, { id: 'num6', vi: 'Sáu', es: 'Seis', emoji: '6️⃣', cat: 'numbers', lvl: 2 },
-            { id: 'num7', vi: 'Bảy', es: 'Siete', emoji: '7️⃣', cat: 'numbers', lvl: 2 }, { id: 'num8', vi: 'Tám', es: 'Ocho', emoji: '8️⃣', cat: 'numbers', lvl: 2 },
-            { id: 'num9', vi: 'Chín', es: 'Nueve', emoji: '9️⃣', cat: 'numbers', lvl: 3 }, { id: 'num10', vi: 'Mười', es: 'Diez', emoji: '🔟', cat: 'numbers', lvl: 3 },
+            { id: 'num1', vi: 'Một', es: 'Uno', emoji: '1️⃣', cat: 'numbers', lvl: 1 },
+            { id: 'num2', vi: 'Hai', es: 'Dos', emoji: '2️⃣', cat: 'numbers', lvl: 1 },
+            { id: 'num3', vi: 'Ba', es: 'Tres', emoji: '3️⃣', cat: 'numbers', lvl: 1 },
+            { id: 'num4', vi: 'Bốn', es: 'Cuatro', emoji: '4️⃣', cat: 'numbers', lvl: 1 },
+            { id: 'num5', vi: 'Năm', es: 'Cinco', emoji: '5️⃣', cat: 'numbers', lvl: 2 },
+            { id: 'num6', vi: 'Sáu', es: 'Seis', emoji: '6️⃣', cat: 'numbers', lvl: 2 },
+            { id: 'num7', vi: 'Bảy', es: 'Siete', emoji: '7️⃣', cat: 'numbers', lvl: 2 },
+            { id: 'num8', vi: 'Tám', es: 'Ocho', emoji: '8️⃣', cat: 'numbers', lvl: 2 },
+            { id: 'num9', vi: 'Chín', es: 'Nueve', emoji: '9️⃣', cat: 'numbers', lvl: 3 },
+            { id: 'num10', vi: 'Mười', es: 'Diez', emoji: '🔟', cat: 'numbers', lvl: 3 },
 
-            // Body (15+)
-            { id: 'eye', vi: 'Mắt', es: 'Ojo', emoji: '👁️', cat: 'body', lvl: 1 }, { id: 'nose', vi: 'Mũi', es: 'Nariz', emoji: '👃', cat: 'body', lvl: 1 },
-            { id: 'mouth', vi: 'Miệng', es: 'Boca', emoji: '👄', cat: 'body', lvl: 1 }, { id: 'ear', vi: 'Tai', es: 'Oreja', emoji: '👂', cat: 'body', lvl: 1 },
-            { id: 'hand', vi: 'Tay', es: 'Mano', emoji: '✋', cat: 'body', lvl: 2 }, { id: 'foot', vi: 'Chân', es: 'Pie', emoji: '🦶', cat: 'body', lvl: 2 },
-            { id: 'head', vi: 'Đầu', es: 'Cabeza', emoji: '👤', cat: 'body', lvl: 2 }, { id: 'hair', vi: 'Tóc', es: 'Pelo', emoji: '💇', cat: 'body', lvl: 2 },
+            { id: 'eye', vi: 'Mắt', es: 'Ojo', emoji: '👁️', cat: 'body', lvl: 1 },
+            { id: 'nose', vi: 'Mũi', es: 'Nariz', emoji: '👃', cat: 'body', lvl: 1 },
+            { id: 'mouth', vi: 'Miệng', es: 'Boca', emoji: '👄', cat: 'body', lvl: 1 },
+            { id: 'ear', vi: 'Tai', es: 'Oreja', emoji: '👂', cat: 'body', lvl: 1 },
+            { id: 'hand', vi: 'Tay', es: 'Mano', emoji: '✋', cat: 'body', lvl: 2 },
+            { id: 'foot', vi: 'Chân', es: 'Pie', emoji: '🦶', cat: 'body', lvl: 2 },
+            { id: 'head', vi: 'Đầu', es: 'Cabeza', emoji: '👤', cat: 'body', lvl: 2 },
+            { id: 'hair', vi: 'Tóc', es: 'Pelo', emoji: '💇', cat: 'body', lvl: 2 },
             
-            // Home & Objects (20+)
-            { id: 'house', vi: 'Nhà', es: 'Casa', emoji: '🏠', cat: 'home', lvl: 1 }, { id: 'bed', vi: 'Giường', es: 'Cama', emoji: '🛏️', cat: 'home', lvl: 1 },
-            { id: 'door', vi: 'Cửa', es: 'Puerta', emoji: '🚪', cat: 'home', lvl: 1 }, { id: 'table', vi: 'Bàn', es: 'Mesa', emoji: '🪑', cat: 'home', lvl: 1 },
-            { id: 'chair', vi: 'Ghế', es: 'Silla', emoji: '🪑', cat: 'home', lvl: 2 }, { id: 'tv', vi: 'Tivi', es: 'Televisión', emoji: '📺', cat: 'home', lvl: 2 },
-            { id: 'book', vi: 'Sách', es: 'Libro', emoji: '📖', cat: 'home', lvl: 2 }, { id: 'pen', vi: 'Bút', es: 'Bolígrafo', emoji: '🖊️', cat: 'home', lvl: 2 },
+            { id: 'house', vi: 'Nhà', es: 'Casa', emoji: '🏠', cat: 'home', lvl: 1 },
+            { id: 'bed', vi: 'Giường', es: 'Cama', emoji: '🛏️', cat: 'home', lvl: 1 },
+            { id: 'door', vi: 'Cửa', es: 'Puerta', emoji: '🚪', cat: 'home', lvl: 1 },
+            { id: 'table', vi: 'Bàn', es: 'Mesa', emoji: '🪑', cat: 'home', lvl: 1 },
+            { id: 'chair', vi: 'Ghế', es: 'Silla', emoji: '🪑', cat: 'home', lvl: 2 },
+            { id: 'tv', vi: 'Tivi', es: 'Televisión', emoji: '📺', cat: 'home', lvl: 2 },
+            { id: 'book', vi: 'Sách', es: 'Libro', emoji: '📖', cat: 'home', lvl: 2 },
+            { id: 'pen', vi: 'Bút', es: 'Bolígrafo', emoji: '🖊️', cat: 'home', lvl: 2 },
             
-            // Vehicles (10+)
-            { id: 'car', vi: 'Xe ô tô', es: 'Coche', emoji: '🚗', cat: 'vehicles', lvl: 1 }, { id: 'bike', vi: 'Xe đạp', es: 'Bicicleta', emoji: '🚲', cat: 'vehicles', lvl: 1 },
-            { id: 'bus', vi: 'Xe buýt', es: 'Autobús', emoji: '🚌', cat: 'vehicles', lvl: 2 }, { id: 'train', vi: 'Tàu hỏa', es: 'Tren', emoji: '🚂', cat: 'vehicles', lvl: 2 },
-            { id: 'plane', vi: 'Máy bay', es: 'Avión', emoji: '✈️', cat: 'vehicles', lvl: 3 }, { id: 'boat', vi: 'Thuyền', es: 'Barco', emoji: '⛵', cat: 'vehicles', lvl: 3 }
-            
-            // *NOTE TO DEVELOPER: To reach 1000 words, simply continue adding objects to this array.*
+            { id: 'car', vi: 'Xe ô tô', es: 'Coche', emoji: '🚗', cat: 'vehicles', lvl: 1 },
+            { id: 'bike', vi: 'Xe đạp', es: 'Bicicleta', emoji: '🚲', cat: 'vehicles', lvl: 1 },
+            { id: 'bus', vi: 'Xe buýt', es: 'Autobús', emoji: '🚌', cat: 'vehicles', lvl: 2 },
+            { id: 'train', vi: 'Tàu hỏa', es: 'Tren', emoji: '🚂', cat: 'vehicles', lvl: 2 },
+            { id: 'plane', vi: 'Máy bay', es: 'Avión', emoji: '✈️', cat: 'vehicles', lvl: 3 },
+            { id: 'boat', vi: 'Thuyền', es: 'Barco', emoji: '⛵', cat: 'vehicles', lvl: 3 }
         ];
 
-        // Group database into curriculum chapters dynamically
         const TOPICS_CONFIG = [
             { id: 'animals', vi: 'Động Vật', es: 'Animales', emoji: '🦁' },
             { id: 'food', vi: 'Ẩm Thực', es: 'Comida', emoji: '🍲' },
@@ -316,7 +332,6 @@
         }
         generateCurriculum();
 
-        // --- CORE NAVIGATION & PROFILES ---
         window.showScreen = function(screenName) {
             if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
             document.querySelectorAll('.screen-container').forEach(el => el.classList.add('screen-hidden', 'hidden'));
@@ -331,27 +346,30 @@
         };
 
         window.createProfile = function() {
-            const name = prompt("Tên của bé? (Child's Name):", "Bé " + Math.floor(Math.random()*100));
+            const name = prompt(currentLang === 'es' ? '¿Nombre del niño(a)?' : "Tên của bé? (Child's Name):", "Bé " + Math.floor(Math.random()*100));
             if(name) {
                 const p = { id: Date.now().toString(), name, emoji: ['👦','👧','🐯','🐱','🦊','🐼'][Math.floor(Math.random()*6)], level: 'beginner', stars: 0, progress: {} };
-                let profiles = JSON.parse(localStorage.getItem('vuihoc_v2_profiles') || '[]');
-                profiles.push(p); localStorage.setItem('vuihoc_v2_profiles', JSON.stringify(profiles));
+                let profiles = JSON.parse(localStorage.getItem('vuihoc_modern_profiles') || '[]');
+                profiles.push(p); localStorage.setItem('vuihoc_modern_profiles', JSON.stringify(profiles));
                 loadProfiles(); window.selectProfile(p);
             }
         };
 
         function loadProfiles() {
-            let saved = JSON.parse(localStorage.getItem('vuihoc_v2_profiles') || '[]');
+            let saved = JSON.parse(localStorage.getItem('vuihoc_modern_profiles') || '[]');
             if (saved.length === 0) {
-                saved = [{ id: '1', name: 'Mẫu (Sample)', emoji: '🐼', level: 'beginner', stars: 10, progress: {} }];
-                localStorage.setItem('vuihoc_v2_profiles', JSON.stringify(saved));
+                saved = [
+                    { id: '1', name: 'An', emoji: '🐯', level: 'advanced', stars: 24, progress: {} },
+                    { id: '2', name: 'Sofia', emoji: '🌸', level: 'beginner', stars: 12, progress: {} }
+                ];
+                localStorage.setItem('vuihoc_modern_profiles', JSON.stringify(saved));
             }
             const container = document.getElementById('profiles-container'); container.innerHTML = '';
             saved.forEach(p => {
                 const btn = document.createElement('div');
                 btn.className = 'btn-3d w-40 h-48 bg-white rounded-3xl border-4 border-amber-300 flex flex-col items-center justify-center cursor-pointer';
                 btn.onclick = () => window.selectProfile(p);
-                btn.innerHTML = `<span class="text-6xl mb-2">${p.emoji}</span><span class="font-game text-xl">${p.name}</span><span class="text-amber-500 font-bold mt-1">⭐ ${p.stars}</span>`;
+                btn.innerHTML = `<span class="text-6xl mb-2">${p.emoji}</span><span class="font-game text-xl">${p.name}</span><span class="text-amber-500 font-bold mt-1">⭐ ${p.stars || 0}</span>`;
                 container.appendChild(btn);
             });
         }
@@ -368,6 +386,15 @@
             currentLang = lang;
             document.getElementById('lang-vi').className = `lang-switch flex-1 py-3 rounded-2xl text-lg font-game transition-all ${lang==='vi'?'bg-amber-500 text-white shadow-md':'text-gray-500'}`;
             document.getElementById('lang-es').className = `lang-switch flex-1 py-3 rounded-2xl text-lg font-game transition-all ${lang==='es'?'bg-amber-500 text-white shadow-md':'text-gray-500'}`;
+            
+            // Translate Arcade Section
+            document.getElementById('arcade-title').innerText = lang === 'es' ? '🎮 Zona de Juegos (Arcade)' : '🎮 Khu Vui Chơi (Arcade)';
+            document.getElementById('arcade-btn-slicer').innerText = lang === 'es' ? 'Cortar Palabras' : 'Chém Từ';
+            document.getElementById('arcade-btn-balloon').innerText = lang === 'es' ? 'Globos' : 'Bắt Bóng';
+            document.getElementById('arcade-btn-spelling').innerText = lang === 'es' ? 'Deletrear' : 'Xếp Chữ';
+            document.getElementById('arcade-btn-writing').innerText = lang === 'es' ? 'Escribir' : 'Tập Viết';
+            document.getElementById('curriculum-title').innerText = lang === 'es' ? '📚 Mapa de Aprendizaje' : '📚 Bản đồ Học Tập';
+
             renderDashboard();
         };
 
@@ -392,7 +419,6 @@
             });
         }
 
-        // --- STREAMING_CHUNK: iOS Audio Fix & Lesson Logic ---
         window.speakText = function(txt, forceLang) {
             if(!window.speechSynthesis) return;
             window.speechSynthesis.cancel();
@@ -400,7 +426,6 @@
             const targetLang = forceLang || (currentLang === 'es' ? 'es-ES' : 'vi-VN');
             utt.lang = targetLang;
             
-            // iOS precise voice matching
             let voices = window.speechSynthesis.getVoices();
             let voice = voices.find(v => v.lang === targetLang) || voices.find(v => v.lang.startsWith(targetLang.split('-')[0]));
             if(voice) utt.voice = voice;
@@ -422,7 +447,7 @@
             document.getElementById('game-progress').innerText = `${currentLessonData.idx + 1} / ${currentLessonData.words.length}`;
             document.getElementById('active-emoji').innerText = w.emoji;
             document.getElementById('active-word').innerText = w[currentLang];
-            document.getElementById('speech-feedback').innerText = "Bấm mic để đọc theo";
+            document.getElementById('speech-feedback').innerText = currentLang === 'es' ? 'Toca el micrófono y repite' : 'Bấm mic để đọc theo';
             setTimeout(() => window.playCurrentWordAudio(), 400);
         }
         window.playCurrentWordAudio = () => window.speakText(currentLessonData.words[currentLessonData.idx][currentLang]);
@@ -433,17 +458,17 @@
             if(!SR) return alert('Speech recognition not supported on this browser.');
             const rec = new SR(); rec.lang = currentLang === 'es' ? 'es-ES' : 'vi-VN';
             
-            rec.onstart = () => { document.getElementById('mic-btn').classList.add('animate-pulse'); document.getElementById('speech-feedback').innerText = "Đang nghe... 🎤"; };
+            rec.onstart = () => { document.getElementById('mic-btn').classList.add('animate-pulse'); document.getElementById('speech-feedback').innerText = currentLang === 'es' ? 'Escuchando... 🎤' : 'Đang nghe... 🎤'; };
             rec.onresult = (e) => {
                 const said = e.results[0][0].transcript.toLowerCase();
                 const target = currentLessonData.words[currentLessonData.idx][currentLang].toLowerCase();
                 if(said.includes(target) || target.includes(said)) {
                     window.playSound.success(); fireConfetti();
-                    document.getElementById('speech-feedback').innerText = "Chính xác! ⭐";
+                    document.getElementById('speech-feedback').innerText = "¡Excelente! ⭐";
                     setTimeout(window.skipWord, 1200);
                 } else {
                     window.playSound.error();
-                    document.getElementById('speech-feedback').innerText = `Nghe: "${said}". Lại nhé!`;
+                    document.getElementById('speech-feedback').innerText = currentLang === 'es' ? `Escuché: "${said}". ¡Inténtalo de nuevo!` : `Nghe: "${said}". Lại nhé!`;
                 }
             };
             rec.onend = () => document.getElementById('mic-btn').classList.remove('animate-pulse');
@@ -455,17 +480,15 @@
             currentLessonData.idx++;
             if(currentLessonData.idx >= currentLessonData.words.length) {
                 window.playSound.success(); fireConfetti();
-                // Save progress
                 if(!currentProfile.progress[currentLessonData.weekId]) currentProfile.progress[currentLessonData.weekId] = {};
                 if(!currentProfile.progress[currentLessonData.weekId][currentLessonData.levelId]) {
                     currentProfile.progress[currentLessonData.weekId][currentLessonData.levelId] = true;
                     currentProfile.stars += 5; 
-                    let saved = JSON.parse(localStorage.getItem('vuihoc_v2_profiles'));
+                    let saved = JSON.parse(localStorage.getItem('vuihoc_modern_profiles'));
                     const idx = saved.findIndex(p => p.id === currentProfile.id);
-                    if(idx > -1) { saved[idx] = currentProfile; localStorage.setItem('vuihoc_v2_profiles', JSON.stringify(saved)); }
+                    if(idx > -1) { saved[idx] = currentProfile; localStorage.setItem('vuihoc_modern_profiles', JSON.stringify(saved)); }
                 }
                 
-                // Show Next Menu
                 document.getElementById('mic-btn').classList.add('hidden');
                 document.querySelector('#screen-game button[onclick="window.skipWord()"]').classList.add('hidden');
                 document.getElementById('game-post-game-menu').classList.remove('hidden');
@@ -494,7 +517,7 @@
             }
         }
 
-        // --- STREAMING_CHUNK: Enhanced Graphic Mini-Games (Slicer) ---
+        // Slicer
         let slcRun = false, sCtx, sCan, sFruits = [], sParticles = [], sTrail = [], sScore = 0;
         window.startSlicerGame = function() { window.showScreen('slicer'); };
         window.exitSlicer = function() { slcRun = false; window.showScreen('dashboard'); };
@@ -511,11 +534,9 @@
                 const y = e.touches ? e.touches[0].clientY : e.clientY;
                 sTrail.push({x, y, age: 0});
                 
-                // Hit detection
                 sFruits.forEach(f => {
                     if(!f.sliced && Math.hypot(x - f.x, y - f.y) < 60) {
                         f.sliced = true; window.playSound.slice(); sScore++; document.getElementById('slicer-score').innerText = sScore;
-                        // Spawn particles
                         for(let i=0; i<15; i++) sParticles.push({x: f.x, y: f.y, vx: (Math.random()-0.5)*15, vy: (Math.random()-0.5)*15, life: 1, c: `hsl(${Math.random()*360},100%,50%)`});
                     }
                 });
@@ -527,13 +548,11 @@
         function slicerLoop() {
             if(!slcRun) return; sCtx.fillStyle = '#0f172a'; sCtx.fillRect(0,0,sCan.width, sCan.height);
             
-            // Spawn fruit
             if(Math.random() < 0.03) {
                 const w = VOCAB_DATABASE[Math.floor(Math.random()*VOCAB_DATABASE.length)];
                 sFruits.push({ emoji: w.emoji, x: Math.random()*(sCan.width-100)+50, y: sCan.height+50, vx: (Math.random()-0.5)*6, vy: -(Math.random()*8 + 15), rot: 0, vrot: (Math.random()-0.5)*0.2, sliced: false });
             }
 
-            // Draw Trail
             if(sTrail.length > 0) {
                 sCtx.beginPath(); sCtx.moveTo(sTrail[0].x, sTrail[0].y);
                 for(let i=1; i<sTrail.length; i++) sCtx.lineTo(sTrail[i].x, sTrail[i].y);
@@ -542,12 +561,11 @@
             }
             sTrail.forEach(t => t.age++); sTrail = sTrail.filter(t => t.age < 10);
 
-            // Update & Draw Fruits
             sFruits.forEach((f, i) => {
                 f.x += f.vx; f.y += f.vy; f.vy += 0.3; f.rot += f.vrot;
                 sCtx.save(); sCtx.translate(f.x, f.y); 
                 
-                if(f.sliced) { // Draw split halves
+                if(f.sliced) {
                     sCtx.globalAlpha = Math.max(0, 1 - (f.vy/20));
                     sCtx.font = "80px Arial"; sCtx.textAlign = 'center'; sCtx.textBaseline='middle';
                     sCtx.translate(-20 - f.vy*2, f.vy); sCtx.rotate(f.rot - 0.5); sCtx.fillText(f.emoji, 0, 0);
@@ -559,7 +577,6 @@
                 if(f.y > sCan.height + 150) sFruits.splice(i, 1);
             });
 
-            // Update particles
             sParticles.forEach((p, i) => {
                 p.x += p.vx; p.y += p.vy; p.life -= 0.03;
                 sCtx.fillStyle = p.c; sCtx.globalAlpha = p.life;
@@ -571,7 +588,7 @@
             requestAnimationFrame(slicerLoop);
         }
 
-        // --- STREAMING_CHUNK: Enhanced Graphic Mini-Games (Balloon & Spelling) ---
+        // Balloon
         let balRun = false, balScore = 0, balTarget = null;
         window.startBalloonGame = () => { window.showScreen('balloon'); balRun = true; balScore = 0; document.getElementById('balloon-score').innerText='0'; nextBalloonRound(); };
         window.exitBalloon = () => { balRun = false; window.showScreen('dashboard'); };
@@ -580,7 +597,6 @@
             if(!balRun) return;
             const area = document.getElementById('balloon-area'); area.innerHTML = '';
             
-            // Pick 3 random words from DB
             const sample = [...VOCAB_DATABASE].sort(()=>0.5-Math.random()).slice(0,3);
             balTarget = sample[0];
             document.getElementById('balloon-target-text').innerText = balTarget[currentLang];
@@ -605,7 +621,6 @@
                         window.playSound.pop(); fireConfetti();
                         balScore++; document.getElementById('balloon-score').innerText = balScore;
                         
-                        // Particle Explosion
                         const rect = bw.getBoundingClientRect();
                         for(let j=0; j<12; j++) {
                             const p = document.createElement('div'); p.className = 'pop-particle'; p.style.background = color;
@@ -620,15 +635,13 @@
                     }
                 };
                 bw.addEventListener('pointerdown', handlePop);
-                
-                // Remove if floats off screen
                 bw.addEventListener('animationend', (e) => { if(e.animationName === 'floatUp') { bw.remove(); if(w.id === balTarget.id && balRun) nextBalloonRound(); } });
                 area.appendChild(bw);
             });
         }
         window.playBalloonAudio = () => window.speakText(balTarget[currentLang]);
 
-        // Spelling 3D Blocks
+        // Spelling
         let spellScore = 0, spellTarget = null, spellArr = [], spellIdx = 0;
         window.startSpellingGame = () => { window.showScreen('spelling'); spellScore = 0; document.getElementById('spelling-score').innerText='0'; loadSpellWord(); };
         window.exitSpelling = () => window.showScreen('dashboard');
@@ -663,7 +676,7 @@
                         if(spellIdx >= spellArr.length) {
                             window.playSound.success(); fireConfetti();
                             spellScore++; document.getElementById('spelling-score').innerText = spellScore;
-                            setTimeout(loadSpellWord, 1500); // Endless Loop
+                            setTimeout(loadSpellWord, 1500);
                         }
                     } else {
                         window.playSound.error(); b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'), 400);
@@ -674,7 +687,7 @@
         }
         window.playSpellingAudio = () => window.speakText(spellTarget[currentLang]);
 
-        // --- STREAMING_CHUNK: Enhanced Tracing / Writing (Neon Canvas) ---
+        // Writing
         let wCanvas, wCtx, isDrawing = false, wTarget = null;
         window.startWritingGame = () => { window.showScreen('writing'); };
         window.exitWriting = () => window.showScreen('dashboard');
@@ -682,10 +695,8 @@
         function initWritingCanvas() {
             wCanvas = document.getElementById('writing-canvas'); wCtx = wCanvas.getContext('2d');
             const rect = wCanvas.parentElement.getBoundingClientRect(); wCanvas.width = rect.width; wCanvas.height = rect.height;
-            
             wCanvas.addEventListener('pointerdown', wStart); wCanvas.addEventListener('pointermove', wDraw);
             window.addEventListener('pointerup', wStop);
-            
             window.nextWritingWord();
         }
 
@@ -693,7 +704,6 @@
             wCtx.clearRect(0,0,wCanvas.width, wCanvas.height);
             wCtx.strokeStyle = 'rgba(255,255,255,0.1)'; wCtx.lineWidth = 4; wCtx.setLineDash([15, 15]);
             wCtx.beginPath(); wCtx.moveTo(40, wCanvas.height/2); wCtx.lineTo(wCanvas.width-40, wCanvas.height/2); wCtx.stroke(); wCtx.setLineDash([]);
-            
             wCtx.textAlign = 'center'; wCtx.textBaseline = 'middle'; wCtx.font = "900 80px 'Nunito'";
             wCtx.fillStyle = 'rgba(255,255,255,0.05)';
             wCtx.fillText(`${wTarget.emoji} ${wTarget[currentLang]}`, wCanvas.width/2, wCanvas.height/2);
@@ -706,7 +716,6 @@
         function wDraw(e) {
             if(!isDrawing) return; e.preventDefault(); const r = wCanvas.getBoundingClientRect();
             wCtx.lineTo(e.clientX-r.left, e.clientY-r.top);
-            // Neon style
             wCtx.strokeStyle = '#2dd4bf'; wCtx.lineWidth = 15; wCtx.lineCap = 'round'; wCtx.lineJoin = 'round';
             wCtx.shadowBlur = 20; wCtx.shadowColor = '#14b8a6'; wCtx.stroke();
         }
@@ -716,3 +725,4 @@
     </script>
 </body>
 </html>
+```eof
