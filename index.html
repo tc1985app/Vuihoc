@@ -200,13 +200,13 @@
 
             <div class="bg-emerald-50/80 backdrop-blur-sm rounded-[2rem] p-5 border-4 border-emerald-200 shadow-md flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <span class="text-3xl">📖</span>
+                    <span class="text-3xl">🖼️</span>
                     <div class="text-left">
-                        <h3 id="reading-title" class="text-lg font-game text-emerald-900">Đọc Hiểu Đoạn Văn</h3>
-                        <p class="text-xs text-emerald-700 font-bold">Reading & Paragraphs</p>
+                        <h3 id="desc-title" class="text-lg font-game text-emerald-900">Mô Tả Tranh</h3>
+                        <p id="desc-subtitle" class="text-xs text-emerald-700 font-bold">Describe Pictures</p>
                     </div>
                 </div>
-                <button type="button" onclick="window.startReadingGame()" id="reading-btn" class="btn-3d px-4 py-2.5 bg-emerald-600 text-white font-game text-sm rounded-2xl shadow-md">Luyện Tập</button>
+                <button type="button" onclick="window.startDescribeGame()" id="desc-btn" class="btn-3d px-4 py-2.5 bg-emerald-600 text-white font-game text-sm rounded-2xl shadow-md">Thử Thách</button>
             </div>
         </div>
 
@@ -235,21 +235,18 @@
         </div>
     </div>
 
-    <!-- Screen 4: Reading Comprehension with Paragraphs -->
-    <div id="screen-reading" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-emerald-50 hidden overflow-y-auto pt-8 px-4 pb-12">
+    <!-- Screen 4: Picture Description Game (Adaptive to Proficiency) -->
+    <div id="screen-describe" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-teal-50 hidden overflow-y-auto pt-8 px-4 pb-12">
         <div class="w-full max-w-xl flex justify-between items-center mb-6">
-            <button type="button" onclick="window.exitReadingGame()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-500 font-game text-lg border-2 border-red-200">Thoát</button>
-            <div class="bg-emerald-200 px-4 py-2 rounded-2xl border-2 border-emerald-400 font-game text-emerald-800"><span id="reading-progress">1 / 5</span></div>
+            <button type="button" onclick="window.exitDescribeGame()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-500 font-game text-lg border-2 border-red-200">Thoát</button>
+            <div class="bg-teal-200 px-4 py-2 rounded-2xl border-2 border-teal-400 font-game text-teal-800"><span id="desc-game-progress">1 / 5</span></div>
         </div>
         
-        <div class="bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-emerald-300 shadow-2xl w-full max-w-xl flex flex-col items-center mb-6 pop-in text-center">
-            <span id="reading-emoji" class="text-6xl mb-3 block">📖</span>
-            <div id="reading-paragraph-box" class="w-full bg-emerald-50/70 border-2 border-emerald-200 p-4 sm:p-5 rounded-2xl mb-6 text-left shadow-inner">
-                <p id="reading-paragraph-text" class="text-base sm:text-lg font-game text-emerald-900 leading-relaxed mb-3"></p>
-                <button type="button" onclick="window.playReadingAudio()" id="reading-audio-btn" class="btn-3d px-4 py-2 bg-emerald-600 text-white font-game rounded-xl text-sm shadow-sm flex items-center gap-2 mx-auto">🔊 Nghe Đoạn Văn</button>
-            </div>
-            <h3 id="reading-question" class="text-xl sm:text-2xl font-game text-gray-800 mb-6">Câu hỏi: ...</h3>
-            <div id="reading-options" class="w-full flex flex-col gap-3"></div>
+        <div class="bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-teal-300 shadow-2xl w-full max-w-xl flex flex-col items-center mb-6 pop-in text-center">
+            <span id="desc-game-emoji" class="text-8xl mb-4 block floating">🌳</span>
+            <button type="button" onclick="window.playDescAudio()" class="btn-3d px-5 py-2.5 bg-teal-600 text-white font-game rounded-xl text-sm shadow-sm flex items-center gap-2 mx-auto mb-6">🔊 Nghe Mô Tả</button>
+            <h3 id="desc-game-prompt" class="text-xl sm:text-2xl font-game text-gray-800 mb-6">Chọn câu miêu tả đúng nhất cho bức tranh:</h3>
+            <div id="desc-game-options" class="w-full flex flex-col gap-3"></div>
         </div>
     </div>
 
@@ -271,7 +268,7 @@
         <div id="balloon-area"></div>
     </div>
 
-    <!-- Screen: Rebuilt Multiple Choice Spelling Game (Xếp Chữ) -->
+    <!-- Screen: Multiple Choice Spelling Game -->
     <div id="screen-spelling" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-purple-50 hidden overflow-y-auto pt-6 px-4">
         <div class="w-full max-w-xl flex justify-between items-center mb-6">
             <button type="button" onclick="window.exitSpelling()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-500 font-game text-lg border-2 border-red-200">Thoát</button>
@@ -329,73 +326,64 @@
         };
 
         const ALPHABET_VI = [
-            {char: 'A', emoji: '🍎', word: 'Áo'}, {char: 'Ă', emoji: '🌙', word: 'Ăn'}, {char: 'Â', emoji: '🥞', word: 'Ấm'}, {char: 'B', emoji: '🎈', word: 'Bút'},
-            {char: 'C', emoji: '🐱', word: 'Cá'}, {char: 'D', emoji: '🎒', word: 'Dép'}, {char: 'Đ', emoji: '🚂', word: 'Đèn'}, {char: 'E', emoji: '🐘', word: 'Em'},
-            {char: 'Ê', emoji: '🛏️', word: 'Êm'}, {char: 'G', emoji: '🐓', word: 'Gà'}, {char: 'H', emoji: '🏠', word: 'Hành'}, {char: 'I', emoji: '📌', word: 'In'},
-            {char: 'K', emoji: '🪁', word: 'Kẹo'}, {char: 'L', emoji: '🦁', word: 'Lá'}, {char: 'M', emoji: '🐵', word: 'Mèo'}, {char: 'N', emoji: '🍌', word: 'Nhà'},
-            {char: 'O', emoji: '⭕', word: 'Ong'}, {char: 'Ô', emoji: '☂️', word: 'Ô tô'}, {char: 'Ơ', emoji: '🦋', word: 'Ớt'}, {char: 'P', emoji: '🎹', word: 'Phở'},
-            {char: 'Q', emoji: '👑', word: 'Quả'}, {char: 'R', emoji: '🤖', word: 'Rổ'}, {char: 'S', emoji: '⭐', word: 'Sách'}, {char: 'T', emoji: '🐢', word: 'Tay'},
-            {char: 'U', emoji: '🍇', word: 'Ủ'}, {char: 'Ư', emoji: '🦘', word: 'Ức'}, {char: 'V', emoji: '🎻', word: 'Vịt'}, {char: 'X', emoji: '🚲', word: 'Xe'}, {char: 'Y', emoji: '⛵', word: 'Yếm'}
+            {char: 'A', emoji: '🍎', word: 'A'}, {char: 'Ă', emoji: '🌙', word: 'Ă'}, {char: 'Â', emoji: '🥞', word: 'Â'}, {char: 'B', emoji: '🎈', word: 'Bờ'},
+            {char: 'C', emoji: '🐱', word: 'Cờ'}, {char: 'D', emoji: '🎒', word: 'Dờ'}, {char: 'Đ', emoji: '🚂', word: 'Đờ'}, {char: 'E', emoji: '🐘', word: 'E'},
+            {char: 'Ê', emoji: '🛏️', word: 'Ê'}, {char: 'G', emoji: '🐓', word: 'Gờ'}, {char: 'H', emoji: '🏠', word: 'Hờ'}, {char: 'I', emoji: '📌', word: 'I'},
+            {char: 'K', emoji: '🪁', word: 'Ca'}, {char: 'L', emoji: '🦁', word: 'Lờ'}, {char: 'M', emoji: '🐵', word: 'Mờ'}, {char: 'N', emoji: '🍌', word: 'Nờ'},
+            {char: 'O', emoji: '⭕', word: 'O'}, {char: 'Ô', emoji: '☂️', word: 'Ô'}, {char: 'Ơ', emoji: '🦋', word: 'Ơ'}, {char: 'P', emoji: '🎹', word: 'Pê'},
+            {char: 'Q', emoji: '👑', word: 'Qu'}, {char: 'R', emoji: '🤖', word: 'Rờ'}, {char: 'S', emoji: '⭐', word: 'Sờ'}, {char: 'T', emoji: '🐢', word: 'Tờ'},
+            {char: 'U', emoji: '🍇', word: 'U'}, {char: 'Ư', emoji: '🦘', word: 'Ư'}, {char: 'V', emoji: '🎻', word: 'Vờ'}, {char: 'X', emoji: '🚲', word: 'Xờ'}, {char: 'Y', emoji: '⛵', word: 'I dài'}
         ];
 
         const ALPHABET_ES = [
-            {char: 'A', emoji: '🌳', word: 'Árbol'}, {char: 'B', emoji: '⛵', word: 'Barco'}, {char: 'C', emoji: '🏠', word: 'Casa'}, {char: 'Ch', emoji: '🍫', word: 'Chocolate'},
-            {char: 'D', emoji: '🎒', word: 'Dedo'}, {char: 'E', emoji: '🐘', word: 'Elefante'}, {char: 'F', emoji: '🔥', word: 'Fuego'}, {char: 'G', emoji: '🦒', word: 'Gato'},
-            {char: 'H', emoji: '🍃', word: 'Hojas'}, {char: 'I', emoji: '📌', word: 'Isla'}, {char: 'J', emoji: '🦒', word: 'Jirafa'}, {char: 'K', emoji: '🪁', word: 'Koala'},
-            {char: 'L', emoji: '🦁', word: 'León'}, {char: 'Ll', emoji: '🦙', word: 'Llama'}, {char: 'M', emoji: '🐵', word: 'Mono'}, {char: 'N', emoji: '🍌', word: 'Naranja'},
-            {char: 'Ñ', emoji: '🪅', word: 'Ñandú'}, {char: 'O', emoji: '⭕', word: 'Oso'}, {char: 'P', emoji: '🎹', word: 'Perro'}, {char: 'Q', emoji: '👑', word: 'Queso'},
-            {char: 'R', emoji: '🤖', word: 'Ratón'}, {char: 'Rr', emoji: '🚂', word: 'Carro'}, {char: 'S', emoji: '⭐', word: 'Sol'}, {char: 'T', emoji: '🐢', word: 'Tortuga'},
-            {char: 'U', emoji: '🍇', word: 'Uva'}, {char: 'V', emoji: '🎻', word: 'Vaca'}, {char: 'W', emoji: '🧇', word: 'Wafle'}, {char: 'X', emoji: '🎄', word: 'Xilófono'},
-            {char: 'Y', emoji: '⛵', word: 'Yoyo'}, {char: 'Z', emoji: '🦊', word: 'Zorro'}
+            {char: 'A', emoji: '🌳', word: 'A'}, {char: 'B', emoji: '⛵', word: 'Be'}, {char: 'C', emoji: '🏠', word: 'Ce'}, {char: 'Ch', emoji: '🍫', word: 'Che'},
+            {char: 'D', emoji: '🎒', word: 'De'}, {char: 'E', emoji: '🐘', word: 'E'}, {char: 'F', emoji: '🔥', word: 'Efe'}, {char: 'G', emoji: '🦒', word: 'Ge'},
+            {char: 'H', emoji: '🍃', word: 'Hache'}, {char: 'I', emoji: '📌', word: 'I'}, {char: 'J', emoji: '🦒', word: 'Jota'}, {char: 'K', emoji: '🪁', word: 'Ka'},
+            {char: 'L', emoji: '🦁', word: 'Ele'}, {char: 'Ll', emoji: '🦙', word: 'Elle'}, {char: 'M', emoji: '🐵', word: 'Eme'}, {char: 'N', emoji: '🍌', word: 'Ene'},
+            {char: 'Ñ', emoji: '🪅', word: 'Eñe'}, {char: 'O', emoji: '⭕', word: 'O'}, {char: 'P', emoji: '🎹', word: 'Pe'}, {char: 'Q', emoji: '👑', word: 'Cu'},
+            {char: 'R', emoji: '🤖', word: 'Ere'}, {char: 'Rr', emoji: '🚂', word: 'Erre'}, {char: 'S', emoji: '⭐', word: 'Ese'}, {char: 'T', emoji: '🐢', word: 'Te'},
+            {char: 'U', emoji: '🍇', word: 'U'}, {char: 'V', emoji: '🎻', word: 'Uve'}, {char: 'W', emoji: '🧇', word: 'Doble u'}, {char: 'X', emoji: '🎄', word: 'Equis'},
+            {char: 'Y', emoji: '⛵', word: 'I griega'}, {char: 'Z', emoji: '🦊', word: 'Zeta'}
         ];
 
-        const READING_PARAGRAPHS = {
-            vi: [
-                {
-                    emoji: '🌳',
-                    paragraph: 'Vào một buổi sáng mùa xuân, khu rừng rộn ràng tiếng chim hót lí lo. Các bạn nhỏ cùng nhau đi dạo dưới tán cây xanh mát. Bé An nhìn thấy một bông hoa hồng rực rỡ đang nở rộ bên đường.',
-                    question: 'Bé An nhìn thấy loài hoa gì nở rộ bên đường?',
-                    options: ['Hoa hồng rực rỡ', 'Hoa cúc vàng', 'Hoa hướng dương'],
-                    correct: 0
-                },
-                {
-                    emoji: '🍜',
-                    paragraph: 'Hôm nay là chủ nhật, cả nhà cùng nhau đi ăn phở truyền thống ở góc phố quen thuộc. Mùi nước dùng thơm phức lan tỏa trong gió khiến ai nấy đều cảm thấy hào hứng và đói bụng.',
-                    question: 'Cả nhà đi ăn món gì vào ngày chủ nhật?',
-                    options: ['Phở truyền thống', 'Bánh mì kẹp', 'Cơm tấm sườn'],
-                    correct: 0
-                },
-                {
-                    emoji: '🐱',
-                    paragraph: 'Chú mèo mướp nhà em rất ngoan. Mỗi khi em đi học về, chú lại ra tận cửa quẫy đuôi chào đón. Tối đến, chú nằm cuộn tròn trên chiếc thảm ấm áp cạnh giường ngủ.',
-                    question: 'Chú mèo làm gì khi em đi học về?',
-                    options: ['Ra cửa quẫy đuôi chào đón', 'Nằm ngủ trong bếp', 'Chạy ra vườn bắt chuột'],
-                    correct: 0
-                }
-            ],
-            es: [
-                {
-                    emoji: '🌳',
-                    paragraph: 'En una hermosa mañana de primavera, el bosque se llena con el canto alegre de los pájaros. Los niños pasean felices bajo la sombra de los árboles verdes. Sofía ve una rosa roja muy brillante junto al camino.',
-                    question: '¿Qué ve Sofía junto al camino?',
-                    options: ['Una rosa roja brillante', 'Un gato negro', 'Una mariposa amarilla'],
-                    correct: 0
-                },
-                {
-                    emoji: '🍜',
-                    paragraph: 'Hoy es domingo y toda la familia va a desayunar sopa tradicional al restaurante de la esquina. El aroma delicioso de la comida hace que todos tengan mucho apetito.',
-                    question: '¿A dónde va toda la familia hoy domingo?',
-                    options: ['A comer sopa tradicional', 'Al parque de atracciones', 'A la playa a nadar'],
-                    correct: 0
-                },
-                {
-                    emoji: '🐱',
-                    paragraph: 'El gato de mi casa es muy cariñoso. Cuando regreso de la escuela, siempre corre hacia la puerta para saludarme moviendo su cola. Por la noche, duerme plácidamente sobre la alfombra.',
-                    question: '¿Qué hace el gato cuando regreso de la escuela?',
-                    options: ['Corre a la puerta a saludarme', 'Se esconde debajo de la cama', 'Come pescado fresco'],
-                    correct: 0
-                }
-            ]
+        // Picture Description Game Data (Adaptive to Proficiency Levels)
+        const DESCRIBE_DATA = {
+            vi: {
+                beginner: [
+                    { emoji: '🐶', prompt: 'Con vật này là gì?', options: ['Con chó', 'Con mèo', 'Con chim'], correct: 0 },
+                    { emoji: '🍎', prompt: 'Đây là loại quả gì?', options: ['Quả táo', 'Quả chuối', 'Quả nho'], correct: 0 },
+                    { emoji: '🚗', prompt: 'Phương tiện này là gì?', options: ['Xe ô tô', 'Xe đạp', 'Máy bay'], correct: 0 },
+                    { emoji: '🏠', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Trường học', 'Bệnh viện'], correct: 0 }
+                ],
+                intermediate: [
+                    { emoji: '🐕', prompt: 'Miêu tả nào đúng cho bức tranh?', options: ['Con chó màu vàng đang chạy', 'Con mèo đang ngủ', 'Con cá bơi trong nước'], correct: 0 },
+                    { emoji: '🍲', prompt: 'Miêu tả nào đúng cho bức tranh?', options: ['Tô phở nóng thơm ngon', 'Bánh mì kẹp thịt', 'Ly sữa tươi'], correct: 0 },
+                    { emoji: '🚲', prompt: 'Miêu tả nào đúng cho bức tranh?', options: ['Chiếc xe đạp màu xanh', 'Tàu hỏa chạy trên ray', 'Máy bay trên trời'], correct: 0 }
+                ],
+                advanced: [
+                    { emoji: '🌳', prompt: 'Miêu tả chi tiết bức tranh:', options: ['Khu rừng mùa xuân rộn ràng tiếng chim hót và hoa nở', 'Cơn mưa giông mạnh vào mùa đông', 'Sa mạc cát khô cằn nắng gắt'], correct: 0 },
+                    { emoji: '🍜', prompt: 'Miêu tả chi tiết bức tranh:', options: ['Cả nhà cùng nhau đi ăn phở truyền thống vào chủ nhật', 'Trẻ em chơi đùa ngoài sân bóng', 'Đầu bếp đang nướng bánh ngọt'], correct: 0 },
+                    { emoji: '🐱', prompt: 'Miêu tả chi tiết bức tranh:', options: ['Chú mèo mướp ngoan quẫy đuôi đón em đi học về', 'Con ngựa chạy nhanh trên thảo nguyên', 'Chim đại bàng bay lượn trên núi cao'], correct: 0 }
+                ]
+            },
+            es: {
+                beginner: [
+                    { emoji: '🐶', prompt: '¿Qué animal es este?', options: ['El perro', 'El gato', 'El pájaro'], correct: 0 },
+                    { emoji: '🍎', prompt: '¿Qué fruta es esta?', options: ['La manzana', 'El plátano', 'La uva'], correct: 0 },
+                    { emoji: '🚗', prompt: '¿Qué vehículo es este?', options: ['El coche', 'La bicicleta', 'El avión'], correct: 0 },
+                    { emoji: '🏠', prompt: '¿Qué lugar es este?', options: ['La casa', 'La escuela', 'El hospital'], correct: 0 }
+                ],
+                intermediate: [
+                    { emoji: '🐕', prompt: '¿Qué descripción es correcta?', options: ['El perro marrón corre feliz', 'El gato duerme en la cama', 'El pez nada en el río'], correct: 0 },
+                    { emoji: '🍲', prompt: '¿Qué descripción es correcta?', options: ['Una deliciosa sopa caliente', 'Pan con mantequilla', 'Un vaso de leche'], correct: 0 },
+                    { emoji: '🚲', prompt: '¿Qué descripción es correcta?', options: ['Una bicicleta azul brillante', 'Un tren sobre las vías', 'Un avión en el cielo'], correct: 0 }
+                ],
+                advanced: [
+                    { emoji: '🌳', prompt: 'Describe detalladamente la escena:', options: ['Un bosque de primavera lleno de pájaros y flores brillantes', 'Una tormenta fuerte de invierno en la montaña', 'Un desierto seco bajo el sol'], correct: 0 },
+                    { emoji: '🍜', prompt: 'Describe detalladamente la escena:', options: ['Toda la familia disfruta de una sopa tradicional un domingo', 'Los niños juegan fútbol en el patio', 'Un panadero hornea pasteles'], correct: 0 },
+                    { emoji: '🐱', prompt: 'Describe detalladamente la escena:', options: ['Un gato cariñoso espera junto a la puerta al regresar de la escuela', 'Un caballo corre libre por la pradera', 'Un águila vuela alto'], correct: 0 }
+                ]
+            }
         };
 
         const VOCAB_DATABASE = [
@@ -596,8 +584,8 @@
             activeAlphabet.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'btn-3d bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 flex flex-col items-center justify-center cursor-pointer';
-                card.onclick = () => window.speakText(item.word || item.char, currentLang === 'es' ? 'es-ES' : 'vi-VN');
-                card.innerHTML = `<span class="text-3xl font-game text-amber-800">${item.char}</span><span class="text-2xl mt-1">${item.emoji}</span><span class="text-[10px] font-bold text-gray-500 mt-0.5">${item.word || ''}</span>`;
+                card.onclick = () => window.speakText(item.word, currentLang === 'es' ? 'es-ES' : 'vi-VN');
+                card.innerHTML = `<span class="text-3xl font-game text-amber-800">${item.char}</span><span class="text-2xl mt-1">${item.emoji}</span><span class="text-[10px] font-bold text-gray-500 mt-0.5">${item.word}</span>`;
                 grid.appendChild(card);
             });
             document.getElementById('alphabet-modal').classList.remove('hidden');
@@ -660,11 +648,10 @@
             const btnWriting = document.getElementById('arcade-btn-writing');
             const currTitle = document.getElementById('curriculum-title');
             const alphaTitle = document.getElementById('alpha-title');
-            const readingTitle = document.getElementById('reading-title');
+            const descTitle = document.getElementById('desc-title');
+            const descSubtitle = document.getElementById('desc-subtitle');
             const alphaBtn = document.getElementById('alpha-btn');
-            const readingBtn = document.getElementById('reading-btn');
-            const audioBtn = document.getElementById('reading-audio-btn');
-            const spellAudioBtn = document.getElementById('spelling-audio-btn');
+            const descBtn = document.getElementById('desc-btn');
 
             if(arcadeTitle) arcadeTitle.innerText = lang === 'es' ? '🎮 Zona de Juegos (Arcade)' : '🎮 Khu Vui Chơi (Arcade)';
             if(btnSlicer) btnSlicer.innerText = lang === 'es' ? 'Cortar Palabras' : 'Chém Từ';
@@ -673,11 +660,10 @@
             if(btnWriting) btnWriting.innerText = lang === 'es' ? 'Escribir' : 'Tập Viết';
             if(currTitle) currTitle.innerText = lang === 'es' ? '📚 Mapa de Aprendizaje' : '📚 Bản đồ Học Tập';
             if(alphaTitle) alphaTitle.innerText = lang === 'es' ? 'Alfabeto' : 'Bảng Chữ Cái';
-            if(readingTitle) readingTitle.innerText = lang === 'es' ? 'Comprensión Lectora' : 'Đọc Hiểu Đoạn Văn';
+            if(descTitle) descTitle.innerText = lang === 'es' ? 'Describir Imagen' : 'Mô Tả Tranh';
+            if(descSubtitle) descSubtitle.innerText = lang === 'es' ? 'Describe Pictures' : 'Describe Pictures';
             if(alphaBtn) alphaBtn.innerText = lang === 'es' ? 'Explorar' : 'Khám Phá';
-            if(readingBtn) readingBtn.innerText = lang === 'es' ? 'Practicar' : 'Luyện Tập';
-            if(audioBtn) audioBtn.innerHTML = lang === 'es' ? '🔊 Escuchar Párrafo' : '🔊 Nghe Đoạn Văn';
-            if(spellAudioBtn) spellAudioBtn.innerHTML = lang === 'es' ? '🔊 Escuchar Palabra' : '🔊 Nghe Từ';
+            if(descBtn) descBtn.innerText = lang === 'es' ? 'Desafío' : 'Thử Thách';
 
             renderDashboard();
         };
@@ -721,55 +707,55 @@
             window.speechSynthesis.speak(utt);
         };
 
-        // Reading Comprehension Game with Paragraphs
-        let readingParagraphsList = [];
-        let readingParaIdx = 0;
-        window.startReadingGame = function() {
-            const pool = READING_PARAGRAPHS[currentLang] || READING_PARAGRAPHS['vi'];
-            readingParagraphsList = [...pool].sort(() => 0.5 - Math.random());
-            readingParaIdx = 0;
-            window.showScreen('reading');
-            loadReadingParagraph();
+        // Picture Description Game (Adaptive to Proficiency)
+        let descList = [];
+        let descIdx = 0;
+        window.startDescribeGame = function() {
+            const level = currentProfile ? (currentProfile.level || 'beginner') : 'beginner';
+            const pool = DESCRIBE_DATA[currentLang][level] || DESCRIBE_DATA[currentLang]['beginner'];
+            descList = [...pool].sort(() => 0.5 - Math.random());
+            descIdx = 0;
+            window.showScreen('describe');
+            loadDescribeCard();
         };
-        window.exitReadingGame = () => window.showScreen('dashboard');
+        window.exitDescribeGame = () => window.showScreen('dashboard');
 
-        window.playReadingAudio = function() {
-            const q = readingParagraphsList[readingParaIdx];
-            if(q) window.speakText(q.paragraph);
+        window.playDescAudio = function() {
+            const q = descList[descIdx];
+            if(q) window.speakText(q.prompt);
         };
 
-        function loadReadingParagraph() {
-            if(readingParaIdx >= readingParagraphsList.length) {
+        function loadDescribeCard() {
+            if(descIdx >= descList.length) {
                 window.playSound.success(); fireConfetti();
-                alert(currentLang === 'es' ? '¡Excelente comprensión lectora! +3 ⭐' : 'Xuất sắc! Hoàn thành đọc hiểu đoạn văn +3 ⭐');
+                alert(currentLang === 'es' ? '¡Excelente descripción! +3 ⭐' : 'Xuất sắc! Hoàn thành mô tả tranh +3 ⭐');
                 if(currentProfile) {
                     currentProfile.stars += 3;
                     let saved = JSON.parse(localStorage.getItem('vuihoc_modern_profiles') || '[]');
                     const idx = saved.findIndex(p => p.id === currentProfile.id);
                     if(idx > -1) { saved[idx] = currentProfile; localStorage.setItem('vuihoc_modern_profiles', JSON.stringify(saved)); }
                 }
-                window.exitReadingGame();
+                window.exitDescribeGame();
                 return;
             }
-            const q = readingParagraphsList[readingParaIdx];
-            document.getElementById('reading-progress').innerText = `${readingParaIdx + 1} / ${readingParagraphsList.length}`;
-            document.getElementById('reading-emoji').innerText = q.emoji;
-            document.getElementById('reading-paragraph-text').innerText = q.paragraph;
-            document.getElementById('reading-question').innerText = q.question;
-            window.speakText(q.paragraph);
+            const q = descList[descIdx];
+            document.getElementById('desc-game-progress').innerText = `${descIdx + 1} / ${descList.length}`;
+            document.getElementById('desc-game-emoji').innerText = q.emoji;
+            document.getElementById('desc-game-prompt').innerText = q.prompt;
+            window.speakText(q.prompt);
 
-            const optContainer = document.getElementById('reading-options');
+            const optContainer = document.getElementById('desc-game-options');
             optContainer.innerHTML = '';
             q.options.forEach((opt, i) => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = 'btn-3d w-full p-4 bg-emerald-100 border-2 border-emerald-300 rounded-2xl text-emerald-900 font-game text-xl text-left';
+                btn.className = 'btn-3d w-full p-4 bg-teal-100 border-2 border-teal-300 rounded-2xl text-teal-900 font-game text-xl text-left';
                 btn.innerText = `${i + 1}. ${opt}`;
                 btn.onclick = () => {
                     if(i === q.correct) {
                         window.playSound.success();
-                        readingParaIdx++;
-                        setTimeout(loadReadingParagraph, 800);
+                        descIdx++;
+                        setTimeout(loadDescribeCard, 800);
                     } else {
                         window.playSound.error();
                         btn.classList.add('shake'); setTimeout(() => btn.classList.remove('shake'), 400);
@@ -886,7 +872,7 @@
             }
         }
 
-        // Slicer
+        // Slicer (With Speech Pronunciation on Slice)
         let slcRun = false, sCtx, sCan, sFruits = [], sParticles = [], sTrail = [], sScore = 0;
         window.startSlicerGame = function() { window.showScreen('slicer'); };
         window.exitSlicer = function() { slcRun = false; window.showScreen('dashboard'); };
@@ -908,7 +894,10 @@
                 
                 sFruits.forEach(f => {
                     if(!f.sliced && Math.hypot(x - f.x, y - f.y) < 60) {
-                        f.sliced = true; window.playSound.slice(); sScore++; 
+                        f.sliced = true; 
+                        window.playSound.slice(); 
+                        window.speakText(f.word[currentLang]); // Pronounce word on slice!
+                        sScore++; 
                         if(scoreEl) scoreEl.innerText = sScore;
                         for(let i=0; i<15; i++) sParticles.push({x: f.x, y: f.y, vx: (Math.random()-0.5)*15, vy: (Math.random()-0.5)*15, life: 1, c: `hsl(${Math.random()*360},100%,50%)`});
                     }
@@ -923,7 +912,7 @@
             
             if(Math.random() < 0.03) {
                 const w = VOCAB_DATABASE[Math.floor(Math.random()*VOCAB_DATABASE.length)];
-                sFruits.push({ emoji: w.emoji, x: Math.random()*(sCan.width-100)+50, y: sCan.height+50, vx: (Math.random()-0.5)*6, vy: -(Math.random()*8 + 15), rot: 0, vrot: (Math.random()-0.5)*0.2, sliced: false });
+                sFruits.push({ word: w, emoji: w.emoji, x: Math.random()*(sCan.width-100)+50, y: sCan.height+50, vx: (Math.random()-0.5)*6, vy: -(Math.random()*8 + 15), rot: 0, vrot: (Math.random()-0.5)*0.2, sliced: false });
             }
 
             if(sTrail.length > 0) {
@@ -1024,7 +1013,7 @@
         }
         window.playBalloonAudio = () => { if(balTarget) window.speakText(balTarget[currentLang]); };
 
-        // Multiple Choice Spelling Game (Xếp Chữ)
+        // Multiple Choice Spelling Game
         let spellScore = 0, spellTarget = null;
         window.startSpellingGame = () => { window.showScreen('spelling'); spellScore = 0; const s = document.getElementById('spelling-score'); if(s) s.innerText='0'; loadMultipleChoiceSpell(); };
         window.exitSpelling = () => window.showScreen('dashboard');
