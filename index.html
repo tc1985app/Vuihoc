@@ -214,14 +214,14 @@
         <div id="lessons-map" class="w-full flex flex-col gap-6"></div>
     </div>
 
-    <!-- Screen 3: Lesson/Pronunciation (With Skip / Next Button) -->
+    <!-- Screen 3: Lesson/Pronunciation -->
     <div id="screen-game" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-amber-50 hidden overflow-y-auto pt-8 px-4">
         <div class="w-full max-w-xl flex justify-between items-center mb-8">
             <button type="button" onclick="window.exitGame()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-500 font-game text-lg border-2 border-red-200">Thoát</button>
             <div class="bg-amber-200 px-4 py-2 rounded-2xl border-2 border-amber-400 font-game text-amber-800"><span id="game-progress">1 / 10</span></div>
         </div>
         
-        <div id="active-card" class="bg-white rounded-[3rem] p-10 border-8 border-amber-300 shadow-2xl w-full max-w-sm flex flex-col items-center justify-center mb-8 cursor-pointer pop-in" onclick="window.playCurrentWordAudio()">
+        <div id="active-card" class="bg-white rounded-[3rem] p-10 border-8 border-amber-300 shadow-2xl w-full max-w-sm flex flex-col items-center justify-center mb-10 cursor-pointer pop-in" onclick="window.playCurrentWordAudio()">
             <span id="active-emoji" class="text-9xl mb-6 block floating">🐶</span>
             <span id="active-word" class="text-5xl font-game text-gray-800 text-center leading-tight">Chó</span>
         </div>
@@ -329,25 +329,26 @@
             error: () => { playTone(300, 'sawtooth', 0.2, 0.1); setTimeout(()=>playTone(250, 'sawtooth', 0.2, 0.1), 150); }
         };
 
+        // Fully corrected Alphabet dataset with precise vocabulary words starting with each letter
         const ALPHABET_VI = [
-            {char: 'A', emoji: '🍎', word: 'A'}, {char: 'Ă', emoji: '🌙', word: 'Ă'}, {char: 'Â', emoji: '🥞', word: 'Â'}, {char: 'B', emoji: '🎈', word: 'Bờ'},
-            {char: 'C', emoji: '🐱', word: 'Cờ'}, {char: 'D', emoji: '🎒', word: 'Dờ'}, {char: 'Đ', emoji: '🚂', word: 'Đờ'}, {char: 'E', emoji: '🐘', word: 'E'},
-            {char: 'Ê', emoji: '🛏️', word: 'Ê'}, {char: 'G', emoji: '🐓', word: 'Gờ'}, {char: 'H', emoji: '🏠', word: 'Hờ'}, {char: 'I', emoji: '📌', word: 'I'},
-            {char: 'K', emoji: '🪁', word: 'Ca'}, {char: 'L', emoji: '🦁', word: 'Lờ'}, {char: 'M', emoji: '🐵', word: 'Mờ'}, {char: 'N', emoji: '🍌', word: 'Nờ'},
-            {char: 'O', emoji: '⭕', word: 'O'}, {char: 'Ô', emoji: '☂️', word: 'Ô'}, {char: 'Ơ', emoji: '🦋', word: 'Ơ'}, {char: 'P', emoji: '🎹', word: 'Pê'},
-            {char: 'Q', emoji: '👑', word: 'Qu'}, {char: 'R', emoji: '🤖', word: 'Rờ'}, {char: 'S', emoji: '⭐', word: 'Sờ'}, {char: 'T', emoji: '🐢', word: 'Tờ'},
-            {char: 'U', emoji: '🍇', word: 'U'}, {char: 'Ư', emoji: '🦘', word: 'Ư'}, {char: 'V', emoji: '🎻', word: 'Vờ'}, {char: 'X', emoji: '🚲', word: 'Xờ'}, {char: 'Y', emoji: '⛵', word: 'I dài'}
+            {char: 'A', emoji: '🍎', word: 'Áo'}, {char: 'Ă', emoji: '🌙', word: 'Ăn'}, {char: 'Â', emoji: '🥞', word: 'Ấm'}, {char: 'B', emoji: '🎈', word: 'Bút'},
+            {char: 'C', emoji: '🐱', word: 'Cá'}, {char: 'D', emoji: '🎒', word: 'Dép'}, {char: 'Đ', emoji: '🚂', word: 'Đèn'}, {char: 'E', emoji: '🐘', word: 'Em'},
+            {char: 'Ê', emoji: '🛏️', word: 'Êm'}, {char: 'G', emoji: '🐓', word: 'Gà'}, {char: 'H', emoji: '🏠', word: 'Hành'}, {char: 'I', emoji: '📌', word: 'In'},
+            {char: 'K', emoji: '🪁', word: 'Kẹo'}, {char: 'L', emoji: '🦁', word: 'Lá'}, {char: 'M', emoji: '🐵', word: 'Mèo'}, {char: 'N', emoji: '🍌', word: 'Nhà'},
+            {char: 'O', emoji: '⭕', word: 'Ong'}, {char: 'Ô', emoji: '☂️', word: 'Ô tô'}, {char: 'Ơ', emoji: '🦋', word: 'Ớt'}, {char: 'P', emoji: '🎹', word: 'Phở'},
+            {char: 'Q', emoji: '👑', word: 'Quả'}, {char: 'R', emoji: '🤖', word: 'Rổ'}, {char: 'S', emoji: '⭐', word: 'Sách'}, {char: 'T', emoji: '🐢', word: 'Tay'},
+            {char: 'U', emoji: '🍇', word: 'Ủ'}, {char: 'Ư', emoji: '🦘', word: 'Ức'}, {char: 'V', emoji: '🎻', word: 'Vịt'}, {char: 'X', emoji: '🚲', word: 'Xe'}, {char: 'Y', emoji: '⛵', word: 'Yếm'}
         ];
 
         const ALPHABET_ES = [
-            {char: 'A', emoji: '🌳', word: 'A'}, {char: 'B', emoji: '⛵', word: 'Be'}, {char: 'C', emoji: '🏠', word: 'Ce'}, {char: 'Ch', emoji: '🍫', word: 'Che'},
-            {char: 'D', emoji: '🎒', word: 'De'}, {char: 'E', emoji: '🐘', word: 'E'}, {char: 'F', emoji: '🔥', word: 'Efe'}, {char: 'G', emoji: '🦒', word: 'Ge'},
-            {char: 'H', emoji: '🍃', word: 'Hache'}, {char: 'I', emoji: '📌', word: 'I'}, {char: 'J', emoji: '🦒', word: 'Jota'}, {char: 'K', emoji: '🪁', word: 'Ka'},
-            {char: 'L', emoji: '🦁', word: 'Ele'}, {char: 'Ll', emoji: '🦙', word: 'Elle'}, {char: 'M', emoji: '🐵', word: 'Eme'}, {char: 'N', emoji: '🍌', word: 'Ene'},
-            {char: 'Ñ', emoji: '🪅', word: 'Eñe'}, {char: 'O', emoji: '⭕', word: 'O'}, {char: 'P', emoji: '🎹', word: 'Pe'}, {char: 'Q', emoji: '👑', word: 'Cu'},
-            {char: 'R', emoji: '🤖', word: 'Ere'}, {char: 'Rr', emoji: '🚂', word: 'Erre'}, {char: 'S', emoji: '⭐', word: 'Ese'}, {char: 'T', emoji: '🐢', word: 'Te'},
-            {char: 'U', emoji: '🍇', word: 'U'}, {char: 'V', emoji: '🎻', word: 'Uve'}, {char: 'W', emoji: '🧇', word: 'Doble u'}, {char: 'X', emoji: '🎄', word: 'Equis'},
-            {char: 'Y', emoji: '⛵', word: 'I griega'}, {char: 'Z', emoji: '🦊', word: 'Zeta'}
+            {char: 'A', emoji: '🌳', word: 'Árbol'}, {char: 'B', emoji: '⛵', word: 'Barco'}, {char: 'C', emoji: '🏠', word: 'Casa'}, {char: 'Ch', emoji: '🍫', word: 'Chocolate'},
+            {char: 'D', emoji: '🎒', word: 'Dedo'}, {char: 'E', emoji: '🐘', word: 'Elefante'}, {char: 'F', emoji: '🔥', word: 'Fuego'}, {char: 'G', emoji: '🦒', word: 'Gato'},
+            {char: 'H', emoji: '🍃', word: 'Hojas'}, {char: 'I', emoji: '📌', word: 'Isla'}, {char: 'J', emoji: '🦒', word: 'Jirafa'}, {char: 'K', emoji: '🪁', word: 'Koala'},
+            {char: 'L', emoji: '🦁', word: 'León'}, {char: 'Ll', emoji: '🦙', word: 'Llama'}, {char: 'M', emoji: '🐵', word: 'Mono'}, {char: 'N', emoji: '🍌', word: 'Naranja'},
+            {char: 'Ñ', emoji: '🪅', word: 'Ñandú'}, {char: 'O', emoji: '⭕', word: 'Oso'}, {char: 'P', emoji: '🎹', word: 'Perro'}, {char: 'Q', emoji: '👑', word: 'Queso'},
+            {char: 'R', emoji: '🤖', word: 'Ratón'}, {char: 'Rr', emoji: '🚂', word: 'Carro'}, {char: 'S', emoji: '⭐', word: 'Sol'}, {char: 'T', emoji: '🐢', word: 'Tortuga'},
+            {char: 'U', emoji: '🍇', word: 'Uva'}, {char: 'V', emoji: '🎻', word: 'Vaca'}, {char: 'W', emoji: '🧇', word: 'Wafle'}, {char: 'X', emoji: '🎄', word: 'Xilófono'},
+            {char: 'Y', emoji: '⛵', word: 'Yoyo'}, {char: 'Z', emoji: '🦊', word: 'Zorro'}
         ];
 
         const DESCRIBE_DATA = {
@@ -390,7 +391,6 @@
         };
 
         const VOCAB_DATABASE = [
-            // Animals (12 words)
             { id: 'dog', vi: 'Chó', es: 'Perro', emoji: '🐶', cat: 'animals', lvl: 1 },
             { id: 'cat', vi: 'Mèo', es: 'Gato', emoji: '🐱', cat: 'animals', lvl: 1 },
             { id: 'bird', vi: 'Chim', es: 'Pájaro', emoji: '🐦', cat: 'animals', lvl: 1 },
@@ -404,7 +404,6 @@
             { id: 'elephant', vi: 'Voi', es: 'Elefante', emoji: '🐘', cat: 'animals', lvl: 3 },
             { id: 'tiger', vi: 'Hổ', es: 'Tigre', emoji: '🐅', cat: 'animals', lvl: 3 },
             
-            // Food (12 words)
             { id: 'water', vi: 'Nước', es: 'Agua', emoji: '💧', cat: 'food', lvl: 1 },
             { id: 'milk', vi: 'Sữa', es: 'Leche', emoji: '🥛', cat: 'food', lvl: 1 },
             { id: 'rice', vi: 'Cơm', es: 'Arroz', emoji: '🍚', cat: 'food', lvl: 1 },
@@ -418,7 +417,6 @@
             { id: 'soup', vi: 'Súp/Phở', es: 'Sopa', emoji: '🍲', cat: 'food', lvl: 3 },
             { id: 'cake', vi: 'Bánh', es: 'Pastel', emoji: '🍰', cat: 'food', lvl: 3 },
             
-            // Colors & Shapes (10 words)
             { id: 'red', vi: 'Đỏ', es: 'Rojo', emoji: '🔴', cat: 'colors', lvl: 1 },
             { id: 'blue', vi: 'Xanh dương', es: 'Azul', emoji: '🔵', cat: 'colors', lvl: 1 },
             { id: 'yellow', vi: 'Vàng', es: 'Amarillo', emoji: '🟡', cat: 'colors', lvl: 1 },
@@ -430,7 +428,6 @@
             { id: 'purple', vi: 'Tím', es: 'Morado', emoji: '🟣', cat: 'colors', lvl: 3 },
             { id: 'orange_col', vi: 'Cam (màu)', es: 'Naranja', emoji: '🟠', cat: 'colors', lvl: 3 },
             
-            // Numbers (10 words)
             { id: 'num1', vi: 'Một', es: 'Uno', emoji: '1️⃣', cat: 'numbers', lvl: 1 },
             { id: 'num2', vi: 'Hai', es: 'Dos', emoji: '2️⃣', cat: 'numbers', lvl: 1 },
             { id: 'num3', vi: 'Ba', es: 'Tres', emoji: '3️⃣', cat: 'numbers', lvl: 1 },
@@ -442,7 +439,6 @@
             { id: 'num9', vi: 'Chín', es: 'Nueve', emoji: '9️⃣', cat: 'numbers', lvl: 3 },
             { id: 'num10', vi: 'Mười', es: 'Diez', emoji: '🔟', cat: 'numbers', lvl: 3 },
 
-            // Body (10 words)
             { id: 'eye', vi: 'Mắt', es: 'Ojo', emoji: '👁️', cat: 'body', lvl: 1 },
             { id: 'nose', vi: 'Mũi', es: 'Nariz', emoji: '👃', cat: 'body', lvl: 1 },
             { id: 'mouth', vi: 'Miệng', es: 'Boca', emoji: '👄', cat: 'body', lvl: 1 },
@@ -454,7 +450,6 @@
             { id: 'tooth', vi: 'Răng', es: 'Diente', emoji: '🦷', cat: 'body', lvl: 3 },
             { id: 'tongue', vi: 'Lưỡi', es: 'Lengua', emoji: '👅', cat: 'body', lvl: 3 },
             
-            // Home (10 words)
             { id: 'house', vi: 'Nhà', es: 'Casa', emoji: '🏠', cat: 'home', lvl: 1 },
             { id: 'bed', vi: 'Giường', es: 'Cama', emoji: '🛏️', cat: 'home', lvl: 1 },
             { id: 'door', vi: 'Cửa', es: 'Puerta', emoji: '🚪', cat: 'home', lvl: 1 },
@@ -466,7 +461,6 @@
             { id: 'mom', vi: 'Mẹ', es: 'Mamá', emoji: '👩', cat: 'home', lvl: 3 },
             { id: 'dad', vi: 'Ba', es: 'Papá', emoji: '👨', cat: 'home', lvl: 3 },
             
-            // Vehicles (6 words)
             { id: 'car', vi: 'Xe ô tô', es: 'Coche', emoji: '🚗', cat: 'vehicles', lvl: 1 },
             { id: 'bike', vi: 'Xe đạp', es: 'Bicicleta', emoji: '🚲', cat: 'vehicles', lvl: 1 },
             { id: 'bus', vi: 'Xe buýt', es: 'Autobús', emoji: '🚌', cat: 'vehicles', lvl: 2 },
@@ -1169,4 +1163,3 @@
     </script>
 </body>
 </html>
-```eof
