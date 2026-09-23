@@ -74,7 +74,7 @@
         .pop-particle { position: absolute; width: 15px; height: 15px; border-radius: 50%; animation: explode 0.5s ease-out forwards; pointer-events: none; }
         @keyframes explode { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
 
-        .spell-slot { background: rgba(255,255,255,0.8); box-shadow: inset 0 4px 6px rgba(0,0,0,0.1); }
+        .spell-slot { background: rgba(255,255,255,0.9); box-shadow: inset 0 4px 6px rgba(0,0,0,0.1); }
         .spell-block { cursor: pointer; touch-action: manipulation; transition: all 0.2s; user-select: none; }
 
         canvas { display: block; width: 100%; height: 100%; touch-action: none; }
@@ -163,7 +163,7 @@
             <button type="button" onclick="window.toggleLanguage('es')" id="lang-es" class="lang-switch flex-1 py-3 rounded-2xl text-lg font-game text-gray-500 transition-all">🇪🇸 Español</button>
         </div>
 
-        <div class="w-full bg-blue-50/80 backdrop-blur-sm rounded-[2rem] p-6 border-4 border-blue-200 shadow-xl mb-10">
+        <div class="w-full bg-blue-50/80 backdrop-blur-sm rounded-[2rem] p-6 border-4 border-blue-200 shadow-xl mb-6">
             <h2 id="arcade-title" class="text-2xl font-game text-blue-800 mb-4 text-center">🎮 Khu Vui Chơi (Arcade)</h2>
             <div class="grid grid-cols-2 gap-4">
                 <button type="button" onclick="window.startSlicerGame()" class="btn-3d py-6 bg-orange-500 text-white rounded-3xl border-b-[6px] border-orange-700 flex flex-col items-center">
@@ -181,15 +181,28 @@
             </div>
         </div>
 
-        <div class="w-full bg-amber-50/80 backdrop-blur-sm rounded-[2rem] p-6 border-4 border-amber-200 shadow-xl mb-10 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <span class="text-4xl">🔤</span>
-                <div class="text-left">
-                    <h3 id="alpha-title" class="text-xl font-game text-amber-900">Bảng Chữ Cái</h3>
-                    <p class="text-xs text-amber-700 font-bold">Alphabet & Phonics</p>
+        <div class="w-full grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+            <div class="bg-amber-50/80 backdrop-blur-sm rounded-[2rem] p-5 border-4 border-amber-200 shadow-md flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">🔤</span>
+                    <div class="text-left">
+                        <h3 id="alpha-title" class="text-lg font-game text-amber-900">Bảng Chữ Cái</h3>
+                        <p class="text-xs text-amber-700 font-bold">Alphabet & Phonics</p>
+                    </div>
                 </div>
+                <button type="button" onclick="window.openAlphabetModal()" class="btn-3d px-4 py-2.5 bg-amber-600 text-white font-game text-sm rounded-2xl shadow-md">Khám Phá</button>
             </div>
-            <button type="button" onclick="window.openAlphabetModal()" class="btn-3d px-6 py-3 bg-amber-600 text-white font-game rounded-2xl shadow-md">Khám Phá</button>
+
+            <div class="bg-emerald-50/80 backdrop-blur-sm rounded-[2rem] p-5 border-4 border-emerald-200 shadow-md flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">📖</span>
+                    <div class="text-left">
+                        <h3 id="reading-title" class="text-lg font-game text-emerald-900">Đọc Hiểu</h3>
+                        <p class="text-xs text-emerald-700 font-bold">Reading Comprehension</p>
+                    </div>
+                </div>
+                <button type="button" onclick="window.startReadingGame()" class="btn-3d px-4 py-2.5 bg-emerald-600 text-white font-game text-sm rounded-2xl shadow-md">Luyện Tập</button>
+            </div>
         </div>
 
         <h2 id="curriculum-title" class="text-3xl font-game text-amber-800 mb-6 text-center">📚 Bản đồ Học Tập</h2>
@@ -217,6 +230,20 @@
         </div>
     </div>
 
+    <!-- Screen 4: Reading Comprehension Practice -->
+    <div id="screen-reading" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-emerald-50 hidden overflow-y-auto pt-8 px-4">
+        <div class="w-full max-w-xl flex justify-between items-center mb-6">
+            <button type="button" onclick="window.exitReadingGame()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-500 font-game text-lg border-2 border-red-200">Thoát</button>
+            <div class="bg-emerald-200 px-4 py-2 rounded-2xl border-2 border-emerald-400 font-game text-emerald-800"><span id="reading-progress">1 / 5</span></div>
+        </div>
+        
+        <div class="bg-white rounded-[3rem] p-8 border-8 border-emerald-300 shadow-2xl w-full max-w-lg flex flex-col items-center mb-6 pop-in text-center">
+            <span id="reading-emoji" class="text-7xl mb-4 block">📖</span>
+            <h3 id="reading-question" class="text-2xl font-game text-gray-800 mb-6">Đọc câu và chọn nghĩa đúng:</h3>
+            <div id="reading-options" class="w-full flex flex-col gap-3"></div>
+        </div>
+    </div>
+
     <!-- Screen: Ninja Slicer -->
     <div id="screen-slicer" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center justify-center bg-slate-900 hidden">
         <div class="absolute top-6 left-6 z-20"><button type="button" onclick="window.exitSlicer()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-500 font-game shadow-lg">Thoát</button></div>
@@ -235,18 +262,20 @@
         <div id="balloon-area"></div>
     </div>
 
-    <!-- Screen: Wooden Block Spelling -->
-    <div id="screen-spelling" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-amber-100 hidden">
-        <div class="w-full flex justify-between items-center p-6 z-10 bg-white/50 backdrop-blur-md border-b-4 border-amber-200">
+    <!-- Screen: Rebuilt Wooden Block Spelling (Xếp Chữ) -->
+    <div id="screen-spelling" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-amber-100 hidden overflow-y-auto">
+        <div class="w-full max-w-2xl flex justify-between items-center p-6 z-10">
             <button type="button" onclick="window.exitSpelling()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-500 font-game shadow-md">Thoát</button>
             <div class="bg-purple-500 px-6 py-3 rounded-2xl text-white font-game text-xl shadow-md border-2 border-purple-400">Điểm: <span id="spelling-score">0</span></div>
         </div>
-        <div class="flex-1 flex flex-col items-center justify-center w-full px-4">
-            <button type="button" onclick="window.playSpellingAudio()" class="btn-3d w-40 h-40 bg-white rounded-[3rem] border-8 border-purple-300 flex items-center justify-center mb-12 shadow-2xl pop-in">
-                <span id="spelling-emoji" class="text-8xl">🐶</span>
-            </button>
-            <div id="spelling-slots" class="flex gap-3 mb-16 flex-wrap justify-center p-4 bg-amber-900/10 rounded-3xl"></div>
-            <div id="spelling-bank" class="flex gap-4 flex-wrap justify-center max-w-2xl"></div>
+        <div class="flex-1 flex flex-col items-center justify-center w-full max-w-2xl px-4 pb-12">
+            <div class="bg-white rounded-[3rem] p-8 border-8 border-purple-300 shadow-2xl flex flex-col items-center mb-8 pop-in">
+                <span id="spelling-emoji" class="text-8xl mb-2">🐶</span>
+                <button type="button" onclick="window.playSpellingAudio()" class="mt-2 px-4 py-2 bg-purple-100 text-purple-700 font-game rounded-xl border border-purple-300 text-sm">🔊 Nghe Từ</button>
+            </div>
+            
+            <div id="spelling-slots" class="flex gap-2 sm:gap-3 mb-10 flex-wrap justify-center p-4 bg-amber-900/10 rounded-3xl w-full"></div>
+            <div id="spelling-bank" class="flex gap-3 sm:gap-4 flex-wrap justify-center w-full"></div>
         </div>
     </div>
 
@@ -313,6 +342,23 @@
             {char: 'U', emoji: '🍇'}, {char: 'V', emoji: '🎻'}, {char: 'W', emoji: '🧇'}, {char: 'X', emoji: '🎄'},
             {char: 'Y', emoji: '⛵'}, {char: 'Z', emoji: '🦊'}
         ];
+
+        const READING_POOL = {
+            vi: [
+                { emoji: '🐶', question: 'Con chó màu gì trong câu: "Con chó màu vàng đang chạy"?', options: ['Màu vàng', 'Màu đỏ', 'Màu đen'], correct: 0 },
+                { emoji: '🍲', question: 'Món ăn nào được nhắc đến: "Bé thích ăn phở bò nóng"?', options: ['Phở bò', 'Bánh mì', 'Cơm rang'], correct: 0 },
+                { emoji: '🌅', question: 'Trời hôm nay thế nào trong câu: "Trời hôm nay rất đẹp"?', options: ['Rất đẹp', 'Mưa to', 'Lạnh lắm'], correct: 0 },
+                { emoji: '🍎', question: 'Quả táo có đặc điểm gì trong câu: "Quả táo màu đỏ ngọt lịm"?', options: ['Màu đỏ ngọt lịm', 'Màu xanh chua', 'Màu vàng'], correct: 0 },
+                { emoji: '🚗', question: 'Xe ô tô làm gì trong câu: "Xe ô tô chạy nhanh trên đường"?', options: ['Chạy nhanh trên đường', 'Đậu trong nhà', 'Bay trên trời'], correct: 0 }
+            ],
+            es: [
+                { emoji: '🐶', question: '¿De qué color es el perro en: "El perro es marrón y corre"?', options: ['Marrón', 'Blanco', 'Negro'], correct: 0 },
+                { emoji: '🍲', question: '¿Qué le gusta comer en: "A María le gusta la sopa"?', options: ['La sopa', 'El pan', 'El arroz'], correct: 0 },
+                { emoji: '🌅', question: '¿Cómo está el día en: "Hoy el día está muy bonito"?', options: ['Muy bonito', 'Lluvioso', 'Frío'], correct: 0 },
+                { emoji: '🍎', question: '¿Cómo es la manzana en: "La manzana roja es dulce"?', options: ['Roja y dulce', 'Verde y ácida', 'Amarilla'], correct: 0 },
+                { emoji: '🚗', question: '¿Qué hace el carro en: "El coche corre por la calle"?', options: ['Corre por la calle', 'Vuela', 'Nata'], correct: 0 }
+            ]
+        };
 
         const VOCAB_DATABASE = [
             { id: 'dog', vi: 'Chó', es: 'Perro', emoji: '🐶', cat: 'animals', lvl: 1 },
@@ -571,6 +617,7 @@
             const btnWriting = document.getElementById('arcade-btn-writing');
             const currTitle = document.getElementById('curriculum-title');
             const alphaTitle = document.getElementById('alpha-title');
+            const readingTitle = document.getElementById('reading-title');
 
             if(arcadeTitle) arcadeTitle.innerText = lang === 'es' ? '🎮 Zona de Juegos (Arcade)' : '🎮 Khu Vui Chơi (Arcade)';
             if(btnSlicer) btnSlicer.innerText = lang === 'es' ? 'Cortar Palabras' : 'Chém Từ';
@@ -579,6 +626,7 @@
             if(btnWriting) btnWriting.innerText = lang === 'es' ? 'Escribir' : 'Tập Viết';
             if(currTitle) currTitle.innerText = lang === 'es' ? '📚 Mapa de Aprendizaje' : '📚 Bản đồ Học Tập';
             if(alphaTitle) alphaTitle.innerText = lang === 'es' ? 'Alfabeto' : 'Bảng Chữ Cái';
+            if(readingTitle) readingTitle.innerText = lang === 'es' ? 'Comprensión Lectora' : 'Đọc Hiểu';
 
             renderDashboard();
         };
@@ -620,6 +668,58 @@
             
             window.speechSynthesis.speak(utt);
         };
+
+        // Reading Comprehension Game
+        let readingQuestions = [];
+        let readingIdx = 0;
+        window.startReadingGame = function() {
+            const pool = READING_POOL[currentLang] || READING_POOL['vi'];
+            readingQuestions = [...pool].sort(() => 0.5 - Math.random()).slice(0, 5);
+            readingIdx = 0;
+            window.showScreen('reading');
+            loadReadingQuestion();
+        };
+        window.exitReadingGame = () => window.showScreen('dashboard');
+
+        function loadReadingQuestion() {
+            if(readingIdx >= readingQuestions.length) {
+                window.playSound.success(); fireConfetti();
+                alert(currentLang === 'es' ? '¡Excelente comprensión lectora! +3 ⭐' : 'Xuất sắc! Hoàn thành đọc hiểu +3 ⭐');
+                if(currentProfile) {
+                    currentProfile.stars += 3;
+                    let saved = JSON.parse(localStorage.getItem('vuihoc_modern_profiles') || '[]');
+                    const idx = saved.findIndex(p => p.id === currentProfile.id);
+                    if(idx > -1) { saved[idx] = currentProfile; localStorage.setItem('vuihoc_modern_profiles', JSON.stringify(saved)); }
+                }
+                window.exitReadingGame();
+                return;
+            }
+            const q = readingQuestions[readingIdx];
+            document.getElementById('reading-progress').innerText = `${readingIdx + 1} / ${readingQuestions.length}`;
+            document.getElementById('reading-emoji').innerText = q.emoji;
+            document.getElementById('reading-question').innerText = q.question;
+            window.speakText(q.question);
+
+            const optContainer = document.getElementById('reading-options');
+            optContainer.innerHTML = '';
+            q.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn-3d w-full p-4 bg-emerald-100 border-2 border-emerald-300 rounded-2xl text-emerald-900 font-game text-xl text-left';
+                btn.innerText = `${i + 1}. ${opt}`;
+                btn.onclick = () => {
+                    if(i === q.correct) {
+                        window.playSound.success();
+                        readingIdx++;
+                        setTimeout(loadReadingQuestion, 800);
+                    } else {
+                        window.playSound.error();
+                        btn.classList.add('shake'); setTimeout(() => btn.classList.remove('shake'), 400);
+                    }
+                };
+                optContainer.appendChild(btn);
+            });
+        }
 
         let currentLessonData = { weekId: null, levelId: null, words: [], idx: 0 };
         window.startLesson = function(weekId, levelId, words) {
@@ -866,7 +966,7 @@
         }
         window.playBalloonAudio = () => { if(balTarget) window.speakText(balTarget[currentLang]); };
 
-        // Spelling
+        // Rebuilt Spelling (Xếp Chữ)
         let spellScore = 0, spellTarget = null, spellArr = [], spellIdx = 0;
         window.startSpellingGame = () => { window.showScreen('spelling'); spellScore = 0; const s = document.getElementById('spelling-score'); if(s) s.innerText='0'; loadSpellWord(); };
         window.exitSpelling = () => window.showScreen('dashboard');
@@ -885,24 +985,24 @@
 
             spellArr.forEach((c, i) => {
                 const s = document.createElement('div');
-                s.className = 'spell-slot w-14 h-16 rounded-2xl flex items-center justify-center text-3xl font-game text-amber-900/35';
+                s.className = 'spell-slot w-12 h-14 sm:w-14 sm:h-16 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-game text-amber-900/35';
                 s.innerText = c; s.id = `sslop-${i}`;
                 slots.appendChild(s);
             });
 
             [...spellArr].sort(()=>0.5-Math.random()).forEach((c, i) => {
-                const b = document.createElement('div');
-                b.className = 'spell-block btn-3d w-14 h-16 bg-amber-400 rounded-2xl flex items-center justify-center text-3xl font-game text-amber-900 border-b-4 border-amber-600';
-                b.innerText = c; b.id = `sblk-${i}`;
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'spell-block btn-3d w-12 h-14 sm:w-14 sm:h-16 bg-amber-400 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-game text-amber-900 border-b-4 border-amber-600';
+                b.innerText = c; 
                 
-                const handleBlockAction = (e) => {
-                    e.preventDefault();
+                b.onclick = () => {
                     if(c === spellArr[spellIdx]) {
                         window.playSound.blip();
                         b.style.visibility = 'hidden';
                         const slot = document.getElementById(`sslop-${spellIdx}`);
                         if(slot) {
-                            slot.className = 'spell-slot w-14 h-16 rounded-2xl flex items-center justify-center text-3xl font-game text-white bg-green-500 border-b-4 border-green-700 pop-in';
+                            slot.className = 'spell-slot w-12 h-14 sm:w-14 sm:h-16 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-game text-white bg-green-500 border-b-4 border-green-700 pop-in';
                         }
                         spellIdx++;
                         if(spellIdx >= spellArr.length) {
@@ -916,9 +1016,6 @@
                         window.playSound.error(); b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'), 400);
                     }
                 };
-
-                b.onclick = handleBlockAction;
-                b.ontouchend = handleBlockAction;
 
                 bank.appendChild(b);
             });
