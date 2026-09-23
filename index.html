@@ -1,912 +1,806 @@
-import React, { useState, useEffect, useRef } from 'react';
-import confetti from 'canvas-confetti';
-
-// --- CURRICULUM WITH 7 PROGRESSIVE LEVELS & HD PHOTOS ---
-const TOPICS = [
-  { 
-    id: 'animals', vi: 'Động Vật', es: 'Animales', emoji: '🦁', color: 'from-amber-400 to-orange-500',
-    levels: {
-      1: [{ vi: 'Chó', es: 'Perro', img: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Mèo', es: 'Gato', img: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Chim', es: 'Pájaro', img: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Cá', es: 'Pez', img: 'https://images.unsplash.com/photo-1524704654690-b56c05c78a00?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Gà', es: 'Pollo', img: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Vịt', es: 'Pato', img: 'https://images.unsplash.com/photo-1555169062-01347abf78fb?auto=format&fit=crop&w=600&q=80' }],
-      2: [{ vi: 'Sư tử', es: 'León', img: 'https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Hổ', es: 'Tigre', img: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Bò', es: 'Vaca', img: 'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Lợn', es: 'Cerdo', img: 'https://images.unsplash.com/photo-1516467508483-a7212febe31a?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Ngựa', es: 'Caballo', img: 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Cừu', es: 'Oveja', img: 'https://images.unsplash.com/photo-1484557077796-8ffc45130e94?auto=format&fit=crop&w=600&q=80' }],
-      3: [{ vi: 'Voi', es: 'Elefante', img: 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Khỉ', es: 'Mono', img: 'https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Gấu', es: 'Oso', img: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Hưu cao cổ', es: 'Jirafa', img: 'https://images.unsplash.com/photo-1534567153574-2b12153a87f0?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Ngựa vằn', es: 'Cebra', img: 'https://images.unsplash.com/photo-1526095179574-86e545346ae9?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Gấu trúc', es: 'Panda', img: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?auto=format&fit=crop&w=600&q=80' }],
-      4: [{ vi: 'Thỏ', es: 'Conejo', img: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Sóc', es: 'Ardilla', img: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Cáo', es: 'Zorro', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Chó sói', es: 'Lobo', img: 'https://images.unsplash.com/photo-1561731216-c3a4d99437d5?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Hươu', es: 'Ciervo', img: 'https://images.unsplash.com/photo-1484406566165-985b496c5f78?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Kangaroo', es: 'Canguro', img: 'https://images.unsplash.com/photo-1529257414772-1960b76fa714?auto=format&fit=crop&w=600&q=80' }],
-      5: [{ vi: 'Rùa', es: 'Tortuga', img: 'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Ếch', es: 'Rana', img: 'https://images.unsplash.com/photo-1534067783941-51c9c23ecefd?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Cá sấu', es: 'Cocodrilo', img: 'https://images.unsplash.com/photo-1534567153574-2b12153a87f0?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Rắn', es: 'Serpiente', img: 'https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Thằn lằn', es: 'Lagarto', img: 'https://images.unsplash.com/photo-1508255266005-91b7d5f07096?auto=format&fit=crop&w=600&q=80' }],
-      6: [{ vi: 'Cá voi', es: 'Ballena', img: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Cá mập', es: 'Tiburón', img: 'https://images.unsplash.com/photo-1560275619-4d6236189f06?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Cá heo', es: 'Delfín', img: 'https://images.unsplash.com/photo-1570455855949-a34e40a049f7?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Bạch tuộc', es: 'Pulpo', img: 'https://images.unsplash.com/photo-1545671913-b89ac1b4ac10?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Cua', es: 'Cangrejo', img: 'https://images.unsplash.com/photo-1559827291-72ee739d0d9a?auto=format&fit=crop&w=600&q=80' }],
-      7: [{ vi: 'Đại bàng', es: 'Águila', img: 'https://images.unsplash.com/photo-1611689342806-0863700ce1e4?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Cú mèo', es: 'Búho', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Thiên nga', es: 'Cisne', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Cánh cụt', es: 'Pingüino', img: 'https://images.unsplash.com/photo-1598439210625-5067c578f3f6?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Hồng hạc', es: 'Flamenco', img: 'https://images.unsplash.com/photo-1497206376748-02759e66c6b3?auto=format&fit=crop&w=600&q=80' }]
-    }
-  },
-  { 
-    id: 'food', vi: 'Ẩm Thực', es: 'Comida', emoji: '🍜', color: 'from-emerald-400 to-teal-600',
-    levels: {
-      1: [{ vi: 'Táo', es: 'Manzana', img: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Chuối', es: 'Plátano', img: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Bánh mì', es: 'Pan', img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Nước', es: 'Agua', img: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Cơm', es: 'Arroz', img: 'https://images.unsplash.com/photo-1516684732162-7984084b22af?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Sữa', es: 'Leche', img: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=600&q=80' }],
-      2: [{ vi: 'Phở/Súp', es: 'Sopa', img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Cam', es: 'Naranja', img: 'https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Trứng', es: 'Huevo', img: 'https://images.unsplash.com/photo-1516467508483-a7212febe31a?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Thịt', es: 'Carne', img: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Cá (ăn)', es: 'Pescado', img: 'https://images.unsplash.com/photo-1534482492-264627efad24?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Gạo', es: 'Trigo', img: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80' }],
-      3: [{ vi: 'Bánh ngọt', es: 'Pastel', img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Phô mai', es: 'Queso', img: 'https://images.unsplash.com/photo-1452195100486-9cc805987862?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Mật ong', es: 'Miel', img: 'https://images.unsplash.com/photo-1587049352847-4a222e784d38?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Cà phê', es: 'Café', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Trà', es: 'Té', img: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80' }],
-      4: [{ vi: 'Dưa hấu', es: 'Sandía', img: 'https://images.unsplash.com/photo-1587049352847-4a222e784d38?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Dâu tây', es: 'Fresa', img: 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Nho', es: 'Uva', img: 'https://images.unsplash.com/photo-1537640538966-79f369143f8f?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Xoài', es: 'Mango', img: 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Dứa', es: 'Piña', img: 'https://images.unsplash.com/photo-1550258987-190a2d41a8ba?auto=format&fit=crop&w=600&q=80' }],
-      5: [{ vi: 'Cà chua', es: 'Tomate', img: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Khoai tây', es: 'Patata', img: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Cà rốt', es: 'Zanahoria', img: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Bắp cải', es: 'Repollo', img: 'https://images.unsplash.com/photo-1550989460-0adf9ea622e2?auto=format&fit=crop&w=600&q=80' }],
-      6: [{ vi: 'Pizza', es: 'Pizza', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Bơ gơ', es: 'Hamburguesa', img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Kem', es: 'Helado', img: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Kẹo', es: 'Caramelo', img: 'https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?auto=format&fit=crop&w=600&q=80' }],
-      7: [{ vi: 'Hạt tiêu', es: 'Pimienta', img: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Muối', es: 'Sal', img: 'https://images.unsplash.com/photo-1518117715206-c4d6823c68e1?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Dầu ăn', es: 'Aceite', img: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Bơ', es: 'Mantequilla', img: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&w=600&q=80' }]
-    }
-  },
-  { 
-    id: 'nature', vi: 'Thiên Nhiên', es: 'Naturaleza', emoji: '🌲', color: 'from-blue-400 to-indigo-600',
-    levels: {
-      1: [{ vi: 'Cây xanh', es: 'Árbol', img: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Hoa', es: 'Flor', img: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Mặt trời', es: 'Sol', img: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Mây', es: 'Nube', img: 'https://images.unsplash.com/photo-1534088568595-a066f410bcda?auto=format&fit=crop&w=600&q=80' }],
-      2: [{ vi: 'Núi', es: 'Montaña', img: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Bãi biển', es: 'Playa', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Sông', es: 'Río', img: 'https://images.unsplash.com/photo-1437482075806-5d22f9f12f94?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Biển', es: 'Mar', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' }],
-      3: [{ vi: 'Khu rừng', es: 'Bosque', img: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Mặt trăng', es: 'Luna', img: 'https://images.unsplash.com/photo-1532693322450-2cb5c51dc777?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Ngôi sao', es: 'Estrella', img: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=600&q=80' }],
-      4: [{ vi: 'Mưa', es: 'Lluvia', img: 'https://images.unsplash.com/photo-1519692933481-e162a57d6721?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Tuyết', es: 'Nieve', img: 'https://images.unsplash.com/photo-1483982258133-b7be267e8f9d?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Gió', es: 'Viento', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80' }],
-      5: [{ vi: 'Lửa', es: 'Fuego', img: 'https://images.unsplash.com/photo-1508873696983-2df5c920ac1c?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Đất', es: 'Tierra', img: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Đá', es: 'Piedra', img: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80' }],
-      6: [{ vi: 'Thác nước', es: 'Cascada', img: 'https://images.unsplash.com/photo-1432821596592-e2c18b78144f?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Sa mạc', es: 'Desierto', img: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80' }],
-      7: [{ vi: 'Cầu vồng', es: 'Arcoíris', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Sấm sét', es: 'Relámpago', img: 'https://images.unsplash.com/photo-1519692933481-e162a57d6721?auto=format&fit=crop&w=600&q=80' }]
-    }
-  },
-  { 
-    id: 'vehicles', vi: 'Phương Tiện', es: 'Vehículos', emoji: '🚗', color: 'from-rose-400 to-red-600',
-    levels: {
-      1: [{ vi: 'Xe ô tô', es: 'Coche', img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Xe đạp', es: 'Bicicleta', img: 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Xe buýt', es: 'Autobús', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' }],
-      2: [{ vi: 'Máy bay', es: 'Avión', img: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Tàu hỏa', es: 'Tren', img: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Thuyền', es: 'Barco', img: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80' }],
-      3: [{ vi: 'Trực thăng', es: 'Helicóptero', img: 'https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Xe máy', es: 'Moto', img: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=600&q=80' }],
-      4: [{ vi: 'Tên lửa', es: 'Cohete', img: 'https://images.unsplash.com/photo-1517976487139-3f16dab6b18d?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Tàu ngầm', es: 'Submarino', img: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80' }],
-      5: [{ vi: 'Xe cứu thương', es: 'Ambulancia', img: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=600&q=80' },
-          { vi: 'Xe cảnh sát', es: 'Patrulla', img: 'https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=600&q=80' }],
-      6: [{ vi: 'Du thuyền', es: 'Yate', img: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80' }],
-      7: [{ vi: 'Khinh khí cầu', es: 'Globo', img: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?auto=format&fit=crop&w=600&q=80' }]
-    }
-  }
-];
-
-const ALPHABET_VI = [
-  { char: 'A', word: 'Áo', img: 'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=300&q=80' },
-  { char: 'Ă', word: 'Ăn', img: 'https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=300&q=80' },
-  { char: 'Â', word: 'Ấm', img: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=300&q=80' },
-  { char: 'B', word: 'Bóng', img: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=300&q=80' },
-  { char: 'C', word: 'Cá', img: 'https://images.unsplash.com/photo-1524704654690-b56c05c78a00?auto=format&fit=crop&w=300&q=80' },
-  { char: 'D', word: 'Dép', img: 'https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=300&q=80' },
-  { char: 'Đ', word: 'Đèn', img: 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=300&q=80' },
-  { char: 'E', word: 'Em', img: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=300&q=80' },
-  { char: 'Ê', word: 'Êm', img: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=300&q=80' },
-  { char: 'G', word: 'Gà', img: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=300&q=80' },
-  { char: 'H', word: 'Hoa', img: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=300&q=80' },
-  { char: 'I', word: 'In', img: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=300&q=80' },
-  { char: 'K', word: 'Kẹo', img: 'https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?auto=format&fit=crop&w=300&q=80' },
-  { char: 'L', word: 'Lá', img: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=300&q=80' },
-  { char: 'M', word: 'Mèo', img: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=300&q=80' },
-  { char: 'N', word: 'Nhà', img: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=300&q=80' },
-  { char: 'O', word: 'Ong', img: 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=300&q=80' },
-  { char: 'Ô', word: 'Ô tô', img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=300&q=80' },
-  { char: 'Ơ', word: 'Ớt', img: 'https://images.unsplash.com/photo-1588854337236-6889d631faa8?auto=format&fit=crop&w=300&q=80' },
-  { char: 'P', word: 'Phở', img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=300&q=80' },
-  { char: 'Q', word: 'Quả', img: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=300&q=80' },
-  { char: 'R', word: 'Rổ', img: 'https://images.unsplash.com/photo-1584288019614-2395d852a0a2?auto=format&fit=crop&w=300&q=80' },
-  { char: 'S', word: 'Sách', img: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=300&q=80' },
-  { char: 'T', word: 'Tay', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80' },
-  { char: 'U', word: 'Ủ', img: 'https://images.unsplash.com/photo-1528825871115-3581a5387919?auto=format&fit=crop&w=300&q=80' },
-  { char: 'Ư', word: 'Ức', img: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=300&q=80' },
-  { char: 'V', word: 'Vịt', img: 'https://images.unsplash.com/photo-1555169062-01347abf78fb?auto=format&fit=crop&w=300&q=80' },
-  { char: 'X', word: 'Xe', img: 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=300&q=80' },
-  { char: 'Y', word: 'Yếm', img: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=300&q=80' }
-];
-
-const ALPHABET_ES = [
-  { char: 'A', word: 'Árbol', img: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=300&q=80' },
-  { char: 'B', word: 'Barco', img: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=300&q=80' },
-  { char: 'C', word: 'Casa', img: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=300&q=80' },
-  { char: 'D', word: 'Dedo', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80' },
-  { char: 'E', word: 'Elefante', img: 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=300&q=80' },
-  { char: 'F', word: 'Fuego', img: 'https://images.unsplash.com/photo-1508873696983-2df5c920ac1c?auto=format&fit=crop&w=300&q=80' },
-  { char: 'G', word: 'Gato', img: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=300&q=80' },
-  { char: 'H', word: 'Hojas', img: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&w=300&q=80' },
-  { char: 'I', word: 'Isla', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=80' },
-  { char: 'J', word: 'Jirafa', img: 'https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=300&q=80' },
-  { char: 'K', word: 'Koala', img: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?auto=format&fit=crop&w=300&q=80' },
-  { char: 'L', word: 'León', img: 'https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=300&q=80' },
-  { char: 'M', word: 'Mono', img: 'https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?auto=format&fit=crop&w=300&q=80' },
-  { char: 'N', word: 'Naranja', img: 'https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=300&q=80' },
-  { char: 'O', word: 'Oso', img: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?auto=format&fit=crop&w=300&q=80' },
-  { char: 'P', word: 'Perro', img: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=300&q=80' },
-  { char: 'Q', word: 'Queso', img: 'https://images.unsplash.com/photo-1452195100486-9cc805987862?auto=format&fit=crop&w=300&q=80' },
-  { char: 'R', word: 'Ratón', img: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=300&q=80' },
-  { char: 'S', word: 'Sol', img: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=300&q=80' },
-  { char: 'T', word: 'Tortuga', img: 'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=300&q=80' },
-  { char: 'U', word: 'Uva', img: 'https://images.unsplash.com/photo-1537640538966-79f369143f8f?auto=format&fit=crop&w=300&q=80' },
-  { char: 'V', word: 'Vaca', img: 'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?auto=format&fit=crop&w=600&q=80' },
-  { char: 'W', word: 'Wafle', img: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?auto=format&fit=crop&w=300&q=80' },
-  { char: 'X', word: 'Xilófono', img: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=300&q=80' },
-  { char: 'Y', word: 'Yoyo', img: 'https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?auto=format&fit=crop&w=300&q=80' },
-  { char: 'Z', word: 'Zorro', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=300&q=80' }
-];
-
-export default function App() {
-  const [profiles, setProfiles] = useState(() => {
-    const saved = localStorage.getItem('vuihoc_react_profiles_v15');
-    return saved ? JSON.parse(saved) : [
-      { id: '1', name: 'An', emoji: '🐯', lang: 'vi', level: 'beginner', stars: 15, progress: {} },
-      { id: '2', name: 'Sofia', emoji: '🌸', lang: 'es', level: 'intermediate', stars: 28, progress: {} }
-    ];
-  });
-
-  const [currentProfile, setCurrentProfile] = useState(null);
-  const [lang, setLang] = useState('vi'); 
-  const [screen, setScreen] = useState('profiles'); // 'profiles', 'dashboard', 'lesson', 'alphabet', 'memory', 'describe', 'slicer'
-  const [activeLesson, setActiveLesson] = useState(null);
-  
-  // Modals state
-  const [showEditProfile, setShowEditProfile] = useState(false);
-  const [editProfileData, setEditProfileData] = useState({ id: '', name: '', emoji: '🐯', lang: 'vi', level: 'beginner' });
-  const [showReportCard, setShowReportCard] = useState(false);
-  const [reportData, setReportData] = useState({ starsEarned: 0, wordsLearned: 0, sessionTime: '2 mins' });
-
-  // Turn Timer State for Multi-Child Households
-  const [turnTimerActive, setTurnTimerActive] = useState(false);
-  const [turnSecondsLeft, setTurnSecondsLeft] = useState(120); // 2 mins per turn
-
-  useEffect(() => {
-    localStorage.setItem('vuihoc_react_profiles_v15', JSON.stringify(profiles));
-  }, [profiles]);
-
-  useEffect(() => {
-    let interval = null;
-    if (turnTimerActive && turnSecondsLeft > 0) {
-      interval = setInterval(() => setTurnSecondsLeft(s => s - 1), 1000);
-    } else if (turnSecondsLeft === 0 && turnTimerActive) {
-      setTurnTimerActive(false);
-      alert("Hết giờ lượt chơi! Đổi bạn khác nào! (Time's up for this turn!)");
-    }
-    return () => clearInterval(interval);
-  }, [turnTimerActive, turnSecondsLeft]);
-
-  const speak = (text, targetLang) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utt = new SpeechSynthesisUtterance(text);
-      const lCode = targetLang || (lang === 'es' ? 'es-ES' : 'vi-VN');
-      utt.lang = lCode;
-      
-      const voices = window.speechSynthesis.getVoices();
-      const v = voices.find(vo => vo.lang.toLowerCase() === lCode.toLowerCase()) || voices.find(vo => vo.lang.toLowerCase().startsWith(lCode.substring(0, 2)));
-      if (v) utt.voice = v;
-      window.speechSynthesis.speak(utt);
-    }
-  };
-
-  const triggerConfetti = () => confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
-
-  // --- SCREEN 1: CATCHY REDESIGNED FRONT PAGE ---
-  if (screen === 'profiles') {
-    return (
-      <div className="min-h-screen bg-gradient-to-tr from-amber-100 via-orange-200 to-rose-300 flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden">
-        <div className="absolute top-10 left-10 w-80 h-80 bg-amber-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse"></div>
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-rose-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse"></div>
-
-        <div className="relative z-10 text-center max-w-3xl mb-10">
-          <div className="inline-block bg-white/95 backdrop-blur-md px-6 py-2 rounded-full border-2 border-amber-300 shadow-lg mb-4 text-amber-800 font-black text-xs tracking-widest uppercase">
-            ✨ Nền Tảng Song Ngữ Hàng Đầu Cho Bé
-          </div>
-          <h1 className="text-5xl sm:text-7xl font-black text-amber-900 mb-3 tracking-tight drop-shadow-sm">Vui Học 🪷</h1>
-          <p className="text-gray-800 font-black text-base sm:text-xl">Học từ vựng thực tế với ảnh HD, bảng chữ cái & trò chơi vui nhộn!</p>
-        </div>
-
-        {/* Profiles Grid */}
-        <div className="relative z-10 flex flex-wrap justify-center gap-6 max-w-4xl mb-8">
-          {profiles.map(p => (
-            <div 
-              key={p.id} 
-              onClick={() => { 
-                setCurrentProfile(p); 
-                if (p.lang && p.lang !== 'both') setLang(p.lang);
-                setScreen('dashboard'); 
-              }} 
-              className="w-56 h-64 bg-white/90 backdrop-blur-md rounded-[2.5rem] border-4 border-amber-300 shadow-[0_15px_30px_rgba(0,0,0,0.15)] flex flex-col items-center justify-center p-6 cursor-pointer transform transition-all duration-300 hover:-translate-y-3 hover:shadow-2xl hover:border-amber-500 group relative"
-            >
-              <button 
-                onClick={(e) => { e.stopPropagation(); setEditProfileData(p); setShowEditProfile(true); }} 
-                className="absolute top-4 right-4 w-9 h-9 rounded-full bg-amber-100 hover:bg-amber-200 flex items-center justify-center text-sm shadow-sm transition-transform active:scale-95"
-                title="Sửa hồ sơ"
-              >
-                ✏️
-              </button>
-              <span className="text-6xl mb-3 group-hover:scale-110 transition-transform">{p.emoji}</span>
-              <h2 className="text-2xl font-black text-gray-800 mb-1">{p.name}</h2>
-              <span className="text-xs font-black uppercase px-3 py-1 rounded-full bg-amber-100 text-amber-800 mb-3 shadow-sm">
-                {p.lang === 'vi' ? '🇻🇳 Tiếng Việt' : p.lang === 'es' ? '🇪🇸 Español' : '🌍 Bilingual'}
-              </span>
-              <div className="text-amber-500 font-black text-sm flex items-center gap-1 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 shadow-inner"><span>⭐</span> {p.stars} Stars</div>
-            </div>
-          ))}
-
-          {/* Add Profile Card */}
-          <button 
-            onClick={() => {
-              const name = prompt("Tên bé hoặc người dùng mới? (Name):", "Bé " + Math.floor(Math.random()*100));
-              if (name) {
-                const newP = { id: Date.now().toString(), name, emoji: ['👦','👧','🐯','🐱','🦊','🐼'][Math.floor(Math.random()*6)], lang: 'vi', level: 'beginner', stars: 0, progress: {} };
-                setProfiles([...profiles, newP]);
-              }
-            }}
-            className="w-56 h-64 bg-amber-500 hover:bg-amber-600 backdrop-blur-md rounded-[2.5rem] border-4 border-dashed border-white shadow-xl flex flex-col items-center justify-center p-6 text-white cursor-pointer transform transition-all duration-300 hover:-translate-y-3 active:scale-95"
-          >
-            <span className="text-5xl mb-2">➕</span>
-            <span className="font-black text-lg text-center">Thêm Tên Người Dùng</span>
-          </button>
-        </div>
-
-        {/* Edit Profile Modal */}
-        {showEditProfile && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-[2.5rem] p-6 max-w-sm w-full border-4 border-amber-300 shadow-2xl text-center">
-              <h3 className="text-2xl font-black text-gray-800 mb-4">✏️ Cài Đặt Hồ Sơ</h3>
-              <div className="space-y-4 mb-6 text-left">
-                <div>
-                  <label className="block text-sm font-black text-gray-700 mb-1">Tên:</label>
-                  <input type="text" value={editProfileData.name} onChange={e => setEditProfileData({...editProfileData, name: e.target.value})} className="w-full p-3 bg-gray-100 rounded-2xl font-black text-gray-800 border-2 border-gray-200" />
-                </div>
-                <div>
-                  <label className="block text-sm font-black text-gray-700 mb-1">Avatar Emoji:</label>
-                  <input type="text" maxLength="2" value={editProfileData.emoji} onChange={e => setEditProfileData({...editProfileData, emoji: e.target.value})} className="w-full p-3 bg-gray-100 rounded-2xl font-black text-2xl text-center text-gray-800 border-2 border-gray-200" />
-                </div>
-                <div>
-                  <label className="block text-sm font-black text-gray-700 mb-1">Ngôn ngữ:</label>
-                  <select value={editProfileData.lang || 'vi'} onChange={e => setEditProfileData({...editProfileData, lang: e.target.value})} className="w-full p-3 bg-gray-100 rounded-2xl font-black text-gray-800 border-2 border-gray-200">
-                    <option value="vi">🇻🇳 Tiếng Việt</option>
-                    <option value="es">🇪🇸 Español</option>
-                    <option value="both">🌍 Bilingual</option>
-                  </select>
-                </div>
-              </div>
-              <div className="flex flex-col gap-3">
-                <button onClick={() => {
-                  if (confirm("Đặt lại điểm và tiến trình của hồ sơ này?")) {
-                    setProfiles(profiles.map(p => p.id === editProfileData.id ? { ...p, stars: 0, progress: {} } : p));
-                    setShowEditProfile(false);
-                  }
-                }} className="w-full py-3 bg-amber-100 hover:bg-amber-200 text-amber-800 font-black rounded-2xl text-sm">🔄 Đặt Lại Điểm (Reset)</button>
-                
-                <button onClick={() => {
-                  if (confirm("Xóa vĩnh viễn hồ sơ này?")) {
-                    setProfiles(profiles.filter(p => p.id !== editProfileData.id));
-                    setShowEditProfile(false);
-                  }
-                }} className="w-full py-3 bg-rose-100 hover:bg-rose-200 text-rose-700 font-black rounded-2xl text-sm">🗑️ Xóa Hồ Sơ Này</button>
-
-                <div className="flex gap-2 mt-2">
-                  <button onClick={() => setShowEditProfile(false)} className="flex-1 py-3 bg-gray-200 text-gray-800 font-black rounded-2xl">Hủy</button>
-                  <button onClick={() => {
-                    setProfiles(profiles.map(p => p.id === editProfileData.id ? editProfileData : p));
-                    if (currentProfile && currentProfile.id === editProfileData.id) setCurrentProfile(editProfileData);
-                    setShowEditProfile(false);
-                  }} className="flex-1 py-3 bg-amber-500 text-white font-black rounded-2xl shadow-md">Lưu</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // --- SCREEN 2: POLISHED KID-FRIENDLY DASHBOARD & CURRICULUM ---
-  if (screen === 'dashboard' && currentProfile) {
-    return (
-      <div className="min-h-screen bg-[#fefae0] p-4 sm:p-8 flex flex-col items-center">
-        {/* Top Navbar */}
-        <div className="w-full max-w-4xl flex justify-between items-center p-4 bg-white/90 backdrop-blur-md rounded-3xl shadow-lg border-2 border-amber-200 mb-6">
-          <button onClick={() => setScreen('profiles')} className="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold rounded-2xl text-sm transition-colors shadow-sm">⬅️ Đổi Hồ Sơ</button>
-          
-          <div className="flex items-center gap-3">
-            <span className="text-3xl bg-amber-100 p-2 rounded-2xl shadow-inner">{currentProfile.emoji}</span>
-            <div className="text-left">
-              <div className="font-black text-xl text-gray-800">{currentProfile.name}</div>
-              <div className="text-amber-600 font-black text-sm">⭐ {currentProfile.stars} Stars</div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {(!currentProfile.lang || currentProfile.lang === 'both') && (
-              <div className="flex bg-amber-100 rounded-2xl p-1 border border-amber-200">
-                <button onClick={() => setLang('vi')} className={`px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${lang === 'vi' ? 'bg-amber-500 text-white shadow-sm' : 'text-gray-700'}`}>VI</button>
-                <button onClick={() => setLang('es')} className={`px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${lang === 'es' ? 'bg-amber-500 text-white shadow-sm' : 'text-gray-700'}`}>ES</button>
-              </div>
-            )}
-            <button onClick={() => { setEditProfileData(currentProfile); setShowEditProfile(true); }} className="p-2.5 bg-amber-100 hover:bg-amber-200 rounded-2xl text-sm shadow-sm text-gray-800" title="Cài đặt">⚙️</button>
-          </div>
-        </div>
-
-        {/* Turn Timer Bar for Multi-Child Households */}
-        <div className="w-full max-w-4xl bg-white/90 backdrop-blur-md p-4 rounded-3xl shadow-md border-2 border-amber-200 mb-6 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">⏳</span>
-            <div>
-              <div className="font-black text-gray-800 text-sm">Hẹn Giờ Lượt Chơi (Turn Timer)</div>
-              <div className="text-xs text-gray-500 font-bold">Giúp chia sẻ lượt chơi công bằng giữa các bé</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="font-black text-xl text-amber-600 bg-amber-50 px-4 py-1.5 rounded-2xl border border-amber-200">
-              {Math.floor(turnSecondsLeft / 60)}:{(turnSecondsLeft % 60).toString().padStart(2, '0')}
-            </span>
-            {turnTimerActive ? (
-              <button onClick={() => setTurnTimerActive(false)} className="px-4 py-2 bg-rose-500 text-white font-black rounded-2xl text-sm shadow-md">Tạm Dừng</button>
-            ) : (
-              <button onClick={() => setTurnTimerActive(true)} className="px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md">Bắt Đầu Lượt ⏱️</button>
-            )}
-            <button onClick={() => setTurnSecondsLeft(120)} className="px-3 py-2 bg-gray-100 text-gray-700 font-black rounded-2xl text-sm">🔄</button>
-          </div>
-        </div>
-
-        {/* Quick Games & Mini-Apps Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full max-w-4xl mb-8">
-          <button onClick={() => setScreen('alphabet')} className="py-4 bg-amber-500 hover:bg-amber-600 text-white font-black text-base rounded-3xl shadow-[0_6px_0px_rgba(180,83,9,1)] active:translate-y-1 flex flex-col items-center transition-all">
-            <span className="text-3xl mb-1">🔤</span> Bảng Chữ Cái
-          </button>
-          <button onClick={() => setScreen('memory')} className="py-4 bg-purple-600 hover:bg-purple-700 text-white font-black text-base rounded-3xl shadow-[0_6px_0px_rgba(107,33,168,1)] active:translate-y-1 flex flex-col items-center transition-all">
-            <span className="text-3xl mb-1">🧠</span> Lật Hình Cặp
-          </button>
-          <button onClick={() => setScreen('describe')} className="py-4 bg-teal-600 hover:bg-teal-700 text-white font-black text-base rounded-3xl shadow-[0_6px_0px_rgba(13,148,136,1)] active:translate-y-1 flex flex-col items-center transition-all">
-            <span className="text-3xl mb-1">🖼️</span> Mô Tả Tranh
-          </button>
-          <button onClick={() => setScreen('slicer')} className="py-4 bg-orange-500 hover:bg-orange-600 text-white font-black text-base rounded-3xl shadow-[0_6px_0px_rgba(194,65,12,1)] active:translate-y-1 flex flex-col items-center transition-all">
-            <span className="text-3xl mb-1">🍉</span> Chém Từ HD
-          </button>
-        </div>
-
-        {/* Curriculum Topics Roadmap (7 Levels per Topic) */}
-        <div className="w-full max-w-4xl space-y-6">
-          <h2 className="text-3xl font-black text-amber-900 text-center mb-6 flex items-center justify-center gap-2"><span>📚</span> Bản Đồ Học Tập Thực Tế (7 Cấp Độ HD)</h2>
-          
-          {TOPICS.map(topic => {
-            return (
-              <div key={topic.id} className="w-full p-6 rounded-[2.5rem] bg-white border-4 border-amber-200 shadow-xl flex flex-col items-center">
-                <div className="flex items-center gap-3 mb-6 bg-amber-50 px-6 py-2 rounded-full border border-amber-300 shadow-inner">
-                  <span className="text-3xl">{topic.emoji}</span>
-                  <h3 className="text-xl font-black text-gray-800">{topic[lang]}</h3>
-                </div>
-
-                <div className="grid grid-cols-4 sm:grid-cols-7 gap-3 w-full">
-                  {[1, 2, 3, 4, 5, 6, 7].map(lvl => {
-                    const levelWords = topic.levels[lvl] || topic.levels[1];
-                    const isDone = currentProfile.progress[topic.id]?.[lvl];
-                    return (
-                      <button 
-                        key={lvl} 
-                        onClick={() => { setActiveLesson({ topic, lvl, words: levelWords }); setScreen('lesson'); }}
-                        className={`py-3.5 rounded-2xl flex flex-col items-center justify-center relative shadow-[0_5px_0px_rgba(0,0,0,0.15)] active:translate-y-1 transition-all ${isDone ? 'bg-emerald-500 text-white border-b-4 border-emerald-700' : 'bg-amber-400 hover:bg-amber-500 text-white border-b-4 border-amber-600'}`}
-                      >
-                        {isDone && <span className="absolute -top-2 -right-2 text-base">⭐</span>}
-                        <span className="text-xl mb-0.5">{topic.emoji}</span>
-                        <span className="font-black text-xs uppercase">L{lvl}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Report Card Modal */}
-        {showReportCard && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-[3rem] p-8 max-w-sm w-full border-4 border-amber-300 shadow-2xl text-center animate-popIn">
-              <span className="text-7xl mb-4 block animate-bounce">🏆</span>
-              <h3 className="text-3xl font-black text-amber-900 mb-2">Báo Cáo Thành Tích!</h3>
-              <p className="text-gray-600 font-bold mb-6">Tuyệt vời, {currentProfile.name} đã hoàn thành xuất sắc!</p>
-              
-              <div className="bg-amber-50 rounded-2xl p-4 border border-amber-200 mb-6 space-y-2 text-left">
-                <div className="flex justify-between font-black text-gray-800"><span>⭐ Sao nhận được:</span><span className="text-amber-600">+{reportData.starsEarned} Stars</span></div>
-                <div className="flex justify-between font-black text-gray-800"><span>📖 Từ vựng ôn tập:</span><span className="text-blue-600">{reportData.wordsLearned} từ</span></div>
-                <div className="flex justify-between font-black text-gray-800"><span>⏱️ Thời gian học:</span><span className="text-emerald-600">{reportData.sessionTime}</span></div>
-              </div>
-
-              <button onClick={() => setShowReportCard(false)} className="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black text-lg rounded-2xl shadow-[0_5px_0px_rgba(180,83,9,1)] active:translate-y-1">Tiếp Tục Học 🚀</button>
-            </div>
-          </div>
-        )}
-
-        {/* Profile Settings Modal */}
-        {showEditProfile && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-[2.5rem] p-6 max-w-sm w-full border-4 border-amber-300 shadow-2xl text-center">
-              <h3 className="text-2xl font-black text-gray-800 mb-4">✏️ Cài Đặt Hồ Sơ</h3>
-              <div className="space-y-4 mb-6 text-left">
-                <div>
-                  <label className="block text-sm font-black text-gray-700 mb-1">Tên:</label>
-                  <input type="text" value={editProfileData.name} onChange={e => setEditProfileData({...editProfileData, name: e.target.value})} className="w-full p-3 bg-gray-100 rounded-2xl font-black text-gray-800 border-2 border-gray-200" />
-                </div>
-                <div>
-                  <label className="block text-sm font-black text-gray-700 mb-1">Avatar Emoji:</label>
-                  <input type="text" maxLength="2" value={editProfileData.emoji} onChange={e => setEditProfileData({...editProfileData, emoji: e.target.value})} className="w-full p-3 bg-gray-100 rounded-2xl font-black text-2xl text-center text-gray-800 border-2 border-gray-200" />
-                </div>
-                <div>
-                  <label className="block text-sm font-black text-gray-700 mb-1">Ngôn ngữ:</label>
-                  <select value={editProfileData.lang || 'vi'} onChange={e => setEditProfileData({...editProfileData, lang: e.target.value})} className="w-full p-3 bg-gray-100 rounded-2xl font-black text-gray-800 border-2 border-gray-200">
-                    <option value="vi">🇻🇳 Tiếng Việt</option>
-                    <option value="es">🇪🇸 Español</option>
-                    <option value="both">🌍 Bilingual</option>
-                  </select>
-                </div>
-              </div>
-              <div className="flex flex-col gap-3">
-                <button onClick={() => {
-                  if (confirm("Đặt lại điểm và tiến trình của hồ sơ này?")) {
-                    const updated = { ...currentProfile, stars: 0, progress: {} };
-                    setCurrentProfile(updated);
-                    setProfiles(profiles.map(p => p.id === updated.id ? updated : p));
-                    setShowEditProfile(false);
-                  }
-                }} className="w-full py-3 bg-amber-100 hover:bg-amber-200 text-amber-800 font-black rounded-2xl text-sm">🔄 Đặt Lại Điểm (Reset)</button>
-                
-                <button onClick={() => {
-                  if (confirm("Xóa vĩnh viễn hồ sơ này?")) {
-                    setProfiles(profiles.filter(p => p.id !== currentProfile.id));
-                    setShowEditProfile(false);
-                    setScreen('profiles');
-                  }
-                }} className="w-full py-3 bg-rose-100 hover:bg-rose-200 text-rose-700 font-black rounded-2xl text-sm">🗑️ Xóa Hồ Sơ Này</button>
-
-                <div className="flex gap-2 mt-2">
-                  <button onClick={() => setShowEditProfile(false)} className="flex-1 py-3 bg-gray-200 text-gray-800 font-black rounded-2xl">Hủy</button>
-                  <button onClick={() => {
-                    setProfiles(profiles.map(p => p.id === editProfileData.id ? editProfileData : p));
-                    setCurrentProfile(editProfileData);
-                    setShowEditProfile(false);
-                  }} className="flex-1 py-3 bg-amber-500 text-white font-black rounded-2xl shadow-md">Lưu</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // --- SCREEN 3: VOCABULARY LESSON WITH REAL HD PHOTOS & REPORT CARD TRIGGER ---
-  if (screen === 'lesson' && activeLesson) {
-    return <LessonScreen activeLesson={activeLesson} setActiveLesson={setActiveLesson} currentProfile={currentProfile} setProfiles={setProfiles} setScreen={setScreen} lang={lang} speak={speak} triggerConfetti={triggerConfetti} TOPICS={TOPICS} setReportData={setReportData} setShowReportCard={setShowReportCard} />;
-  }
-
-  // --- SCREEN 4: ALPHABET PHONICS SCREEN ---
-  if (screen === 'alphabet') {
-    const activeAlphabet = lang === 'es' ? ALPHABET_ES : ALPHABET_VI;
-    return (
-      <div className="min-h-screen bg-amber-50 p-6 flex flex-col items-center">
-        <div className="w-full max-w-4xl flex justify-between items-center mb-6">
-          <button onClick={() => setScreen('dashboard')} className="px-5 py-2.5 bg-white text-amber-900 font-black rounded-2xl shadow-md border-2 border-amber-200">⬅️ Quay lại</button>
-          <h2 className="text-2xl font-black text-amber-900">🪷 Bảng Chữ Cái & Ngữ Âm ({lang === 'es' ? 'Español' : 'Tiếng Việt'})</h2>
-          <div></div>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 w-full max-w-4xl">
-          {activeAlphabet.map((item, i) => (
-            <div key={i} onClick={() => speak(item.char, lang === 'es' ? 'es-ES' : 'vi-VN')} className="bg-white rounded-3xl p-4 border-4 border-amber-300 shadow-lg flex flex-col items-center cursor-pointer transform hover:scale-105 transition-all">
-              <span className="text-4xl font-black text-amber-800 mb-2">{item.char}</span>
-              <img src={item.img} alt={item.word} className="w-full h-24 object-cover rounded-2xl mb-2 shadow-inner" />
-              <span className="font-black text-gray-800 text-sm">{item.word}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  // --- SCREEN 5: MEMORY MATCH GAME ---
-  if (screen === 'memory') {
-    return <MemoryGameScreen setScreen={setScreen} lang={lang} speak={speak} triggerConfetti={triggerConfetti} />;
-  }
-
-  // --- SCREEN 6: PICTURE DESCRIPTION CHALLENGE ---
-  if (screen === 'describe') {
-    return <DescribeChallengeScreen setScreen={setScreen} lang={lang} speak={speak} triggerConfetti={triggerConfetti} />;
-  }
-
-  // --- SCREEN 7: FRUIT SLICER GAME WITH AUDIO PRONUNCIATION ---
-  if (screen === 'slicer') {
-    return <SlicerGameScreen setScreen={setScreen} lang={lang} speak={speak} />;
-  }
-
-  return null;
-}
-
-// --- SUB-COMPONENT: LESSON SCREEN WITH REPORT CARD TRIGGER ---
-function LessonScreen({ activeLesson, setActiveLesson, currentProfile, setProfiles, setScreen, lang, speak, triggerConfetti, TOPICS, setReportData, setShowReportCard }) {
-  const [idx, setIdx] = useState(0);
-  const [completed, setCompleted] = useState(false);
-  const words = activeLesson.words;
-  const currentWord = words[idx];
-
-  useEffect(() => {
-    if (currentWord) speak(currentWord[lang], lang === 'es' ? 'es-ES' : 'vi-VN');
-  }, [idx]);
-
-  const handleNext = () => {
-    if (idx + 1 < words.length) {
-      setIdx(idx + 1);
-    } else {
-      triggerConfetti();
-      setCompleted(true);
-      setReportData({ starsEarned: 5, wordsLearned: words.length, sessionTime: '3 phút' });
-      setShowReportCard(true);
-
-      const updated = { ...currentProfile };
-      if (!updated.progress[activeLesson.topic.id]) updated.progress[activeLesson.topic.id] = {};
-      if (!updated.progress[activeLesson.topic.id][activeLesson.lvl]) {
-        updated.progress[activeLesson.topic.id][activeLesson.lvl] = true;
-        updated.stars += 5;
-      }
-      setProfiles(prev => prev.map(p => p.id === updated.id ? updated : p));
-    }
-  };
-
-  const handleNextLevel = () => {
-    const nextLvl = activeLesson.lvl + 1;
-    if (nextLvl <= 7) {
-      const levelWords = activeLesson.topic.levels[nextLvl] || activeLesson.topic.levels[1];
-      setActiveLesson({
-        topic: activeLesson.topic,
-        lvl: nextLvl,
-        words: levelWords
-      });
-      setCompleted(false);
-      setIdx(0);
-    } else {
-      setScreen('dashboard');
-    }
-  };
-
-  if (completed) {
-    return (
-      <div className="min-h-screen bg-emerald-50 flex flex-col items-center justify-center p-6 text-center animate-fadeIn">
-        <span className="text-8xl mb-6 block animate-bounce">🏆</span>
-        <h2 className="text-4xl font-black text-emerald-800 mb-2">Hoàn Thành Cấp Độ!</h2>
-        <p className="text-xl text-emerald-700 font-extrabold mb-8">Bạn nhận được +5 ⭐</p>
-        <div className="flex flex-col gap-4 w-full max-w-sm">
-          <button onClick={() => { setCompleted(false); setIdx(0); }} className="py-4 bg-blue-500 hover:bg-blue-600 text-white font-black text-xl rounded-2xl shadow-[0_6px_0px_rgba(30,64,175,1)]">🔄 Học Lại (Review)</button>
-          {activeLesson.lvl < 7 && (
-            <button onClick={handleNextLevel} className="py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xl rounded-2xl shadow-[0_6px_0px_rgba(4,120,87,1)]">⬆️ Cấp Tiếp Theo (Next Level)</button>
-          )}
-          <button onClick={() => setScreen('dashboard')} className="py-4 bg-amber-500 hover:bg-amber-600 text-white font-black text-xl rounded-2xl shadow-[0_6px_0px_rgba(180,83,9,1)]">🏠 Về Trang Chủ</button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-[#fefae0] flex flex-col items-center pt-8 px-4 animate-fadeIn">
-      <div className="w-full max-w-md flex justify-between items-center mb-6">
-        <button onClick={() => setScreen('dashboard')} className="px-4 py-2 bg-white rounded-2xl font-extrabold text-gray-800 shadow-sm border border-gray-200">⬅️ Thoát</button>
-        <span className="font-black text-amber-800 uppercase tracking-widest text-sm bg-amber-100 px-4 py-1.5 rounded-full">{activeLesson.topic[lang]} • L{activeLesson.lvl} ({idx + 1}/{words.length})</span>
-      </div>
-
-      <div onClick={() => speak(currentWord[lang], lang === 'es' ? 'es-ES' : 'vi-VN')} className="bg-white border-4 border-amber-300 rounded-[3rem] p-6 w-full max-w-md flex flex-col items-center shadow-2xl mb-8 cursor-pointer overflow-hidden group">
-        <div className="w-full h-72 rounded-3xl overflow-hidden mb-6 shadow-inner relative bg-gray-100">
-          <img src={currentWord.img} alt={currentWord[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-        </div>
-        <h2 className="text-4xl font-black text-gray-800 text-center">{currentWord[lang]}</h2>
-      </div>
-
-      <div className="flex flex-col items-center gap-4 w-full max-w-md">
-        <button onClick={() => speak(currentWord[lang], lang === 'es' ? 'es-ES' : 'vi-VN')} className="w-24 h-24 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-4xl shadow-[0_6px_0px_rgba(153,27,27,1)] active:translate-y-1 text-white transition-all">🔊</button>
-        <button onClick={handleNext} className="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black text-xl rounded-2xl shadow-[0_6px_0px_rgba(180,83,9,1)] active:translate-y-1 transition-all">Tiếp Theo ➡️</button>
-      </div>
-    </div>
-  );
-}
-
-// --- SUB-COMPONENT: MEMORY MATCH GAME ---
-function MemoryGameScreen({ setScreen, lang, speak, triggerConfetti }) {
-  const [cards, setCards] = useState([]);
-  const [first, setFirst] = useState(null);
-  const [lock, setLock] = useState(false);
-  const [matches, setMatches] = useState(0);
-
-  const ALL_ITEMS = [
-    { id: 'dog', vi: 'Chó', es: 'Perro', img: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80' },
-    { id: 'cat', vi: 'Mèo', es: 'Gato', img: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80' },
-    { id: 'apple', vi: 'Táo', es: 'Manzana', img: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80' },
-    { id: 'banana', vi: 'Chuối', es: 'Plátano', img: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=600&q=80' },
-    { id: 'tree', vi: 'Cây', es: 'Árbol', img: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=600&q=80' },
-    { id: 'car', vi: 'Xe ô tô', es: 'Coche', img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80' }
-  ];
-
-  useEffect(() => { loadGame(); }, []);
-
-  const loadGame = () => {
-    setFirst(null); setLock(false); setMatches(0);
-    const subset = [...ALL_ITEMS].sort(() => 0.5 - Math.random()).slice(0, 4);
-    let cList = [];
-    subset.forEach(item => {
-      cList.push({ id: item.id, content: item.img, type: 'img' });
-      cList.push({ id: item.id, content: item[lang], type: 'text' });
-    });
-    cList.sort(() => 0.5 - Math.random());
-    setCards(cList.map((c, i) => ({ ...c, index: i, flipped: false, matched: false })));
-  };
-
-  const handleCardClick = (card) => {
-    if (lock || card.flipped || card.matched) return;
-    const updated = cards.map(c => c.index === card.index ? { ...c, flipped: true } : c);
-    setCards(updated);
-    if (card.type === 'text') speak(card.content, lang === 'es' ? 'es-ES' : 'vi-VN');
-
-    if (!first) {
-      setFirst(card);
-    } else {
-      if (first.id === card.id) {
-        setMatches(m => {
-          const nextM = m + 1;
-          if (nextM === 4) { triggerConfetti(); setTimeout(loadGame, 1500); }
-          return nextM;
-        });
-        setCards(updated.map(c => c.id === card.id ? { ...c, matched: true } : c));
-        setFirst(null);
-      } else {
-        setLock(true);
-        setTimeout(() => {
-          setCards(updated.map(c => c.index === card.index || c.index === first.index ? { ...c, flipped: false } : c));
-          setFirst(null);
-          setLock(false);
-        }, 900);
-      }
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-purple-50 p-6 flex flex-col items-center animate-fadeIn">
-      <div className="w-full max-w-xl flex justify-between items-center mb-6">
-        <button onClick={() => setScreen('dashboard')} className="px-4 py-2 bg-white text-purple-900 font-black rounded-2xl shadow-sm border border-purple-200">⬅️ Thoát</button>
-        <div className="bg-purple-600 px-4 py-2 rounded-2xl text-white font-black shadow-md">Cặp: {matches} / 4</div>
-      </div>
-      <div className="bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-purple-300 shadow-2xl w-full max-w-xl text-center">
-        <h3 className="text-2xl font-black text-purple-900 mb-6">🧠 Lật Hình Tìm Cặp (Memory Match)</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {cards.map(c => (
-            <div 
-              key={c.index} 
-              onClick={() => handleCardClick(c)}
-              className={`h-32 rounded-2xl flex items-center justify-center text-xl font-black cursor-pointer border-4 transition-all shadow-md overflow-hidden ${c.matched ? 'bg-green-300 border-green-500 opacity-60 pointer-events-none' : c.flipped ? 'bg-white border-purple-400 text-purple-900' : 'bg-purple-200 border-purple-400 text-3xl'}`}
-            >
-              {c.flipped || c.matched ? (
-                c.type === 'img' ? <img src={c.content} alt="" className="w-full h-full object-cover" /> : <span className="p-2 text-center text-gray-800">{c.content}</span>
-              ) : '❓'}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// --- SUB-COMPONENT: PICTURE DESCRIPTION CHALLENGE ---
-function DescribeChallengeScreen({ setScreen, lang, speak, triggerConfetti }) {
-  const [qIdx, setQIdx] = useState(0);
-  const questions = [
-    { img: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80', word: lang === 'es' ? 'Perro' : 'Chó', prompt: lang === 'es' ? '¿Qué animal es este?' : 'Con vật trong ảnh là gì?', options: [lang === 'es' ? 'Perro' : 'Chó', lang === 'es' ? 'León' : 'Sư tử', lang === 'es' ? 'Zorro' : 'Cáo'] },
-    { img: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80', word: lang === 'es' ? 'Manzana' : 'Táo', prompt: lang === 'es' ? '¿Qué fruta es esta?' : 'Loại quả trong ảnh là gì?', options: [lang === 'es' ? 'Manzana' : 'Táo', lang === 'es' ? 'Plátano' : 'Chuối', lang === 'es' ? 'Naranja' : 'Cam'] },
-    { img: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=600&q=80', word: lang === 'es' ? 'Árbol' : 'Cây xanh', prompt: lang === 'es' ? '¿Qué ves en la naturaleza?' : 'Cảnh thiên nhiên trong ảnh là gì?', options: [lang === 'es' ? 'Árbol' : 'Cây xanh', lang === 'es' ? 'Sol' : 'Mặt trời', lang === 'es' ? 'Flor' : 'Hoa'] }
-  ];
-
-  const currentQ = questions[qIdx % questions.length];
-
-  const handleAnswer = (opt) => {
-    if (opt === currentQ.word) {
-      triggerConfetti();
-      speak(lang === 'es' ? '¡Correcto!' : 'Chính xác!');
-      setTimeout(() => setQIdx(qIdx + 1), 1000);
-    } else {
-      speak(lang === 'es' ? 'Inténtalo de nuevo' : 'Thử lại nhé');
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-teal-50 p-6 flex flex-col items-center animate-fadeIn">
-      <div className="w-full max-w-lg flex justify-between items-center mb-6">
-        <button onClick={() => setScreen('dashboard')} className="px-4 py-2 bg-white text-teal-800 font-black rounded-2xl shadow-sm border border-teal-200">⬅️ Thoát</button>
-        <span className="font-black text-teal-900 bg-teal-100 px-4 py-1.5 rounded-full">Thử Thách Mô Tả Tranh ({qIdx + 1})</span>
-      </div>
-      <div className="bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-teal-300 shadow-2xl w-full max-w-lg text-center">
-        <div className="w-full h-64 rounded-3xl overflow-hidden mb-6 shadow-inner bg-gray-100">
-          <img src={currentQ.img} alt="" className="w-full h-full object-cover" />
-        </div>
-        <h3 className="text-2xl font-black text-teal-900 mb-6">{currentQ.prompt}</h3>
-        <div className="grid grid-cols-1 gap-3">
-          {currentQ.options.sort(() => 0.5 - Math.random()).map((opt, i) => (
-            <button key={i} onClick={() => handleAnswer(opt)} className="py-4 bg-teal-500 hover:bg-teal-600 text-white font-black text-xl rounded-2xl shadow-[0_4px_0px_rgba(15,118,110,1)] active:translate-y-1 transition-all">{opt}</button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// --- SUB-COMPONENT: FRUIT SLICER GAME WITH AUDIO PRONUNCIATION ---
-function SlicerGameScreen({ setScreen, lang, speak }) {
-  const canvasRef = useRef(null);
-  const [score, setScore] = useState(0);
-
-  const SLICE_ITEMS = [
-    { vi: 'Chó', es: 'Perro', emoji: '🐶' },
-    { vi: 'Mèo', es: 'Gato', emoji: '🐱' },
-    { vi: 'Táo', es: 'Manzana', emoji: '🍎' },
-    { vi: 'Chuối', es: 'Plátano', emoji: '🍌' },
-    { vi: 'Cây', es: 'Árbol', emoji: '🌲' },
-    { vi: 'Xe', es: 'Coche', emoji: '🚗' }
-  ];
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    let running = true;
-    let s = 0;
-    let fruits = [];
-    let particles = [];
-    let trail = [];
-
-    const handleMove = (e) => {
-      const x = e.touches ? e.touches[0].clientX : e.clientX;
-      const y = e.touches ? e.touches[0].clientY : e.clientY;
-      trail.push({ x, y, age: 0 });
-
-      fruits.forEach(f => {
-        if (!f.sliced && Math.hypot(x - f.x, y - f.y) < 70) {
-          f.sliced = true;
-          s++;
-          setScore(s);
-          speak(f.item[lang], lang === 'es' ? 'es-ES' : 'vi-VN');
-          for (let i = 0; i < 12; i++) {
-            particles.push({ x: f.x, y: f.y, vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.5) * 12, life: 1, c: '#f59e0b' });
-          }
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Vui Học">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪷</text></svg>">
+    
+    <title>Vui Học - Bilingual Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #f59e0b; --primary-dark: #d97706; --bg-light: #fdfaf6;
         }
-      });
-    };
+        body {
+            font-family: 'Nunito', system-ui, sans-serif !important;
+            background-color: var(--bg-light); color: #1f2937;
+            overflow-x: hidden; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+            user-select: none; -webkit-user-select: none;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+        h1, h2, h3, .font-game { font-family: 'Nunito', sans-serif !important; font-weight: 900; letter-spacing: 0.5px; }
 
-    window.addEventListener('pointermove', handleMove);
-    window.addEventListener('touchmove', handleMove, { passive: false });
+        .cultural-bg {
+            background-image: radial-gradient(#e5e7eb 2px, transparent 2px), radial-gradient(#e5e7eb 2px, transparent 2px);
+            background-size: 50px 50px; background-position: 0 0, 25px 25px;
+        }
 
-    const loop = () => {
-      if (!running || !ctx) return;
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+        body.dark-mode { background-color: #0f172a !important; color: #f8fafc !important; }
+        body.dark-mode .cultural-bg { background-image: radial-gradient(#334155 2px, transparent 2px), radial-gradient(#334155 2px, transparent 2px); }
+        body.dark-mode .bg-white { background-color: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important; }
+        body.dark-mode .text-gray-800, body.dark-mode .text-gray-700 { color: #f8fafc !important; }
 
-      if (Math.random() < 0.035) {
-        const item = SLICE_ITEMS[Math.floor(Math.random() * SLICE_ITEMS.length)];
-        fruits.push({
-          item,
-          x: Math.random() * (canvas.width - 150) + 75,
-          y: canvas.height + 60,
-          vx: (Math.random() - 0.5) * 5,
-          vy: -(Math.random() * 8 + 14),
-          sliced: false
-        });
-      }
+        .screen-container { transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 1; transform: scale(1); width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .screen-hidden { opacity: 0 !important; transform: scale(0.95) !important; pointer-events: none; position: absolute; display: none !important; }
 
-      if (trail.length > 0) {
-        ctx.beginPath();
-        ctx.moveTo(trail[0].x, trail[0].y);
-        for (let i = 1; i < trail.length; i++) ctx.lineTo(trail[i].x, trail[i].y);
-        ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 6;
-        ctx.stroke();
-      }
-      trail.forEach(t => t.age++);
-      trail = trail.filter(t => t.age < 8);
+        .btn-3d {
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 0px rgba(0,0,0,0.15), 0 15px 20px rgba(0,0,0,0.1);
+            transform: translateY(0); cursor: pointer; touch-action: manipulation;
+        }
+        .btn-3d:active {
+            transform: translateY(8px) !important; box-shadow: 0 0px 0px rgba(0,0,0,0.15), 0 5px 5px rgba(0,0,0,0.1) !important;
+        }
 
-      fruits.forEach((f, index) => {
-        f.x += f.vx;
-        f.y += f.vy;
-        f.vy += 0.35;
+        .floating { animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
+        .pop-in { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake { 10%, 90% { transform: translate3d(-3px, 0, 0); } 20%, 80% { transform: translate3d(5px, 0, 0); } }
 
-        ctx.save();
-        ctx.translate(f.x, f.y);
-        ctx.font = '65px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(f.item.emoji, 0, 0);
-        ctx.restore();
+        #confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 9999; overflow: hidden; }
+        .confetti { position: absolute; width: 12px; height: 24px; animation: fall 3s linear forwards; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
 
-        if (f.y > canvas.height + 150) fruits.splice(index, 1);
-      });
+        #balloon-area { position: absolute; inset: 0; z-index: 20; overflow: hidden; pointer-events: none; }
+        .balloon-wrapper { position: absolute; cursor: pointer; display: flex; flex-direction: column; align-items: center; animation: floatUp var(--speed) ease-in forwards, wobble 3s ease-in-out infinite alternate; pointer-events: auto; }
+        .balloon-body {
+            width: 90px; height: 110px; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            display: flex; align-items: center; justify-content: center; font-size: 2.8rem;
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.2), 0 10px 15px rgba(0,0,0,0.2);
+            position: relative; transition: transform 0.1s;
+        }
+        .balloon-wrapper:active .balloon-body { transform: scale(0.9); }
+        .balloon-body::after { content: ''; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 15px solid inherit; filter: brightness(0.8); }
+        .balloon-string { width: 2px; height: 60px; background: rgba(255,255,255,0.6); margin: 0 auto; margin-top: 10px; }
+        @keyframes floatUp { 0% { bottom: -150px; } 100% { bottom: 120vh; } }
+        @keyframes wobble { 0% { margin-left: -20px; } 100% { margin-left: 20px; } }
+        .pop-particle { position: absolute; width: 15px; height: 15px; border-radius: 50%; animation: explode 0.5s ease-out forwards; pointer-events: none; }
+        @keyframes explode { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
 
-      requestAnimationFrame(loop);
-    };
+        canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+    </style>
+</head>
+<body id="app-body" class="min-h-screen flex flex-col items-center p-3 sm:p-6 cultural-bg">
+    <div id="confetti-container"></div>
 
-    const animId = requestAnimationFrame(loop);
-    return () => {
-      running = false;
-      cancelAnimationFrame(animId);
-      window.removeEventListener('pointermove', handleMove);
-      window.removeEventListener('touchmove', handleMove);
-    };
-  }, []);
-
-  return (
-    <div className="min-h-screen bg-slate-900 relative overflow-hidden">
-      <div className="absolute top-6 left-6 z-20">
-        <button onClick={() => setScreen('dashboard')} className="px-5 py-3 bg-white text-red-600 font-black rounded-2xl shadow-lg">⬅️ Thoát</button>
-      </div>
-      <div className="absolute top-6 right-6 z-20 bg-orange-500 px-6 py-3 rounded-2xl text-white font-black text-xl shadow-lg border-2 border-orange-400">
-        Điểm: {score}
-      </div>
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
+    <!-- Profile Edit Modal -->
+    <div id="profile-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[160] flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full border-4 border-amber-400 shadow-2xl text-left">
+            <h3 class="text-2xl font-game mb-6 text-gray-800 border-b-2 pb-2">✏️ Chỉnh Sửa Hồ Sơ</h3>
+            <input type="hidden" id="prof-edit-id" value="">
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">Tên (Name):</label>
+                <input type="text" id="prof-name" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold" placeholder="VD: An, Sofia...">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">Biểu tượng (Emoji):</label>
+                <input type="text" id="prof-emoji" maxlength="2" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold text-2xl text-center" placeholder="🐯">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">Ngôn ngữ học (Language Track):</label>
+                <select id="prof-lang" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold">
+                    <option value="vi">🇻🇳 Chỉ Tiếng Việt (Vietnamese Only)</option>
+                    <option value="es">🇪🇸 Chỉ Tiếng Tây Ban Nha (Spanish Only)</option>
+                    <option value="both">🌍 Song ngữ (Both / Bilingual)</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">Cấp độ (Proficiency Level):</label>
+                <select id="prof-level" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold">
+                    <option value="beginner">👶 Mới học (Beginner)</option>
+                    <option value="intermediate">👦 Cơ bản (Intermediate)</option>
+                    <option value="advanced">🎓 Nâng cao (Advanced)</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <button type="button" onclick="window.resetCurrentProfileProgress()" class="w-full bg-amber-100 hover:bg-amber-200 text-amber-700 font-black py-3 rounded-xl border-2 border-amber-300 text-sm">🔄 Đặt Lại Điểm & Tiến Trình Này</button>
+            </div>
+            <div class="mb-6">
+                <button type="button" onclick="window.deleteCurrentProfile()" class="w-full bg-red-100 hover:bg-red-200 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm">🗑️ Xóa Hồ Sơ Này (Delete Profile)</button>
+            </div>
+            <div class="flex gap-3">
+                <button type="button" onclick="window.closeProfileModal()" class="btn-3d flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-2xl">Hủy</button>
+                <button type="button" onclick="window.saveProfileData()" class="btn-3d flex-1 bg-amber-600 text-white font-game py-3 rounded-2xl shadow-md">Lưu</button>
+            </div>
+        </div>
     </div>
-  );
-}
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[150] flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full border-4 border-amber-400 shadow-2xl text-left">
+            <h3 class="text-2xl font-game mb-6 text-gray-800 border-b-2 pb-2">⚙️ Cài Đặt (Settings)</h3>
+            <div class="mb-4 flex justify-between items-center bg-gray-100 p-3 rounded-xl border-2 border-gray-300">
+                <label class="text-gray-700 font-bold">Ban đêm (Dark Mode):</label>
+                <input type="checkbox" id="dark-mode-toggle" class="w-6 h-6 cursor-pointer" onclick="window.toggleDarkMode(this.checked)">
+            </div>
+            <div class="mb-4">
+                <button type="button" onclick="window.openProfileModalForCurrent(); window.closeSettings();" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-black py-3 rounded-xl border-2 border-blue-300 text-sm mb-2">✏️ Chỉnh Sửa Hồ Sơ Hiện Tại</button>
+            </div>
+            <div class="mb-6">
+                <button type="button" onclick="window.resetProgress()" class="w-full bg-red-100 hover:bg-red-200 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm">🔄 Đặt Lại Điểm Toàn Bộ</button>
+            </div>
+            <button type="button" onclick="window.closeSettings()" class="btn-3d w-full bg-amber-600 text-white font-game py-3 rounded-2xl border-b-4 border-amber-800 text-lg text-center">Đóng (Close)</button>
+        </div>
+    </div>
+
+    <!-- Alphabet Modal -->
+    <div id="alphabet-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-[150] flex flex-col items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-2xl w-full border-4 border-amber-400 shadow-2xl flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center mb-4 border-b-2 pb-2">
+                <h3 id="alphabet-modal-title" class="text-2xl font-game text-amber-700">🪷 Bảng Chữ Cái (Alphabet)</h3>
+                <button type="button" onclick="window.closeAlphabetModal()" class="btn-3d px-4 py-2 bg-gray-200 rounded-xl font-bold">✕ Đóng</button>
+            </div>
+            <div id="alphabet-grid" class="flex-1 overflow-y-auto grid grid-cols-4 sm:grid-cols-6 gap-3 p-2"></div>
+        </div>
+    </div>
+
+    <!-- Report Card Modal -->
+    <div id="report-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[170] flex items-center justify-center p-4">
+        <div class="bg-white rounded-[3rem] p-8 max-w-sm w-full border-4 border-amber-300 shadow-2xl text-center pop-in">
+            <span class="text-7xl mb-4 block animate-bounce">🏆</span>
+            <h3 class="text-3xl font-game text-amber-900 mb-2">Báo Cáo Thành Tích!</h3>
+            <p id="report-subtitle" class="text-gray-600 font-bold mb-6">Tuyệt vời, bé đã hoàn thành xuất sắc!</p>
+            
+            <div class="bg-amber-50 rounded-2xl p-4 border border-amber-200 mb-6 space-y-2 text-left">
+                <div class="flex justify-between font-black text-gray-800"><span>⭐ Sao nhận được:</span><span id="report-stars" class="text-amber-600">+5 Stars</span></div>
+                <div class="flex justify-between font-black text-gray-800"><span>📖 Từ vựng ôn tập:</span><span id="report-words" class="text-blue-600">8 từ</span></div>
+                <div class="flex justify-between font-black text-gray-800"><span>⏱️ Đánh giá phát âm:</span><span class="text-emerald-600">Xuất sắc ⭐⭐⭐⭐⭐</span></div>
+            </div>
+
+            <button type="button" onclick="window.closeReportCard()" class="btn-3d w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-game text-lg rounded-2xl shadow-md">Tiếp Tục Học 🚀</button>
+        </div>
+    </div>
+
+    <!-- Screen 1: Profiles -->
+    <div id="screen-profiles" class="screen-container flex-1 w-full max-w-4xl flex flex-col items-center justify-center text-center">
+        <header class="mb-10 w-full mt-4 relative">
+            <button type="button" onclick="window.openSettings()" class="absolute top-0 right-0 btn-3d px-4 py-2 bg-white text-gray-700 font-bold rounded-2xl border-2 border-gray-300 text-sm shadow-sm">⚙️</button>
+            <div class="text-6xl mb-4 floating">🪷</div>
+            <h1 class="text-4xl sm:text-6xl font-game text-amber-600 mb-2 drop-shadow-sm">Vui Học</h1>
+            <p class="text-sm sm:text-xl text-gray-500 font-bold mb-6 tracking-wide uppercase">Bilingual 1000+ Words</p>
+        </header>
+        <div id="profiles-container" class="flex flex-wrap justify-center gap-6 w-full mb-8"></div>
+        <button type="button" onclick="window.createProfile()" id="add-profile-btn" class="btn-3d px-8 py-4 bg-amber-500 text-white font-game text-xl rounded-[2rem] border-4 border-amber-600">➕ Thêm Tên Người Dùng (Add User)</button>
+    </div>
+
+    <!-- Screen 2: Dashboard -->
+    <div id="screen-dashboard" class="screen-container screen-hidden flex-1 w-full max-w-4xl flex-col items-center pb-24 mt-2 hidden">
+        <div class="w-full flex justify-between items-center p-4 bg-white/90 backdrop-blur-md rounded-3xl shadow-lg border-2 border-amber-200 mb-6">
+            <button type="button" onclick="window.showScreen('profiles')" class="btn-3d px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold rounded-2xl text-sm">⬅️ Đổi Hồ Sơ</button>
+            
+            <div class="flex items-center gap-3">
+                <span id="dash-avatar" class="text-3xl bg-amber-100 p-2 rounded-2xl shadow-inner">🐯</span>
+                <div class="text-left">
+                    <div id="dash-name" class="font-black text-xl text-gray-800">Tên</div>
+                    <div class="text-amber-600 font-black text-sm">⭐ <span id="dash-stars">0</span> Stars</div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <div id="language-switcher-container" class="flex bg-amber-100 rounded-2xl p-1 border border-amber-200">
+                    <button type="button" onclick="window.toggleLanguage('vi')" id="lang-vi" class="px-3 py-1.5 rounded-xl text-sm font-black transition-colors bg-amber-500 text-white shadow-sm">VI</button>
+                    <button type="button" onclick="window.toggleLanguage('es')" id="lang-es" class="px-3 py-1.5 rounded-xl text-sm font-black transition-colors text-gray-700">ES</button>
+                </div>
+                <button type="button" onclick="window.openSettings()" class="p-2.5 bg-amber-100 hover:bg-amber-200 rounded-2xl text-sm shadow-sm text-gray-800" title="Cài đặt">⚙️</button>
+            </div>
+        </div>
+
+        <!-- Turn Timer Bar for Multi-Child Households -->
+        <div class="w-full bg-white/90 backdrop-blur-md p-4 rounded-3xl shadow-md border-2 border-amber-200 mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">⏳</span>
+                <div>
+                    <div class="font-black text-gray-800 text-sm">Hẹn Giờ Lượt Chơi (Turn Timer)</div>
+                    <div class="text-xs text-gray-500 font-bold">Giúp chia sẻ lượt chơi công bằng giữa các bé</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <span id="turn-timer-display" class="font-black text-xl text-amber-600 bg-amber-50 px-4 py-1.5 rounded-2xl border border-amber-200">2:00</span>
+                <button type="button" onclick="window.toggleTurnTimer()" id="timer-toggle-btn" class="px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md">Bắt Đầu Lượt ⏱️</button>
+                <button type="button" onclick="window.resetTurnTimer()" class="px-3 py-2 bg-gray-100 text-gray-700 font-black rounded-2xl text-sm">🔄</button>
+            </div>
+        </div>
+
+        <!-- Quick Games & Mini-Apps Bar -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full mb-8">
+            <button type="button" onclick="window.openAlphabetModal()" class="btn-3d py-4 bg-amber-500 text-white font-black text-base rounded-3xl flex flex-col items-center">
+                <span class="text-3xl mb-1">🔤</span> <span id="arcade-btn-alpha">Bảng Chữ Cái</span>
+            </button>
+            <button type="button" onclick="window.startMemoryGame()" class="btn-3d py-4 bg-purple-600 text-white font-black text-base rounded-3xl flex flex-col items-center">
+                <span class="text-3xl mb-1">🧠</span> <span id="arcade-btn-memory">Lật Hình Cặp</span>
+            </button>
+            <button type="button" onclick="window.startDescribeGame()" class="btn-3d py-4 bg-teal-600 text-white font-black text-base rounded-3xl flex flex-col items-center">
+                <span class="text-3xl mb-1">🖼️</span> <span id="arcade-btn-describe">Mô Tả Tranh</span>
+            </button>
+            <button type="button" onclick="window.startSlicerGame()" class="btn-3d py-4 bg-orange-500 text-white font-black text-base rounded-3xl flex flex-col items-center">
+                <span class="text-3xl mb-1">🍉</span> <span id="arcade-btn-slicer">Chém Từ HD</span>
+            </button>
+        </div>
+
+        <!-- Curriculum Roadmap -->
+        <div class="w-full space-y-6">
+            <h2 id="curriculum-title" class="text-3xl font-game text-amber-900 text-center mb-6 flex items-center justify-center gap-2"><span>📚</span> Bản Đồ Học Tập Thực Tế (7 Cấp Độ HD)</h2>
+            <div id="lessons-map" class="w-full space-y-4"></div>
+        </div>
+    </div>
+
+    <!-- Screen 3: Lesson Screen -->
+    <div id="screen-game" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-[#fefae0] hidden overflow-y-auto pt-8 px-4 pb-12">
+        <div class="w-full max-w-md flex justify-between items-center mb-6">
+            <button type="button" onclick="window.exitGame()" class="btn-3d px-4 py-2 bg-white rounded-2xl font-extrabold text-gray-800 shadow-sm border border-gray-200">⬅️ Thoát</button>
+            <span id="game-progress" class="font-black text-amber-800 uppercase tracking-widest text-sm bg-amber-100 px-4 py-1.5 rounded-full">Topic • L1</span>
+        </div>
+
+        <div id="active-card" onclick="window.playCurrentWordAudio()" class="bg-white border-4 border-amber-300 rounded-[3rem] p-6 w-full max-w-md flex flex-col items-center shadow-2xl mb-8 cursor-pointer overflow-hidden group">
+            <div class="w-full h-72 rounded-3xl overflow-hidden mb-6 shadow-inner relative bg-gray-100">
+                <img id="active-photo" src="" alt="HD Photo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            </div>
+            <h2 id="active-word" class="text-4xl font-black text-gray-800 text-center">Chó</h2>
+        </div>
+
+        <div class="flex flex-col items-center gap-4 w-full max-w-md">
+            <button type="button" onclick="window.playCurrentWordAudio()" class="w-24 h-24 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-4xl shadow-lg active:translate-y-1 text-white transition-all">🔊</button>
+            <button type="button" onclick="window.skipWord()" class="btn-3d w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black text-xl rounded-2xl">Tiếp Theo ➡️</button>
+        </div>
+    </div>
+
+    <!-- Screen 4: Picture Description Game -->
+    <div id="screen-describe" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-teal-50 hidden overflow-y-auto pt-8 px-4 pb-12">
+        <div class="w-full max-w-lg flex justify-between items-center mb-6">
+            <button type="button" onclick="window.exitDescribeGame()" class="btn-3d px-4 py-2 bg-white text-teal-800 font-black rounded-2xl shadow-sm border border-teal-200">⬅️ Thoát</button>
+            <span id="desc-game-progress" class="font-black text-teal-900 bg-teal-100 px-4 py-1.5 rounded-full">Thử Thách Mô Tả Tranh (1)</span>
+        </div>
+        <div class="bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-teal-300 shadow-2xl w-full max-w-lg text-center">
+            <div class="w-full h-64 rounded-3xl overflow-hidden mb-6 shadow-inner bg-gray-100 flex items-center justify-center">
+                <span id="desc-game-emoji" class="text-8xl">🐶</span>
+            </div>
+            <h3 id="desc-game-prompt" class="text-2xl font-black text-teal-900 mb-6">Con vật trong ảnh là gì?</h3>
+            <div id="desc-game-options" class="w-full flex flex-col gap-3"></div>
+        </div>
+    </div>
+
+    <!-- Screen: Memory Match Game -->
+    <div id="screen-memory" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-purple-50 hidden overflow-y-auto pt-6 px-4 pb-12">
+        <div class="w-full max-w-xl flex justify-between items-center mb-6">
+            <button type="button" onclick="window.exitMemoryGame()" class="btn-3d px-4 py-2 bg-white text-purple-900 font-black rounded-2xl shadow-sm border border-purple-200">⬅️ Thoát</button>
+            <div class="bg-purple-600 px-4 py-2 rounded-2xl text-white font-black shadow-md">Cặp: <span id="memory-score">0</span> / 4</div>
+        </div>
+        <div class="bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-purple-300 shadow-2xl w-full max-w-xl text-center">
+            <h3 class="text-2xl font-black text-purple-900 mb-6">🧠 Lật Hình Tìm Cặp (Memory Match)</h3>
+            <div id="memory-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
+        </div>
+    </div>
+
+    <!-- Screen: Fruit Slicer -->
+    <div id="screen-slicer" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-slate-900 hidden">
+        <div class="absolute top-6 left-6 z-20"><button type="button" onclick="window.exitSlicer()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-600 font-black">Thoát</button></div>
+        <div class="absolute top-6 right-6 z-20 bg-orange-500 px-6 py-3 rounded-2xl text-white font-black text-xl shadow-lg">Điểm: <span id="slicer-score">0</span></div>
+        <canvas id="slicer-canvas"></canvas>
+    </div>
+
+    <script type="module">
+        let profiles = JSON.parse(localStorage.getItem('vuihoc_react_profiles_v16') || 'null') || [
+            { id: '1', name: 'An', emoji: '🐯', lang: 'vi', level: 'beginner', stars: 15, progress: {} },
+            { id: '2', name: 'Sofia', emoji: '🌸', lang: 'es', level: 'intermediate', stars: 28, progress: {} }
+        ];
+
+        let currentProfile = null;
+        let currentLang = 'vi';
+        let currentActiveLesson = null;
+        let currentLessonWordIdx = 0;
+
+        // Turn Timer
+        let turnTimerActive = false;
+        let turnSecondsLeft = 120;
+        let turnTimerInterval = null;
+
+        function saveProfiles() {
+            localStorage.setItem('vuihoc_react_profiles_v16', JSON.stringify(profiles));
+        }
+
+        window.toggleTurnTimer = function() {
+            const btn = document.getElementById('timer-toggle-btn');
+            const display = document.getElementById('turn-timer-display');
+            if(!turnTimerActive) {
+                turnTimerActive = true;
+                if(btn) { btn.innerText = "Tạm Dừng"; btn.className = "px-4 py-2 bg-rose-500 text-white font-black rounded-2xl text-sm shadow-md"; }
+                turnTimerInterval = setInterval(() => {
+                    if(turnSecondsLeft > 0) {
+                        turnSecondsLeft--;
+                        const m = Math.floor(turnSecondsLeft / 60);
+                        const s = turnSecondsLeft % 60;
+                        if(display) display.innerText = `${m}:${s.toString().padStart(2,'0')}`;
+                    } else {
+                        clearInterval(turnTimerInterval);
+                        turnTimerActive = false;
+                        if(btn) { btn.innerText = "Bắt Đầu Lượt ⏱️"; btn.className = "px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md"; }
+                        alert("⏰ Hết giờ lượt chơi! Đổi bạn khác nào!");
+                        turnSecondsLeft = 120;
+                        if(display) display.innerText = "2:00";
+                    }
+                }, 1000);
+            } else {
+                clearInterval(turnTimerInterval);
+                turnTimerActive = false;
+                if(btn) { btn.innerText = "Tiếp Tục Lượt"; btn.className = "px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md"; }
+            }
+        };
+
+        window.resetTurnTimer = function() {
+            turnSecondsLeft = 120;
+            const display = document.getElementById('turn-timer-display');
+            if(display) display.innerText = "2:00";
+        };
+
+        const TOPICS = [
+            { 
+                id: 'animals', vi: 'Động Vật', es: 'Animales', emoji: '🦁',
+                levels: {
+                    1: [{ vi: 'Chó', es: 'Perro', img: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Mèo', es: 'Gato', img: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Chim', es: 'Pájaro', img: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Cá', es: 'Pez', img: 'https://images.unsplash.com/photo-1524704654690-b56c05c78a00?auto=format&fit=crop&w=600&q=80' }],
+                    2: [{ vi: 'Sư tử', es: 'León', img: 'https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Hổ', es: 'Tigre', img: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Bò', es: 'Vaca', img: 'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Ngựa', es: 'Caballo', img: 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=600&q=80' }],
+                    3: [{ vi: 'Voi', es: 'Elefante', img: 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Khỉ', es: 'Mono', img: 'https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Gấu', es: 'Oso', img: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Hươu cao cổ', es: 'Jirafa', img: 'https://images.unsplash.com/photo-1534567153574-2b12153a87f0?auto=format&fit=crop&w=600&q=80' }],
+                    4: [{ vi: 'Thỏ', es: 'Conejo', img: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Sóc', es: 'Ardilla', img: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Cáo', es: 'Zorro', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=600&q=80' }],
+                    5: [{ vi: 'Rùa', es: 'Tortuga', img: 'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Ếch', es: 'Rana', img: 'https://images.unsplash.com/photo-1534067783941-51c9c23ecefd?auto=format&fit=crop&w=600&q=80' }],
+                    6: [{ vi: 'Cá voi', es: 'Ballena', img: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Cá mập', es: 'Tiburón', img: 'https://images.unsplash.com/photo-1560275619-4d6236189f06?auto=format&fit=crop&w=600&q=80' }],
+                    7: [{ vi: 'Đại bàng', es: 'Águila', img: 'https://images.unsplash.com/photo-1611689342806-0863700ce1e4?auto=format&fit=crop&w=600&q=80' }]
+                }
+            },
+            { 
+                id: 'food', vi: 'Ẩm Thực', es: 'Comida', emoji: '🍜',
+                levels: {
+                    1: [{ vi: 'Táo', es: 'Manzana', img: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Chuối', es: 'Plátano', img: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Bánh mì', es: 'Pan', img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Nước', es: 'Agua', img: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=600&q=80' }],
+                    2: [{ vi: 'Phở', es: 'Sopa', img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Cam', es: 'Naranja', img: 'https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Trứng', es: 'Huevo', img: 'https://images.unsplash.com/photo-1516467508483-a7212febe31a?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Thịt', es: 'Carne', img: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=600&q=80' }],
+                    3: [{ vi: 'Bánh ngọt', es: 'Pastel', img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Phô mai', es: 'Queso', img: 'https://images.unsplash.com/photo-1452195100486-9cc805987862?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Cà phê', es: 'Café', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80' }],
+                    4: [{ vi: 'Dưa hấu', es: 'Sandía', img: 'https://images.unsplash.com/photo-1587049352847-4a222e784d38?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Dâu tây', es: 'Fresa', img: 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=600&q=80' }],
+                    5: [{ vi: 'Cà chua', es: 'Tomate', img: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=600&q=80' }],
+                    6: [{ vi: 'Pizza', es: 'Pizza', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80' }],
+                    7: [{ vi: 'Muối', es: 'Sal', img: 'https://images.unsplash.com/photo-1518117715206-c4d6823c68e1?auto=format&fit=crop&w=600&q=80' }]
+                }
+            }
+        ];
+
+        const ALPHABET_VI = [
+            { char: 'A', word: 'Áo' }, { char: 'Ă', word: 'Ăn' }, { char: 'Â', word: 'Ấm' },
+            { char: 'B', word: 'Bóng' }, { char: 'C', word: 'Cá' }, { char: 'D', word: 'Dép' },
+            { char: 'Đ', word: 'Đèn' }, { char: 'E', word: 'Em' }, { char: 'Ê', word: 'Êm' },
+            { char: 'G', word: 'Gà' }, { char: 'H', word: 'Hoa' }, { char: 'I', word: 'In' },
+            { char: 'K', word: 'Kẹo' }, { char: 'L', word: 'Lá' }, { char: 'M', word: 'Mèo' },
+            { char: 'N', word: 'Nhà' }, { char: 'O', word: 'Ong' }, { char: 'Ô', word: 'Ô tô' },
+            { char: 'Ơ', word: 'Ớt' }, { char: 'P', word: 'Phở' }, { char: 'Q', word: 'Quả' },
+            { char: 'R', word: 'Rổ' }, { char: 'S', word: 'Sách' }, { char: 'T', word: 'Tay' },
+            { char: 'U', word: 'Ủ' }, { char: 'Ư', word: 'Ức' }, { char: 'V', word: 'Vịt' },
+            { char: 'X', word: 'Xe' }, { char: 'Y', word: 'Yếm' }
+        ];
+
+        const ALPHABET_ES = [
+            { char: 'A', word: 'Árbol' }, { char: 'B', word: 'Barco' }, { char: 'C', word: 'Casa' },
+            { char: 'D', word: 'Dedo' }, { char: 'E', word: 'Elefante' }, { char: 'F', word: 'Fuego' },
+            { char: 'G', word: 'Gato' }, { char: 'H', word: 'Hojas' }, { char: 'I', word: 'Isla' },
+            { char: 'J', word: 'Jirafa' }, { char: 'K', word: 'Koala' }, { char: 'L', word: 'León' },
+            { char: 'M', word: 'Mono' }, { char: 'N', word: 'Naranja' }, { char: 'O', word: 'Oso' },
+            { char: 'P', word: 'Perro' }, { char: 'Q', word: 'Queso' }, { char: 'R', word: 'Ratón' },
+            { char: 'S', word: 'Sol' }, { char: 'T', word: 'Tortuga' }, { char: 'U', word: 'Uva' },
+            { char: 'V', word: 'Vaca' }, { char: 'W', word: 'Wafle' }, { char: 'X', word: 'Xilófono' },
+            { char: 'Y', word: 'Yoyo' }, { char: 'Z', word: 'Zorro' }
+        ];
+
+        window.speak = function(text, targetLang) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const lCode = targetLang || (currentLang === 'es' ? 'es-ES' : 'vi-VN');
+                const utt = new SpeechSynthesisUtterance(text);
+                utt.lang = lCode;
+                window.speechSynthesis.speak(utt);
+            }
+        };
+
+        window.triggerConfetti = function() {
+            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+        };
+
+        window.showScreen = function(sName) {
+            document.querySelectorAll('.screen-container').forEach(el => {
+                el.classList.add('screen-hidden');
+                el.classList.add('hidden');
+            });
+            const target = document.getElementById(`screen-${sName}`);
+            if (target) {
+                target.classList.remove('hidden');
+                setTimeout(() => target.classList.remove('screen-hidden'), 20);
+            }
+        };
+
+        window.loadProfilesUI = function() {
+            const container = document.getElementById('profiles-container');
+            if (!container) return;
+            container.innerHTML = '';
+            profiles.forEach(p => {
+                const card = document.createElement('div');
+                card.className = "w-56 h-64 bg-white/90 backdrop-blur-md rounded-[2.5rem] border-4 border-amber-300 shadow-xl flex flex-col items-center justify-center p-6 cursor-pointer transform transition-all hover:-translate-y-2 relative group";
+                card.onclick = () => {
+                    currentProfile = p;
+                    if (p.lang && p.lang !== 'both') currentLang = p.lang;
+                    document.getElementById('dash-name').innerText = p.name;
+                    document.getElementById('dash-avatar').innerText = p.emoji;
+                    document.getElementById('dash-stars').innerText = p.stars;
+                    window.showScreen('dashboard');
+                    window.renderDashboardMap();
+                };
+                card.innerHTML = `
+                    <button onclick="event.stopPropagation(); window.openEditProfile('${p.id}')" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center text-sm shadow-sm">✏️</button>
+                    <span class="text-6xl mb-3">${p.emoji}</span>
+                    <h2 class="text-2xl font-black text-gray-800 mb-1">${p.name}</h2>
+                    <span class="text-xs font-black uppercase px-3 py-1 rounded-full bg-amber-100 text-amber-800 mb-3">⭐ ${p.stars} Stars</span>
+                `;
+                container.appendChild(card);
+            });
+        };
+
+        window.createProfile = function() {
+            const name = prompt("Tên bé hoặc người dùng mới? (Name):", "Bé " + Math.floor(Math.random()*100));
+            if (name) {
+                const newP = { id: Date.now().toString(), name, emoji: ['👦','👧','🐯','🐱','🦊','🐼'][Math.floor(Math.random()*6)], lang: 'vi', level: 'beginner', stars: 0, progress: {} };
+                profiles.push(newP);
+                saveProfiles();
+                window.loadProfilesUI();
+            }
+        };
+
+        window.openEditProfile = function(id) {
+            const p = profiles.find(item => item.id === id);
+            if(!p) return;
+            document.getElementById('prof-edit-id').value = p.id;
+            document.getElementById('prof-name').value = p.name;
+            document.getElementById('prof-emoji').value = p.emoji;
+            document.getElementById('prof-lang').value = p.lang || 'vi';
+            document.getElementById('prof-level').value = p.level || 'beginner';
+            document.getElementById('profile-modal').classList.remove('hidden');
+        };
+
+        window.closeProfileModal = function() {
+            document.getElementById('profile-modal').classList.add('hidden');
+        };
+
+        window.saveProfileData = function() {
+            const id = document.getElementById('prof-edit-id').value;
+            const name = document.getElementById('prof-name').value;
+            const emoji = document.getElementById('prof-emoji').value;
+            const lang = document.getElementById('prof-lang').value;
+            const level = document.getElementById('prof-level').value;
+
+            profiles = profiles.map(p => p.id === id ? { ...p, name, emoji, lang, level } : p);
+            saveProfiles();
+            window.closeProfileModal();
+            window.loadProfilesUI();
+            if (currentProfile && currentProfile.id === id) {
+                currentProfile = profiles.find(p => p.id === id);
+            }
+        };
+
+        window.deleteCurrentProfile = function() {
+            const id = document.getElementById('prof-edit-id').value;
+            if (confirm("Xóa vĩnh viễn hồ sơ này?")) {
+                profiles = profiles.filter(p => p.id !== id);
+                saveProfiles();
+                window.closeProfileModal();
+                window.loadProfilesUI();
+                window.showScreen('profiles');
+            }
+        };
+
+        window.resetCurrentProfileProgress = function() {
+            const id = document.getElementById('prof-edit-id').value;
+            if (confirm("Đặt lại điểm và tiến trình của hồ sơ này?")) {
+                profiles = profiles.map(p => p.id === id ? { ...p, stars: 0, progress: {} } : p);
+                saveProfiles();
+                window.closeProfileModal();
+                window.loadProfilesUI();
+            }
+        };
+
+        window.openSettings = function() {
+            document.getElementById('settings-modal').classList.remove('hidden');
+        };
+        window.closeSettings = function() {
+            document.getElementById('settings-modal').classList.add('hidden');
+        };
+        window.toggleDarkMode = function(isDark) {
+            if(isDark) document.body.classList.add('dark-mode');
+            else document.body.classList.remove('dark-mode');
+        };
+        window.resetProgress = function() {
+            if(currentProfile && confirm("Đặt lại toàn bộ điểm?")) {
+                currentProfile.stars = 0; currentProfile.progress = {};
+                saveProfiles();
+                window.renderDashboardMap();
+                window.closeSettings();
+            }
+        };
+
+        window.openProfileModalForCurrent = function() {
+            if (currentProfile) window.openEditProfile(currentProfile.id);
+        };
+
+        window.toggleLanguage = function(l) {
+            currentLang = l;
+            document.getElementById('lang-vi').className = `px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${l==='vi'?'bg-amber-500 text-white shadow-sm':'text-gray-700'}`;
+            document.getElementById('lang-es').className = `px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${l==='es'?'bg-amber-500 text-white shadow-sm':'text-gray-700'}`;
+            window.renderDashboardMap();
+        };
+
+        window.renderDashboardMap = function() {
+            const container = document.getElementById('lessons-map');
+            if(!container) return;
+            container.innerHTML = '';
+
+            TOPICS.forEach(topic => {
+                const box = document.createElement('div');
+                box.className = "w-full p-6 rounded-[2.5rem] bg-white border-4 border-amber-200 shadow-xl flex flex-col items-center mb-6";
+                let levelsHTML = '';
+                [1,2,3,4,5,6,7].forEach(lvl => {
+                    const isDone = currentProfile && currentProfile.progress[topic.id]?.[lvl];
+                    levelsHTML += `
+                        <button onclick="window.startLesson('${topic.id}', ${lvl})" class="py-3.5 rounded-2xl flex flex-col items-center justify-center relative shadow-md active:translate-y-1 transition-all ${isDone?'bg-emerald-500 text-white border-b-4 border-emerald-700':'bg-amber-400 hover:bg-amber-500 text-white border-b-4 border-amber-600'}">
+                            ${isDone?'<span class="absolute -top-2 -right-2 text-base">⭐</span>':''}
+                            <span class="text-xl mb-0.5">${topic.emoji}</span>
+                            <span class="font-black text-xs uppercase">L${lvl}</span>
+                        </button>
+                    `;
+                });
+
+                box.innerHTML = `
+                    <div class="flex items-center gap-3 mb-6 bg-amber-50 px-6 py-2 rounded-full border border-amber-300 shadow-inner">
+                        <span class="text-3xl">${topic.emoji}</span>
+                        <h3 class="text-xl font-black text-gray-800">${topic[currentLang]}</h3>
+                    </div>
+                    <div class="grid grid-cols-4 sm:grid-cols-7 gap-3 w-full">${levelsHTML}</div>
+                `;
+                container.appendChild(box);
+            });
+        };
+
+        // Lesson Screen
+        window.startLesson = function(topicId, lvl) {
+            const topic = TOPICS.find(t => t.id === topicId);
+            if(!topic) return;
+            currentActiveLesson = { topic, lvl, words: topic.levels[lvl] || topic.levels[1] };
+            currentLessonWordIdx = 0;
+            window.showScreen('game');
+            window.loadLessonCard();
+        };
+
+        window.loadLessonCard = function() {
+            const w = currentActiveLesson.words[currentLessonWordIdx];
+            document.getElementById('game-progress').innerText = `${currentActiveLesson.topic[currentLang]} • L${currentActiveLesson.lvl} (${currentLessonWordIdx + 1}/${currentActiveLesson.words.length})`;
+            document.getElementById('active-photo').src = w.img;
+            document.getElementById('active-word').innerText = w[currentLang];
+            window.speak(w[currentLang]);
+        };
+
+        window.playCurrentWordAudio = function() {
+            const w = currentActiveLesson.words[currentLessonWordIdx];
+            window.speak(w[currentLang]);
+        };
+
+        window.skipWord = function() {
+            if (currentLessonWordIdx + 1 < currentActiveLesson.words.length) {
+                currentLessonWordIdx++;
+                window.loadLessonCard();
+            } else {
+                window.triggerConfetti();
+                if(currentProfile) {
+                    if(!currentProfile.progress[currentActiveLesson.topic.id]) currentProfile.progress[currentActiveLesson.topic.id] = {};
+                    if(!currentProfile.progress[currentActiveLesson.topic.id][currentActiveLesson.lvl]) {
+                        currentProfile.progress[currentActiveLesson.topic.id][currentActiveLesson.lvl] = true;
+                        currentProfile.stars += 5;
+                        saveProfiles();
+                    }
+                }
+                document.getElementById('report-stars').innerText = "+5 Stars";
+                document.getElementById('report-words').innerText = `${currentActiveLesson.words.length} từ`;
+                document.getElementById('report-modal').classList.remove('hidden');
+            }
+        };
+
+        window.closeReportCard = function() {
+            document.getElementById('report-modal').classList.add('hidden');
+            window.showScreen('dashboard');
+            window.renderDashboardMap();
+        };
+
+        window.exitGame = function() {
+            window.showScreen('dashboard');
+            window.renderDashboardMap();
+        };
+
+        // Alphabet Modal
+        window.openAlphabetModal = function() {
+            const grid = document.getElementById('alphabet-grid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            const list = currentLang === 'es' ? ALPHABET_ES : ALPHABET_VI;
+            document.getElementById('alphabet-modal-title').innerText = currentLang === 'es' ? '🪷 Alfabeto' : '🪷 Bảng Chữ Cái';
+            list.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 flex flex-col items-center justify-center cursor-pointer hover:scale-105 transition-transform";
+                card.onclick = () => window.speak(item.word, currentLang === 'es' ? 'es-ES' : 'vi-VN');
+                card.innerHTML = `<span class="text-3xl font-black text-amber-800">${item.char}</span><span class="text-xs font-bold text-gray-600 mt-1">${item.word}</span>`;
+                grid.appendChild(card);
+            });
+            document.getElementById('alphabet-modal').classList.remove('hidden');
+        };
+        window.closeAlphabetModal = function() {
+            document.getElementById('alphabet-modal').classList.add('hidden');
+        };
+
+        // Picture Description Game
+        let descIdx = 0;
+        let descQuestions = [];
+        window.startDescribeGame = function() {
+            descQuestions = [
+                { emoji: '🐶', text: currentLang === 'es' ? 'El perro marrón mueve su cola.' : 'Con chó màu vàng đang vẫy đuôi.', prompt: currentLang === 'es' ? '¿Qué animal es este?' : 'Con vật trong ảnh là gì?', options: [currentLang === 'es' ? 'Perro' : 'Chó', currentLang === 'es' ? 'León' : 'Sư tử', currentLang === 'es' ? 'Zorro' : 'Cáo'], correct: 0 },
+                { emoji: '🍎', text: currentLang === 'es' ? 'La manzana roja cuelga del árbol.' : 'Quả táo đỏ mọng trên cành cây.', prompt: currentLang === 'es' ? '¿Qué fruta es esta?' : 'Loại quả trong ảnh là gì?', options: [currentLang === 'es' ? 'Manzana' : 'Táo', currentLang === 'es' ? 'Plátano' : 'Chuối', currentLang === 'es' ? 'Naranja' : 'Cam'], correct: 0 }
+            ];
+            descIdx = 0;
+            window.showScreen('describe');
+            window.loadDescribeCard();
+        };
+        window.exitDescribeGame = function() { window.showScreen('dashboard'); };
+
+        window.loadDescribeCard = function() {
+            const q = descQuestions[descIdx % descQuestions.length];
+            document.getElementById('desc-game-progress').innerText = `Thử Thách (${descIdx + 1})`;
+            document.getElementById('desc-game-emoji').innerText = q.emoji;
+            document.getElementById('desc-game-prompt').innerText = q.prompt;
+            window.speak(q.text);
+
+            const optContainer = document.getElementById('desc-game-options');
+            optContainer.innerHTML = '';
+            q.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = "py-4 bg-teal-500 hover:bg-teal-600 text-white font-black text-xl rounded-2xl shadow-md";
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    if(i === q.correct) {
+                        window.triggerConfetti();
+                        descIdx++;
+                        setTimeout(window.loadDescribeCard, 800);
+                    } else {
+                        window.speak("Thử lại nhé");
+                    }
+                };
+                optContainer.appendChild(btn);
+            });
+        };
+
+        // Memory Game
+        window.startMemoryGame = function() {
+            window.showScreen('memory');
+            loadMemoryGrid();
+        };
+        window.exitMemoryGame = function() { window.showScreen('dashboard'); };
+
+        function loadMemoryGrid() {
+            const grid = document.getElementById('memory-grid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            const items = ['🐶', '🐱', '🍎', '🍌'];
+            let deck = [...items, ...items].sort(() => 0.5 - Math.random());
+            let first = null;
+            let matches = 0;
+
+            deck.forEach(content => {
+                const card = document.createElement('div');
+                card.className = "h-32 bg-purple-200 rounded-2xl flex items-center justify-center text-3xl font-black cursor-pointer border-4 border-purple-400";
+                card.innerText = '❓';
+                card.onclick = () => {
+                    if(card.innerText !== '❓' || card.classList.contains('matched')) return;
+                    card.innerText = content;
+                    card.className = "h-32 bg-white rounded-2xl flex items-center justify-center text-3xl font-black cursor-pointer border-4 border-purple-400 text-purple-900";
+                    
+                    if(!first) {
+                        first = card;
+                    } else {
+                        if(first.innerText === card.innerText) {
+                            first.classList.add('matched');
+                            card.classList.add('matched');
+                            first = null;
+                            matches++;
+                            document.getElementById('memory-score').innerText = matches;
+                            if(matches === 4) {
+                                window.triggerConfetti();
+                                setTimeout(window.startMemoryGame, 1500);
+                            }
+                        } else {
+                            const prev = first;
+                            first = null;
+                            setTimeout(() => {
+                                prev.innerText = '❓';
+                                prev.className = "h-32 bg-purple-200 rounded-2xl flex items-center justify-center text-3xl font-black cursor-pointer border-4 border-purple-400";
+                                card.innerText = '❓';
+                                card.className = "h-32 bg-purple-200 rounded-2xl flex items-center justify-center text-3xl font-black cursor-pointer border-4 border-purple-400";
+                            }, 800);
+                        }
+                    }
+                };
+                grid.appendChild(card);
+            });
+        }
+
+        // Fruit Slicer
+        let slicerRunning = false;
+        window.startSlicerGame = function() {
+            window.showScreen('slicer');
+            const canvas = document.getElementById('slicer-canvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            slicerRunning = true;
+            let score = 0;
+            let items = [{ emoji: '🍎', x: 100, y: canvas.height + 50, vx: 2, vy: -15 }];
+
+            const loop = () => {
+                if(!slicerRunning) return;
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                items.forEach(it => {
+                    it.x += it.vx; it.y += it.vy; it.vy += 0.4;
+                    ctx.font = "60px sans-serif";
+                    ctx.fillText(it.emoji, it.x, it.y);
+                });
+                requestAnimationFrame(loop);
+            };
+            requestAnimationFrame(loop);
+        };
+        window.exitSlicer = function() {
+            slicerRunning = false;
+            window.showScreen('dashboard');
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            window.loadProfilesUI();
+        });
+    </script>
+</body>
+</html>
+```eof
