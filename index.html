@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Vui Học">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪷</text></svg>">
     
-    <title>Vui Học - Bilingual Platform</title>
+    <title>Fun Language Learning - Bilingual Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
     
@@ -335,24 +335,24 @@
         };
 
         const ALPHABET_VI = [
-            {char: 'A', emoji: '🍎'}, {char: 'Ă', emoji: '🌙'}, {char: 'Â', emoji: '🥞'}, {char: 'B', emoji: '🎈'},
-            {char: 'C', emoji: '🐱'}, {char: 'D', emoji: '🎒'}, {char: 'Đ', emoji: '🚂'}, {char: 'E', emoji: '🐘'},
-            {char: 'Ê', emoji: '🛏️'}, {char: 'G', emoji: '🐓'}, {char: 'H', emoji: '🏠'}, {char: 'I', emoji: '📌'},
-            {char: 'K', emoji: '🪁'}, {char: 'L', emoji: '🦁'}, {char: 'M', emoji: '🐵'}, {char: 'N', emoji: '🍌'},
-            {char: 'O', emoji: '⭕'}, {char: 'Ô', emoji: '☂️'}, {char: 'Ơ', emoji: '🦋'}, {char: 'P', emoji: '🎹'},
-            {char: 'Q', emoji: '👑'}, {char: 'R', emoji: '🤖'}, {char: 'S', emoji: '⭐'}, {char: 'T', emoji: '🐢'},
-            {char: 'U', emoji: '🍇'}, {char: 'Ư', emoji: '🦘'}, {char: 'V', emoji: '🎻'}, {char: 'X', emoji: '🚲'}, {char: 'Y', emoji: '⛵'}
+            {char: 'A', emoji: '🍎', word: 'Áo'}, {char: 'Ă', emoji: '🌙', word: 'Ăn'}, {char: 'Â', emoji: '🥞', word: 'Ấm'}, {char: 'B', emoji: ' bút', word: 'Bút'},
+            {char: 'C', emoji: '🐟', word: 'Cá'}, {char: 'D', emoji: '🎒', word: 'Dép'}, {char: 'Đ', emoji: '🚂', word: 'Đèn'}, {char: 'E', emoji: '🐘', word: 'Em'},
+            {char: 'Ê', emoji: '🛏️', word: 'Êm'}, {char: 'G', emoji: '🐓', word: 'Gà'}, {char: 'H', emoji: '🏠', word: 'Hành'}, {char: 'I', emoji: '📌', word: 'In'},
+            {char: 'K', emoji: '🪁', word: 'Kẹo'}, {char: 'L', emoji: '🦁', word: 'Lá'}, {char: 'M', emoji: '🐵', word: 'Mèo'}, {char: 'N', emoji: '🍌', word: 'Nhà'},
+            {char: 'O', emoji: '⭕', word: 'Ong'}, {char: 'Ô', emoji: '☂️', word: 'Ô tô'}, {char: 'Ơ', emoji: '🦋', word: 'Ớt'}, {char: 'P', emoji: '🎹', word: 'Phở'},
+            {char: 'Q', emoji: '👑', word: 'Quả'}, {char: 'R', emoji: '🤖', word: 'Rổ'}, {char: 'S', emoji: '⭐', word: 'Sách'}, {char: 'T', emoji: '🐢', word: 'Tay'},
+            {char: 'U', emoji: '🍇', word: 'Ủ'}, {char: 'Ư', emoji: '🦘', word: 'Ức'}, {char: 'V', emoji: '🎻', word: 'Vịt'}, {char: 'X', emoji: '🚲', word: 'Xe'}, {char: 'Y', emoji: '⛵', word: 'Yếm'}
         ];
 
         const ALPHABET_ES = [
-            {char: 'A', emoji: '🍎'}, {char: 'B', emoji: '🎈'}, {char: 'C', emoji: '🐱'}, {char: 'Ch', emoji: '🍫'},
-            {char: 'D', emoji: '🎒'}, {char: 'E', emoji: '🐘'}, {char: 'F', emoji: '🔥'}, {char: 'G', emoji: '🐓'},
-            {char: 'H', emoji: '🏠'}, {char: 'I', emoji: '📌'}, {char: 'J', emoji: '🦒'}, {char: 'K', emoji: '🪁'},
-            {char: 'L', emoji: '🦁'}, {char: 'Ll', emoji: '🦙'}, {char: 'M', emoji: '🐵'}, {char: 'N', emoji: '🍌'},
-            {char: 'Ñ', emoji: '🪅'}, {char: 'O', emoji: '⭕'}, {char: 'P', emoji: '🎹'}, {char: 'Q', emoji: '👑'},
-            {char: 'R', emoji: '🤖'}, {char: 'Rr', emoji: '🚂'}, {char: 'S', emoji: '⭐'}, {char: 'T', emoji: '🐢'},
-            {char: 'U', emoji: '🍇'}, {char: 'V', emoji: '🎻'}, {char: 'W', emoji: '🧇'}, {char: 'X', emoji: '🎄'},
-            {char: 'Y', emoji: '⛵'}, {char: 'Z', emoji: '🦊'}
+            {char: 'A', emoji: '🌳', word: 'Árbol'}, {char: 'B', emoji: '⛵', word: 'Barco'}, {char: 'C', emoji: '🏠', word: 'Casa'}, {char: 'Ch', emoji: '🍫', word: 'Chocolate'},
+            {char: 'D', emoji: '🎒', _word: 'Dedo'}, {char: 'E', emoji: '🐘', word: 'Elefante'}, {char: 'F', emoji: '🔥', word: 'Fuego'}, {char: 'G', emoji: '🦒', word: 'Gato'},
+            {char: 'H', emoji: '🍃', word: 'Hojas'}, {char: 'I', emoji: '📌', word: 'Isla'}, {char: 'J', emoji: '🦒', word: 'Jirafa'}, {char: 'K', emoji: '🪁', word: 'Koala'},
+            {char: 'L', emoji: '🦁', word: 'León'}, {char: 'Ll', emoji: '🦙', word: 'Llama'}, {char: 'M', emoji: '🐵', word: 'Mono'}, {char: 'N', emoji: '🍌', word: 'Naranja'},
+            {char: 'Ñ', emoji: '🪅', word: 'Ñandú'}, {char: 'O', emoji: '⭕', word: 'Oso'}, {char: 'P', emoji: '🎹', word: 'Perro'}, {char: 'Q', emoji: '👑', word: 'Queso'},
+            {char: 'R', emoji: '🤖', word: 'Ratón'}, {char: 'Rr', emoji: '🚂', word: 'Carro'}, {char: 'S', emoji: '⭐', word: 'Sol'}, {char: 'T', emoji: '🐢', word: 'Tortuga'},
+            {char: 'U', emoji: '🍇', word: 'Uva'}, {char: 'V', emoji: '🎻', word: 'Vaca'}, {char: 'W', emoji: '🧇', word: 'Wafle'}, {char: 'X', emoji: '🎄', word: 'Xilófono'},
+            {char: 'Y', emoji: '⛵', word: 'Yoyo'}, {char: 'Z', emoji: '🦊', word: 'Zorro'}
         ];
 
         const READING_PARAGRAPHS = {
@@ -602,8 +602,8 @@
             activeAlphabet.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'btn-3d bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 flex flex-col items-center justify-center cursor-pointer';
-                card.onclick = () => window.speakText(item.char, currentLang === 'es' ? 'es-ES' : 'vi-VN');
-                card.innerHTML = `<span class="text-3xl font-game text-amber-800">${item.char}</span><span class="text-2xl mt-1">${item.emoji}</span>`;
+                card.onclick = () => window.speakText(item.word || item.char, currentLang === 'es' ? 'es-ES' : 'vi-VN');
+                card.innerHTML = `<span class="text-3xl font-game text-amber-800">${item.char}</span><span class="text-2xl mt-1">${item.emoji}</span><span class="text-[10px] font-bold text-gray-500 mt-0.5">${item.word || ''}</span>`;
                 grid.appendChild(card);
             });
             document.getElementById('alphabet-modal').classList.remove('hidden');
@@ -715,12 +715,14 @@
         window.speakText = function(txt, forceLang) {
             if(!window.speechSynthesis) return;
             window.speechSynthesis.cancel();
-            const utt = new SpeechSynthesisUtterance(txt);
+            
+            // Explicitly set language code for Spanish and Vietnamese to prevent browser accent mismatches
             const targetLang = forceLang || (currentLang === 'es' ? 'es-ES' : 'vi-VN');
+            const utt = new SpeechSynthesisUtterance(txt);
             utt.lang = targetLang;
             
             let voices = window.speechSynthesis.getVoices();
-            let voice = voices.find(v => v.lang === targetLang) || voices.find(v => v.lang.startsWith(targetLang.split('-')[0]));
+            let voice = voices.find(v => v.lang === targetLang) || voices.find(v => v.lang.startsWith(targetLang.substring(0, 2)));
             if(voice) utt.voice = voice;
             
             window.speechSynthesis.speak(utt);
@@ -1129,3 +1131,4 @@
     </script>
 </body>
 </html>
+```eof
