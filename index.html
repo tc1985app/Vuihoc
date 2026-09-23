@@ -93,6 +93,14 @@
                 <label class="block text-gray-700 font-bold mb-2">Biểu tượng (Emoji):</label>
                 <input type="text" id="prof-emoji" maxlength="2" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold text-2xl text-center" placeholder="🐯">
             </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">Ngôn ngữ học (Language Track):</label>
+                <select id="prof-lang" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold">
+                    <option value="vi">🇻🇳 Chỉ Tiếng Việt (Vietnamese Only)</option>
+                    <option value="es">🇪🇸 Chỉ Tiếng Tây Ban Nha (Spanish Only)</option>
+                    <option value="both">🌍 Song ngữ (Both / Bilingual)</option>
+                </select>
+            </div>
             <div class="mb-6">
                 <label class="block text-gray-700 font-bold mb-2">Cấp độ (Proficiency Level):</label>
                 <select id="prof-level" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold">
@@ -117,7 +125,7 @@
                 <input type="checkbox" id="dark-mode-toggle" class="w-6 h-6 cursor-pointer" onclick="window.toggleDarkMode(this.checked)">
             </div>
             <div class="mb-4">
-                <button type="button" onclick="window.openProfileModalForCurrent()" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-black py-3 rounded-xl border-2 border-blue-300 text-sm mb-2">✏️ Đổi Tên, Avatar & Cấp Độ</button>
+                <button type="button" onclick="window.openProfileModalForCurrent()" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-black py-3 rounded-xl border-2 border-blue-300 text-sm mb-2">✏️ Đổi Tên, Ngôn Ngữ & Cấp Độ</button>
             </div>
             <div class="mb-6">
                 <button type="button" onclick="window.resetProgress()" class="w-full bg-red-100 hover:bg-red-200 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm">🔄 Đặt Lại Điểm & Tiến Trình</button>
@@ -163,7 +171,7 @@
             <button type="button" onclick="window.openSettings()" class="btn-3d px-3 py-2.5 bg-gray-100 rounded-2xl text-gray-700 font-bold text-sm">⚙️</button>
         </div>
         
-        <div class="flex bg-gray-200 rounded-3xl p-1.5 mb-8 shadow-inner border-2 border-gray-300 w-full max-w-sm">
+        <div id="language-switcher-container" class="flex bg-gray-200 rounded-3xl p-1.5 mb-8 shadow-inner border-2 border-gray-300 w-full max-w-sm">
             <button type="button" onclick="window.toggleLanguage('vi')" id="lang-vi" class="lang-switch flex-1 py-3 rounded-2xl text-lg font-game bg-amber-500 text-white shadow-md transition-all">🇻🇳 Tiếng Việt</button>
             <button type="button" onclick="window.toggleLanguage('es')" id="lang-es" class="lang-switch flex-1 py-3 rounded-2xl text-lg font-game text-gray-500 transition-all">🇪🇸 Español</button>
         </div>
@@ -232,7 +240,6 @@
             <button type="button" onclick="window.skipWord()" class="btn-3d w-full py-4 bg-amber-500 text-white font-game text-xl rounded-2xl border-b-6 border-amber-700 shadow-lg">Bỏ qua / Tiếp (Next) ➡️</button>
         </div>
         
-        <!-- Post-Lesson Extended Progression Menu -->
         <div id="game-post-game-menu" class="w-full max-w-sm flex-col items-center hidden mt-4 gap-4 pop-in bg-white p-6 rounded-[2.5rem] border-4 border-amber-300 shadow-2xl">
              <h4 class="text-3xl font-game text-amber-600 text-center">🎉 Hoàn Thành Cấp Độ!</h4>
              <p class="text-sm font-bold text-gray-500 text-center">Bạn đã nhận +5 ⭐. Muốn học tiếp như thế nào?</p>
@@ -242,7 +249,7 @@
         </div>
     </div>
 
-    <!-- Screen 4: Dynamic Complex Picture Description Game -->
+    <!-- Screen 4: Dynamic Complex Picture Description Game (Extended & Randomized) -->
     <div id="screen-describe" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-teal-50 hidden overflow-y-auto pt-8 px-4 pb-12">
         <div class="w-full max-w-xl flex justify-between items-center mb-6">
             <button type="button" onclick="window.exitDescribeGame()" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-500 font-game text-lg border-2 border-red-200">Thoát</button>
@@ -354,23 +361,30 @@
             {char: 'Y', emoji: '⛵', word: 'Yoyo'}, {char: 'Z', emoji: '🦊', word: 'Zorro'}
         ];
 
+        // Expanded Dynamic Picture Description Game Data across levels
         const DESCRIBE_DATA = {
             vi: {
                 beginner: [
                     { emoji: '🐶', text: 'Con chó màu vàng đang vẫy đuôi.', prompt: 'Con vật trong tranh là gì?', options: ['Con chó', 'Con mèo', 'Con chim'], correct: 0 },
                     { emoji: '🍎', text: 'Quả táo đỏ mọng trên cành cây.', prompt: 'Đây là loại quả gì?', options: ['Quả táo', 'Quả chuối', 'Quả cam'], correct: 0 },
                     { emoji: '🚗', text: 'Chiếc ô tô màu đỏ chạy trên đường.', prompt: 'Phương tiện này là gì?', options: ['Xe ô tô', 'Xe đạp', 'Tàu hỏa'], correct: 0 },
-                    { emoji: '🏠', text: 'Ngôi nhà nhỏ màu vàng có khu vườn xinh.', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Bệnh viện', 'Trường học'], correct: 0 }
+                    { emoji: '🏠', text: 'Ngôi nhà nhỏ màu vàng có khu vườn xinh.', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Bệnh viện', 'Trường học'], correct: 0 },
+                    { emoji: '🐱', text: 'Con mèo mướp đang nằm sưởi nắng.', prompt: 'Con vật trong tranh là gì?', options: ['Con mèo', 'Con chó', 'Con heo'], correct: 0 },
+                    { emoji: '🍌', text: 'Nải chuối chín vàng thơm ngọt.', prompt: 'Đây là quả gì?', options: ['Quả chuối', 'Quả táo', 'Quả lê'], correct: 0 },
+                    { emoji: '🐟', text: 'Chú cá nhỏ bơi lội tung tăng trong hồ.', prompt: 'Con vật trong tranh là gì?', options: ['Con cá', 'Con chim', 'Con ếch'], correct: 0 }
                 ],
                 intermediate: [
                     { emoji: '🌅', text: 'Buổi sáng bình minh trên biển, ông mặt trời đỏ rực nhô lên từ phía xa chiếu những tia nắng vàng óng ánh xuống mặt nước lăn tăn sóng.', prompt: 'Cảnh tượng trong tranh diễn ra vào lúc nào?', options: ['Buổi sáng bình minh', 'Buổi trưa nắng gắt', 'Đêm trăng sáng'], correct: 0 },
                     { emoji: '🚲', text: 'Bé An đạp chiếc xe đạp màu xanh dương qua con đường làng rợp bóng tre xanh mát vào mỗi buổi chiều.', prompt: 'Bé An đang làm gì vào buổi chiều?', options: ['Đạp xe đạp qua đường làng', 'Chạy bộ công viên', 'Đi học vẽ tranh'], correct: 0 },
-                    { emoji: '🍜', text: 'Tô phở bò nóng hổi khói nghi ngút đặt trên bàn, kèm theo đĩa rau thơm tươi ngon và vài lát chanh tươi.', prompt: 'Món ăn được miêu tả là gì?', options: ['Tô phở bò nóng hổi', 'Bún chả giò', 'Mì ý sốt cà chua'], correct: 0 }
+                    { emoji: '🍜', text: 'Tô phở bò nóng hổi khói nghi ngút đặt trên bàn, kèm theo đĩa rau thơm tươi ngon và vài lát chanh tươi.', prompt: 'Món ăn được miêu tả là gì?', options: ['Tô phở bò nóng hổi', 'Bún chả giò', 'Mì ý sốt cà chua'], correct: 0 },
+                    { emoji: '🌳', text: 'Khu vườn cổ tích xanh mướt có rất nhiều loài hoa đua nhau khoe sắc và những chú bướm rực rỡ bay lượn.', prompt: 'Khu vườn có đặc điểm gì?', options: ['Hoa khoe sắc và bướm bay', 'Cây cối khô héo', 'Tuyết trắng phủ kín'], correct: 0 },
+                    { emoji: '📚', text: 'Góc học tập gọn gàng với bàn gỗ xinh xắn, đèn bàn sáng rực và chồng sách vở xếp ngay ngắn.', prompt: 'Không gian này dùng để làm gì?', options: ['Góc học tập gọn gàng', 'Phòng khách tiếp khách', 'Nhà bếp nấu ăn'], correct: 0 }
                 ],
                 advanced: [
                     { emoji: '🏰', text: 'Lâu đài cổ kính nằm sừng sững trên đỉnh đồi cao, bao bọc bởi tường đá rêu phong và những cánh rừng nguyên sinh bạt ngàn sương mù bao phủ suốt bốn mùa.', prompt: 'Đặc điểm nào KHÔNG đúng với lâu đài trong đoạn văn?', options: ['Nằm ở thung lũng ngập tràn nắng', 'Nằm sừng sững trên đỉnh đồi cao', 'Bao bọc bởi tường đá rêu phong'], correct: 0 },
                     { emoji: '🚀', text: 'Con tàu vũ trụ khổng lồ phóng vút qua bầu trời đêm đầy sao, bắt đầu hành trình khám phá những thiên hà xa xôi ngoài hệ mặt trời.', prompt: 'Mục đích hành trình của con tàu vũ trụ là gì?', options: ['Khám phá các thiên hà xa xôi', 'Quay về Trái Đất nghỉ ngơi', 'Bay vòng quanh mặt trăng'], correct: 0 },
-                    { emoji: '🌊', text: 'Đại dương xanh thẳm ẩn chứa vô số điều kỳ diệu với những rặng san hô rực rỡ sắc màu và hàng ngàn loài sinh vật biển bơi lội tung tăng.', prompt: 'Đại dương xanh thẳm chứa đựng điều gì?', options: ['Rặng san hô và sinh vật biển', 'Những tòa nhà chọc trời', 'Đường cao tốc hiện đại'], correct: 0 }
+                    { emoji: '🌊', text: 'Đại dương xanh thẳm ẩn chứa vô số điều kỳ diệu với những rặng san hô rực rỡ sắc màu và hàng ngàn loài sinh vật biển bơi lội tung tăng.', prompt: 'Đại dương xanh thẳm chứa đựng điều gì?', options: ['Rặng san hô và sinh vật biển', 'Những tòa nhà chọc trời', 'Đường cao tốc hiện đại'], correct: 0 },
+                    { emoji: '🏔️', text: 'Dãy núi hùng vĩ vươn cao chạm đến những tầng mây trắng xóa, đỉnh núi phủ đầy tuyết trắng quanh năm tạo nên khung cảnh thiên nhiên ngoạn mục.', prompt: 'Cảnh quan dãy núi có điểm gì nổi bật?', options: ['Đỉnh núi phủ đầy tuyết trắng', 'Rừng nhiệt đới rậm rạp', 'Bãi biển cát vàng óng ánh'], correct: 0 }
                 ]
             },
             es: {
@@ -378,17 +392,23 @@
                     { emoji: '🐶', text: 'El perro marrón mueve su cola.', prompt: '¿Qué animal aparece en la imagen?', options: ['El perro', 'El gato', 'El pájaro'], correct: 0 },
                     { emoji: '🍎', text: 'La manzana roja cuelga del árbol.', prompt: '¿Qué fruta es esta?', options: ['La manzana', 'El plátano', 'La uva'], correct: 0 },
                     { emoji: '🚗', text: 'El coche rojo viaja por la calle.', prompt: '¿Qué vehículo es este?', options: ['El coche', 'La bicicleta', 'El avión'], correct: 0 },
-                    { emoji: '🏠', text: 'La pequeña casa amarilla con jardín.', prompt: '¿Qué lugar es este?', options: ['La casa', 'La escuela', 'El hospital'], correct: 0 }
+                    { emoji: '🏠', text: 'La pequeña casa amarilla con jardín.', prompt: '¿Qué lugar es este?', options: ['La casa', 'La escuela', 'El hospital'], correct: 0 },
+                    { emoji: '🐱', text: 'El gato duerme bajo el sol.', prompt: '¿Qué animal es este?', options: ['El gato', 'El perro', 'El ratón'], correct: 0 },
+                    { emoji: '🍌', text: 'Un plátano amarillo y dulce.', prompt: '¿Qué fruta es esta?', options: ['El plátano', 'La manzana', 'La pera'], correct: 0 },
+                    { emoji: '🐟', text: 'Un pez pequeño nada en el río.', prompt: '¿Qué animal es este?', options: ['El pez', 'El pájaro', 'La rana'], correct: 0 }
                 ],
                 intermediate: [
                     { emoji: '🌅', text: 'El amanecer en el mar muestra al sol brillante iluminando las suaves olas doradas de la mañana.', prompt: '¿En qué momento del día ocurre la escena?', options: ['Amanecer en la mañana', 'Mediodía soleado', 'Noche estrellada'], correct: 0 },
                     { emoji: '🚲', text: 'Sofía monta su bicicleta azul por el camino rodeado de árboles verdes todas las tardes.', prompt: '¿Qué hace Sofía todas las tardes?', options: ['Monta su bicicleta por el camino', 'Juega al fútbol', 'Pinta cuadros'], correct: 0 },
-                    { emoji: '🍜', text: 'Un plato de sopa caliente y deliciosa acompañada de hierbas frescas y limón.', prompt: '¿Qué platillo se describe?', options: ['Una sopa caliente y deliciosa', 'Pan con queso', 'Ensalada verde'], correct: 0 }
+                    { emoji: '🍜', text: 'Un plato de sopa caliente y deliciosa acompañada de hierbas frescas y limón.', prompt: '¿Qué platillo se describe?', options: ['Una sopa caliente y deliciosa', 'Pan con queso', 'Ensalada verde'], correct: 0 },
+                    { emoji: '🌳', text: 'Un jardín mágico lleno de flores coloridas y mariposas que vuelan alegremente.', prompt: '¿Cómo es el jardín?', options: ['Lleno de flores y mariposas', 'Seco y sin vida', 'Cubierto de nieve'], correct: 0 },
+                    { emoji: '📚', text: 'Un escritorio ordenado con lámpara brillante y libros apilados.', prompt: '¿Para qué sirve este espacio?', options: ['Para estudiar y leer', 'Para cocinar', 'Para dormir'], correct: 0 }
                 ],
                 advanced: [
                     { emoji: '🏰', text: 'El antiguo castillo se alza majestuoso sobre una colina alta, rodeado de murallas de piedra y bosques misteriosos cubiertos de neblina.', prompt: '¿Qué característica describe mejor al castillo?', options: ['Se alza majestuoso sobre una colina alta', 'Está en la playa tropical', 'Es una cabaña moderna'], correct: 0 },
                     { emoji: '🚀', text: 'La gigantesca nave espacial cruza velozmente el cielo estrellado, iniciando su gran misión de explorar lejanas galaxias.', prompt: '¿Cuál es la misión de la nave espacial?', options: ['Explorar lejanas galaxias', 'Regresar a la Tierra', 'Orbitar la luna únicamente'], correct: 0 },
-                    { emoji: '🌊', text: 'El océano profundo esconde maravillas increíbles con arrecifes de coral brillantes y miles de coloridas especies marinas.', prompt: '¿Qué esconde el océano profundo?', options: ['Arrecifes de coral y especies marinas', 'Carros y edificios', 'Montañas de hielo'], correct: 0 }
+                    { emoji: '🌊', text: 'El océano profundo esconde maravillas increíbles con arrecifes de coral brillantes y miles de coloridas especies marinas.', prompt: '¿Qué esconde el océano profundo?', options: ['Arrecifes de coral y especies marinas', 'Carros y edificios', 'Montañas de hielo'], correct: 0 },
+                    { emoji: '🏔️', text: 'Las majestuosas montañas se elevan hacia el cielo, con cumbres nevadas todo el año que forman un paisaje impresionante.', prompt: '¿Qué destaca del paisaje montañoso?', options: ['Cumbres nevadas todo el año', 'Selvas tropicales densas', 'Playas de arena dorada'], correct: 0 }
                 ]
             }
         };
@@ -427,7 +447,7 @@
             { id: 'cheese', vi: 'Phô mai', es: 'Queso', emoji: '🧀', cat: 'food', lvl: 6 },
             { id: 'honey', vi: 'Mật ong', es: 'Miel', emoji: '🍯', cat: 'food', lvl: 7 },
             
-            // Colors & Shapes (14 words)
+            // Colors & Shapes (10 words)
             { id: 'red', vi: 'Đỏ', es: 'Rojo', emoji: '🔴', cat: 'colors', lvl: 1 },
             { id: 'blue', vi: 'Xanh dương', es: 'Azul', emoji: '🔵', cat: 'colors', lvl: 1 },
             { id: 'yellow', vi: 'Vàng', es: 'Amarillo', emoji: '🟡', cat: 'colors', lvl: 1 },
@@ -439,7 +459,7 @@
             { id: 'purple', vi: 'Tím', es: 'Morado', emoji: '🟣', cat: 'colors', lvl: 5 },
             { id: 'orange_col', vi: 'Cam (màu)', es: 'Naranja', emoji: '🟠', cat: 'colors', lvl: 6 },
             
-            // Numbers (14 words)
+            // Numbers (10 words)
             { id: 'num1', vi: 'Một', es: 'Uno', emoji: '1️⃣', cat: 'numbers', lvl: 1 },
             { id: 'num2', vi: 'Hai', es: 'Dos', emoji: '2️⃣', cat: 'numbers', lvl: 1 },
             { id: 'num3', vi: 'Ba', es: 'Tres', emoji: '3️⃣', cat: 'numbers', lvl: 1 },
@@ -451,7 +471,7 @@
             { id: 'num9', vi: 'Chín', es: 'Nueve', emoji: '9️⃣', cat: 'numbers', lvl: 6 },
             { id: 'num10', vi: 'Mười', es: 'Diez', emoji: '🔟', cat: 'numbers', lvl: 7 },
 
-            // Body (12 words)
+            // Body (10 words)
             { id: 'eye', vi: 'Mắt', es: 'Ojo', emoji: '👁️', cat: 'body', lvl: 1 },
             { id: 'nose', vi: 'Mũi', es: 'Nariz', emoji: '👃', cat: 'body', lvl: 1 },
             { id: 'mouth', vi: 'Miệng', es: 'Boca', emoji: '👄', cat: 'body', lvl: 1 },
@@ -462,7 +482,7 @@
             { id: 'hair', vi: 'Tóc', es: 'Pelo', emoji: '💇', cat: 'body', lvl: 6 },
             { id: 'tooth', vi: 'Răng', es: 'Diente', emoji: '🦷', cat: 'body', lvl: 7 },
             
-            // Home (12 words)
+            // Home (10 words)
             { id: 'house', vi: 'Nhà', es: 'Casa', emoji: '🏠', cat: 'home', lvl: 1 },
             { id: 'bed', vi: 'Giường', es: 'Cama', emoji: '🛏️', cat: 'home', lvl: 1 },
             { id: 'door', vi: 'Cửa', es: 'Puerta', emoji: '🚪', cat: 'home', lvl: 2 },
@@ -472,7 +492,7 @@
             { id: 'book', vi: 'Sách', es: 'Libro', emoji: '📖', cat: 'home', lvl: 6 },
             { id: 'pen', vi: 'Bút', es: 'Bolígrafo', emoji: '🖊️', cat: 'home', lvl: 7 },
             
-            // Vehicles (10 words)
+            // Vehicles (6 words)
             { id: 'car', vi: 'Xe ô tô', es: 'Coche', emoji: '🚗', cat: 'vehicles', lvl: 1 },
             { id: 'bike', vi: 'Xe đạp', es: 'Bicicleta', emoji: '🚲', cat: 'vehicles', lvl: 1 },
             { id: 'bus', vi: 'Xe buýt', es: 'Autobús', emoji: '🚌', cat: 'vehicles', lvl: 3 },
@@ -497,7 +517,6 @@
             TOPICS_CONFIG.forEach(topic => {
                 const words = VOCAB_DATABASE.filter(w => w.cat === topic.id);
                 if(words.length === 0) return;
-                // Generate 7 progressive levels
                 const levels = {
                     level1: words.filter(w=>w.lvl===1),
                     level2: words.filter(w=>w.lvl===2),
@@ -507,7 +526,6 @@
                     level6: words.filter(w=>w.lvl===6),
                     level7: words.filter(w=>w.lvl===7)
                 };
-                // Fallback fill if any level is empty
                 Object.keys(levels).forEach((lvlKey, idx) => {
                     if(levels[lvlKey].length === 0) {
                         levels[lvlKey] = [words[idx % words.length]];
@@ -569,12 +587,14 @@
             const idEl = document.getElementById('prof-edit-id');
             const nameEl = document.getElementById('prof-name');
             const emojiEl = document.getElementById('prof-emoji');
+            const langEl = document.getElementById('prof-lang');
             const levelEl = document.getElementById('prof-level');
             const modal = document.getElementById('profile-modal');
             
             if(idEl) idEl.value = currentProfile.id;
             if(nameEl) nameEl.value = currentProfile.name;
             if(emojiEl) emojiEl.value = currentProfile.emoji;
+            if(langEl) langEl.value = currentProfile.lang || 'both';
             if(levelEl) levelEl.value = currentProfile.level || 'beginner';
             window.closeSettings();
             if(modal) modal.classList.remove('hidden');
@@ -587,12 +607,14 @@
             const idEl = document.getElementById('prof-edit-id');
             const nameEl = document.getElementById('prof-name');
             const emojiEl = document.getElementById('prof-emoji');
+            const langEl = document.getElementById('prof-lang');
             const levelEl = document.getElementById('prof-level');
-            if(!idEl || !nameEl || !emojiEl || !levelEl) return;
+            if(!idEl || !nameEl || !emojiEl || !langEl || !levelEl) return;
             
             const id = idEl.value;
             const name = nameEl.value.trim();
             const emoji = emojiEl.value.trim() || '👦';
+            const profileLang = langEl.value;
             const level = levelEl.value;
             if(!name) { alert('Vui lòng nhập tên!'); return; }
             
@@ -601,13 +623,10 @@
             if(idx > -1) {
                 saved[idx].name = name;
                 saved[idx].emoji = emoji;
+                saved[idx].lang = profileLang;
                 saved[idx].level = level;
                 localStorage.setItem('vuihoc_modern_profiles', JSON.stringify(saved));
-                currentProfile = saved[idx];
-                const nameElDash = document.getElementById('dash-name');
-                const avatarElDash = document.getElementById('dash-avatar');
-                if(nameElDash) nameElDash.innerText = currentProfile.name;
-                if(avatarElDash) avatarElDash.innerText = currentProfile.emoji;
+                window.selectProfile(saved[idx]);
             }
             window.closeProfileModal();
         };
@@ -622,7 +641,7 @@
             activeAlphabet.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'btn-3d bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 flex flex-col items-center justify-center cursor-pointer';
-                card.onclick = () => window.speakText(item.char, currentLang === 'es' ? 'es-ES' : 'vi-VN');
+                card.onclick = () => window.speakText(item.word, currentLang === 'es' ? 'es-ES' : 'vi-VN');
                 card.innerHTML = `<span class="text-3xl font-game text-amber-800">${item.char}</span><span class="text-2xl mt-1">${item.emoji}</span><span class="text-[10px] font-bold text-gray-500 mt-0.5">${item.word}</span>`;
                 grid.appendChild(card);
             });
@@ -633,7 +652,7 @@
         window.createProfile = function() {
             const name = prompt(currentLang === 'es' ? '¿Nombre del usuario?' : "Tên người dùng mới? (User Name):", "User " + Math.floor(Math.random()*100));
             if(name) {
-                const p = { id: Date.now().toString(), name, emoji: ['👦','👧','🐯','🐱','🦊','🐼'][Math.floor(Math.random()*6)], level: 'beginner', stars: 0, progress: {} };
+                const p = { id: Date.now().toString(), name, emoji: ['👦','👧','🐯','🐱','🦊','🐼'][Math.floor(Math.random()*6)], lang: 'both', level: 'beginner', stars: 0, progress: {} };
                 let profiles = JSON.parse(localStorage.getItem('vuihoc_modern_profiles') || '[]');
                 profiles.push(p); localStorage.setItem('vuihoc_modern_profiles', JSON.stringify(profiles));
                 loadProfiles(); window.selectProfile(p);
@@ -644,8 +663,8 @@
             let saved = JSON.parse(localStorage.getItem('vuihoc_modern_profiles') || '[]');
             if (saved.length === 0) {
                 saved = [
-                    { id: '1', name: 'An', emoji: '🐯', level: 'advanced', stars: 24, progress: {} },
-                    { id: '2', name: 'Sofia', emoji: '🌸', level: 'beginner', stars: 12, progress: {} }
+                    { id: '1', name: 'An', emoji: '🐯', lang: 'vi', level: 'advanced', stars: 24, progress: {} },
+                    { id: '2', name: 'Sofia', emoji: '🌸', lang: 'es', level: 'beginner', stars: 12, progress: {} }
                 ];
                 localStorage.setItem('vuihoc_modern_profiles', JSON.stringify(saved));
             }
@@ -656,13 +675,21 @@
                 const btn = document.createElement('div');
                 btn.className = 'btn-3d w-40 h-48 bg-white rounded-3xl border-4 border-amber-300 flex flex-col items-center justify-center cursor-pointer';
                 btn.onclick = () => window.selectProfile(p);
-                btn.innerHTML = `<span class="text-6xl mb-2">${p.emoji}</span><span class="font-game text-xl">${p.name}</span><span class="text-amber-500 font-bold mt-1">⭐ ${p.stars || 0}</span>`;
+                btn.innerHTML = `<span class="text-6xl mb-2">${p.emoji}</span><span class="font-game text-xl">${p.name}</span><span class="text-xs text-blue-600 font-bold uppercase mt-1">${p.lang==='vi'?'🇻🇳 VI':p.lang==='es'?'🇪🇸 ES':'🌍 Bilingual'}</span><span class="text-amber-500 font-bold mt-1">⭐ ${p.stars || 0}</span>`;
                 container.appendChild(btn);
             });
         }
 
         window.selectProfile = function(p) {
             currentProfile = p;
+            if(p.lang && p.lang !== 'both') {
+                currentLang = p.lang;
+                const sw = document.getElementById('language-switcher-container');
+                if(sw) sw.style.display = 'none'; // Hide switcher if profile is locked to single language
+            } else {
+                const sw = document.getElementById('language-switcher-container');
+                if(sw) sw.style.display = 'flex';
+            }
             const nameEl = document.getElementById('dash-name');
             const avatarEl = document.getElementById('dash-avatar');
             const starsEl = document.getElementById('dash-stars');
@@ -1203,4 +1230,3 @@
     </script>
 </body>
 </html>
-```eof
