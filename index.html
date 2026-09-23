@@ -10,12 +10,11 @@
     
     <title>Vui Học - Thế Giới Ngôn Ngữ Kỳ Diệu</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --primary: #f59e0b; --primary-dark: #d97706; --bg-light: #fdfaf6;
-        }
+        :root { --primary: #f59e0b; --primary-dark: #d97706; --bg-light: #fdfaf6; }
         body {
             font-family: 'Nunito', system-ui, sans-serif !important;
             background-color: var(--bg-light); color: #1f2937;
@@ -24,19 +23,14 @@
             transition: background-color 0.4s ease, color 0.4s ease;
         }
         h1, h2, h3, .font-game { font-family: 'Nunito', sans-serif !important; font-weight: 900; letter-spacing: 0.5px; }
-
         .cultural-bg {
             background-image: radial-gradient(#e5e7eb 2px, transparent 2px), radial-gradient(#e5e7eb 2px, transparent 2px);
             background-size: 50px 50px; background-position: 0 0, 25px 25px;
         }
-
         body.dark-mode { background-color: #0f172a !important; color: #f8fafc !important; }
         body.dark-mode .cultural-bg { background-image: radial-gradient(#334155 2px, transparent 2px), radial-gradient(#334155 2px, transparent 2px); }
         body.dark-mode .bg-white { background-color: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important; }
         body.dark-mode .text-gray-800, body.dark-mode .text-gray-700 { color: #f8fafc !important; }
-
-        .screen-container { transition: opacity 0.3s ease, transform 0.3s ease; width: 100%; display: flex; flex-direction: column; align-items: center; }
-        .screen-hidden { opacity: 0 !important; transform: scale(0.98) !important; pointer-events: none; position: absolute; display: none !important; }
 
         .btn-3d {
             transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
@@ -46,647 +40,132 @@
         .btn-3d:active {
             transform: translateY(8px) !important; box-shadow: 0 0px 0px rgba(0,0,0,0.15), 0 5px 5px rgba(0,0,0,0.1) !important;
         }
-
         .floating { animation: float 3s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
         .pop-in { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-
-        #confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 9999; overflow: hidden; }
-        .confetti { position: absolute; width: 12px; height: 24px; animation: fall 3s linear forwards; }
-        @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
-
         canvas { display: block; width: 100%; height: 100%; touch-action: none; }
     </style>
 </head>
-<body id="app-body" class="min-h-screen flex flex-col items-center p-3 sm:p-6 cultural-bg">
-    <div id="confetti-container"></div>
+<body class="min-h-screen flex flex-col items-center p-3 sm:p-6 cultural-bg">
+    <div id="app" class="w-full max-w-4xl flex flex-col items-center flex-1"></div>
 
-    <!-- Profile Edit Modal -->
-    <div id="profile-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[160] flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full border-4 border-amber-400 shadow-2xl text-left">
-            <h3 class="text-2xl font-game mb-6 text-gray-800 border-b-2 pb-2">✏️ Chỉnh Sửa Hồ Sơ</h3>
-            <input type="hidden" id="prof-edit-id" value="">
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Tên (Name):</label>
-                <input type="text" id="prof-name" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold" placeholder="VD: An, Sofia...">
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Biểu tượng (Emoji):</label>
-                <input type="text" id="prof-emoji" maxlength="2" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold text-2xl text-center" placeholder="🐯">
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Ngôn ngữ học (Language Track):</label>
-                <select id="prof-lang" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold">
-                    <option value="vi">🇻🇳 Chỉ Tiếng Việt (Vietnamese Only)</option>
-                    <option value="es">🇪🇸 Chỉ Tiếng Tây Ban Nha (Spanish Only)</option>
-                    <option value="both">🌍 Song ngữ (Both / Bilingual)</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Cấp độ (Proficiency Level):</label>
-                <select id="prof-level" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold">
-                    <option value="beginner">👶 Mới học (Beginner)</option>
-                    <option value="intermediate">👦 Cơ bản (Intermediate)</option>
-                    <option value="advanced">🎓 Nâng cao (Advanced)</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <button type="button" onclick="window.resetCurrentProfileProgress()" class="w-full bg-amber-100 hover:bg-amber-200 text-amber-700 font-black py-3 rounded-xl border-2 border-amber-300 text-sm">🔄 Đặt Lại Điểm & Tiến Trình Này</button>
-            </div>
-            <div class="mb-6">
-                <button type="button" onclick="window.deleteCurrentProfile()" class="w-full bg-red-100 hover:bg-red-200 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm">🗑️ Xóa Hồ Sơ Này (Delete Profile)</button>
-            </div>
-            <div class="flex gap-3">
-                <button type="button" onclick="window.closeProfileModal()" class="btn-3d flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-2xl">Hủy</button>
-                <button type="button" onclick="window.saveProfileData()" class="btn-3d flex-1 bg-amber-600 text-white font-game py-3 rounded-2xl shadow-md">Lưu</button>
-            </div>
-        </div>
-    </div>
+    <script>
+        // --- CENTRALIZED APP STATE ---
+        const STATE = {
+            screen: 'profiles', // 'profiles', 'dashboard', 'lesson', 'alphabet', 'describe', 'memory', 'slicer'
+            profiles: JSON.parse(localStorage.getItem('vuihoc_profiles_v32') || 'null') || [
+                { id: '1', name: 'An', emoji: '🐯', lang: 'vi', level: 'beginner', stars: 15, progress: {} },
+                { id: '2', name: 'Sofia', emoji: '🌸', lang: 'es', level: 'intermediate', stars: 28, progress: {} }
+            ],
+            currentProfileId: null,
+            lang: 'vi',
+            darkMode: false,
+            // Lesson runner state
+            activeTopic: null,
+            activeLevel: 1,
+            lessonWords: [],
+            lessonIdx: 0,
+            showReport: false,
+            // Turn Timer State
+            timerSeconds: 120,
+            timerRunning: false,
+            timerInterval: null,
+            // Modals
+            showSettings: false,
+            showEditProfile: false,
+            editTarget: null,
+            showAlphabet: false,
+            // Game states
+            describeList: [],
+            describeIdx: 0,
+            memoryPairs: 4,
+            memoryDeck: [],
+            memoryFirst: null,
+            memoryMatches: 0,
+            memoryDone: false,
+            slicerScore: 0,
+            slicerActive: false
+        };
 
-    <!-- Settings Modal -->
-    <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[150] flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full border-4 border-amber-400 shadow-2xl text-left">
-            <h3 class="text-2xl font-game mb-6 text-gray-800 border-b-2 pb-2">⚙️ Cài Đặt (Settings)</h3>
-            <div class="mb-4 flex justify-between items-center bg-gray-100 p-3 rounded-xl border-2 border-gray-300">
-                <label class="text-gray-700 font-bold">Ban đêm (Dark Mode):</label>
-                <input type="checkbox" id="dark-mode-toggle" class="w-6 h-6 cursor-pointer" onclick="window.toggleDarkMode(this.checked)">
-            </div>
-            <div class="mb-3">
-                <button type="button" onclick="window.openProfileModalForCurrent(); window.closeSettings();" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-black py-3 rounded-xl border-2 border-blue-300 text-sm">✏️ Chỉnh Sửa Hồ Sơ Hiện Tại</button>
-            </div>
-            <div class="mb-3">
-                <button type="button" onclick="window.resetProgress(); window.closeSettings();" class="w-full bg-red-100 hover:bg-red-200 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm">🔄 Đặt Lại Điểm Toàn Bộ</button>
-            </div>
-            <div class="mb-6">
-                <button type="button" onclick="window.deleteCurrentProfileFromSettings(); window.closeSettings();" class="w-full bg-rose-100 hover:bg-rose-200 text-rose-700 font-black py-3 rounded-xl border-2 border-rose-300 text-sm">🗑️ Xóa Hồ Sơ Này (Delete Profile)</button>
-            </div>
-            <button type="button" onclick="window.closeSettings()" class="btn-3d w-full bg-amber-600 text-white font-game py-3 rounded-2xl border-b-4 border-amber-800 text-lg text-center">Đóng (Close)</button>
-        </div>
-    </div>
-
-    <!-- Alphabet Modal -->
-    <div id="alphabet-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-[150] flex flex-col items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 max-w-2xl w-full border-4 border-amber-400 shadow-2xl card-pop flex flex-col max-h-[90vh]">
-            <div class="flex justify-between items-center mb-4 border-b-2 pb-2">
-                <h3 id="alphabet-modal-title" class="text-2xl font-game text-amber-700">🪷 Bảng Chữ Cái (Alphabet)</h3>
-                <button type="button" onclick="window.closeAlphabetModal()" class="btn-3d px-4 py-2 bg-gray-200 rounded-xl font-bold">✕ Đóng</button>
-            </div>
-            <div id="alphabet-grid" class="flex-1 overflow-y-auto grid grid-cols-4 sm:grid-cols-6 gap-3 p-2"></div>
-        </div>
-    </div>
-
-    <!-- Post-Lesson Progression Menu Modal -->
-    <div id="report-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[170] flex items-center justify-center p-4">
-        <div class="bg-white rounded-[3rem] p-8 max-w-sm w-full border-4 border-amber-300 shadow-2xl text-center pop-in">
-            <span class="text-7xl mb-4 block animate-bounce">🏆</span>
-            <h3 id="report-title" class="text-3xl font-game text-amber-900 mb-2">Hoàn Thành Cấp Độ!</h3>
-            <p id="report-subtitle" class="text-gray-600 font-bold mb-6">Bạn đã nhận <span class="text-amber-600 font-black">+5 ⭐</span>. Muốn làm gì tiếp theo?</p>
-            
-            <div class="flex flex-col gap-3">
-                <button type="button" onclick="window.restartSameLessonWithNewWords()" id="btn-new-words" class="btn-3d w-full bg-blue-500 hover:bg-blue-600 text-white font-game text-base py-3 rounded-2xl shadow-md">🔄 Học Thêm Từ Mới (New Words)</button>
-                <button type="button" onclick="window.advanceToNextLevel()" id="btn-next-level" class="btn-3d w-full bg-emerald-500 hover:bg-emerald-600 text-white font-game text-base py-3 rounded-2xl shadow-md">⬆️ Thử Cấp Tiếp Theo (Next Level)</button>
-                <button type="button" onclick="window.closeReportCard()" id="btn-continue" class="btn-3d w-full bg-amber-500 hover:bg-amber-600 text-white font-game text-base py-3 rounded-2xl shadow-md">🏠 Về Trang Chủ (Dashboard)</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Screen 1: Profiles -->
-    <div id="screen-profiles" class="screen-container flex-1 w-full max-w-4xl flex flex-col items-center justify-center text-center">
-        <header class="mb-10 w-full mt-4 relative">
-            <button type="button" onclick="window.openSettings()" class="absolute top-0 right-0 btn-3d px-4 py-2 bg-white text-gray-700 font-bold rounded-2xl border-2 border-gray-300 text-sm shadow-sm">⚙️</button>
-            <div class="text-6xl mb-4 floating">🪷</div>
-            <h1 class="text-4xl sm:text-6xl font-game text-amber-600 mb-2 drop-shadow-sm">Vui Học</h1>
-            <p id="sub-title-main" class="text-sm sm:text-xl text-gray-500 font-bold mb-6 tracking-wide uppercase">Thế Giới Ngôn Ngữ Kỳ Diệu</p>
-        </header>
-        <div id="profiles-container" class="flex flex-wrap justify-center gap-6 w-full mb-8"></div>
-        <button type="button" onclick="window.createProfile()" id="add-profile-btn" class="btn-3d px-8 py-4 bg-amber-500 text-white font-game text-xl rounded-[2rem] border-4 border-amber-600">➕ Thêm Tên Người Dùng (Add User)</button>
-    </div>
-
-    <!-- Screen 2: Dashboard -->
-    <div id="screen-dashboard" class="screen-container screen-hidden flex-1 w-full max-w-4xl flex-col items-center pb-24 mt-2 hidden">
-        <div class="w-full flex justify-between items-center p-4 bg-white/90 backdrop-blur-md rounded-3xl shadow-lg border-2 border-amber-200 mb-6">
-            <button type="button" onclick="window.showScreen('profiles')" id="dash-btn-switch" class="btn-3d px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold rounded-2xl text-sm">⬅️ Đổi Hồ Sơ</button>
-            
-            <div class="flex items-center gap-3">
-                <span id="dash-avatar" class="text-3xl bg-amber-100 p-2 rounded-2xl shadow-inner">🐯</span>
-                <div class="text-left">
-                    <div id="dash-name" class="font-black text-xl text-gray-800">Tên</div>
-                    <div class="text-amber-600 font-black text-sm">⭐ <span id="dash-stars">0</span> Stars</div>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-2">
-                <div id="language-switcher-container" class="flex bg-amber-100 rounded-2xl p-1 border border-amber-200">
-                    <button type="button" onclick="window.toggleLanguage('vi')" id="lang-vi" class="px-3 py-1.5 rounded-xl text-sm font-black transition-colors bg-amber-500 text-white shadow-sm">VI</button>
-                    <button type="button" onclick="window.toggleLanguage('es')" id="lang-es" class="px-3 py-1.5 rounded-xl text-sm font-black transition-colors text-gray-700">ES</button>
-                </div>
-                <button type="button" onclick="window.openSettings()" class="p-2.5 bg-amber-100 hover:bg-amber-200 rounded-2xl text-sm shadow-sm text-gray-800" title="Cài đặt">⚙️</button>
-            </div>
-        </div>
-
-        <!-- Turn Timer Bar with Flexible Duration Options -->
-        <div class="w-full bg-white/90 backdrop-blur-md p-4 rounded-3xl shadow-md border-2 border-amber-200 mb-6 flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-center gap-2">
-                <span class="text-2xl">⏳</span>
-                <div>
-                    <div id="timer-label" class="font-black text-gray-800 text-sm">Hẹn Giờ Lượt Chơi (Turn Timer)</div>
-                    <div id="timer-sub" class="text-xs text-gray-500 font-bold">Chọn thời gian và bắt đầu phiên chơi công bằng</div>
-                </div>
-            </div>
-            <div class="flex flex-wrap items-center gap-3">
-                <div class="flex bg-gray-100 p-1 rounded-2xl gap-1 border">
-                    <button type="button" onclick="window.setTimerMinutes(2)" class="px-2.5 py-1 text-xs font-black bg-white rounded-xl shadow-sm timer-opt" data-mins="2">2m</button>
-                    <button type="button" onclick="window.setTimerMinutes(5)" class="px-2.5 py-1 text-xs font-black text-gray-600 rounded-xl timer-opt" data-mins="5">5m</button>
-                    <button type="button" onclick="window.setTimerMinutes(10)" class="px-2.5 py-1 text-xs font-black text-gray-600 rounded-xl timer-opt" data-mins="10">10m</button>
-                </div>
-                <span id="turn-timer-display" class="font-black text-xl text-amber-600 bg-amber-50 px-4 py-1.5 rounded-2xl border border-amber-200">2:00</span>
-                <button type="button" onclick="window.toggleTurnTimer()" id="timer-toggle-btn" class="px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md">Bắt Đầu ⏱️</button>
-            </div>
-        </div>
-
-        <!-- Quick Games & Mini-Apps Bar -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full mb-8">
-            <button type="button" onclick="window.openAlphabetModal()" class="btn-3d py-4 bg-amber-500 text-white font-black text-base rounded-3xl flex flex-col items-center">
-                <span class="text-3xl mb-1">🔤</span> <span id="arcade-btn-alpha">Bảng Chữ Cái</span>
-            </button>
-            <button type="button" onclick="window.startMemoryGame()" class="btn-3d py-4 bg-purple-600 text-white font-black text-base rounded-3xl flex flex-col items-center">
-                <span class="text-3xl mb-1">🧠</span> <span id="arcade-btn-memory">Lật Hình Cặp</span>
-            </button>
-            <button type="button" onclick="window.startDescribeGame()" class="btn-3d py-4 bg-teal-600 text-white font-black text-base rounded-3xl flex flex-col items-center">
-                <span class="text-3xl mb-1">🖼️</span> <span id="arcade-btn-describe">Mô Tả Tranh</span>
-            </button>
-            <button type="button" onclick="window.startSlicerGame()" class="btn-3d py-4 bg-orange-500 text-white font-black text-base rounded-3xl flex flex-col items-center">
-                <span class="text-3xl mb-1">🍉</span> <span id="arcade-btn-slicer">Chém Từ HD</span>
-            </button>
-        </div>
-
-        <!-- Curriculum Roadmap -->
-        <div class="w-full space-y-6">
-            <h2 id="curriculum-title" class="text-3xl font-game text-amber-900 text-center mb-6 flex items-center justify-center gap-2"><span>📚</span> Bản Đồ Học Tập Thực Tế (7 Cấp Độ HD)</h2>
-            <div id="lessons-map" class="w-full space-y-4"></div>
-        </div>
-    </div>
-
-    <!-- Screen 3: Lesson Screen -->
-    <div id="screen-game" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-[#fefae0] hidden overflow-y-auto pt-8 px-4 pb-12">
-        <div class="w-full max-w-md flex justify-between items-center mb-6">
-            <button type="button" onclick="window.exitGame()" id="lesson-btn-exit" class="btn-3d px-4 py-2 bg-white rounded-2xl font-extrabold text-gray-800 shadow-sm border border-gray-200">⬅️ Thoát</button>
-            <span id="game-progress" class="font-black text-amber-800 uppercase tracking-widest text-sm bg-amber-100 px-4 py-1.5 rounded-full">Topic • L1</span>
-        </div>
-
-        <div id="active-card" onclick="window.playCurrentWordAudio()" class="bg-white border-4 border-amber-300 rounded-[3rem] p-6 w-full max-w-md flex flex-col items-center shadow-2xl mb-8 cursor-pointer overflow-hidden group">
-            <div class="w-full h-72 rounded-3xl overflow-hidden mb-6 shadow-inner relative bg-gray-100 flex items-center justify-center">
-                <img id="active-photo" src="" alt="HD Photo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.style.display='none'; document.getElementById('active-emoji-fallback').style.display='block';">
-                <span id="active-emoji-fallback" class="text-8xl hidden">🔢</span>
-            </div>
-            <h2 id="active-word" class="text-4xl font-black text-gray-800 text-center">Chó</h2>
-        </div>
-
-        <div class="flex flex-col items-center gap-4 w-full max-w-md">
-            <button type="button" onclick="window.playCurrentWordAudio()" class="w-24 h-24 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-4xl shadow-lg active:translate-y-1 text-white transition-all">🔊</button>
-            <button type="button" onclick="window.skipWord()" id="lesson-btn-next" class="btn-3d w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black text-xl rounded-2xl">Tiếp Theo ➡️</button>
-        </div>
-    </div>
-
-    <!-- Screen 4: Picture Description Game -->
-    <div id="screen-describe" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-teal-50 hidden overflow-y-auto pt-8 px-4 pb-12">
-        <div class="w-full max-w-lg flex justify-between items-center mb-6">
-            <button type="button" onclick="window.exitDescribeGame()" id="desc-btn-exit" class="btn-3d px-4 py-2 bg-white text-teal-800 font-black rounded-2xl shadow-sm border border-teal-200">⬅️ Thoát</button>
-            <span id="desc-game-progress" class="font-black text-teal-900 bg-teal-100 px-4 py-1.5 rounded-full">Thử Thách Mô Tả Tranh (1)</span>
-        </div>
-        <div class="bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-teal-300 shadow-2xl w-full max-w-lg text-center">
-            <div class="w-full h-64 rounded-3xl overflow-hidden mb-6 shadow-inner bg-gray-100 flex items-center justify-center">
-                <span id="desc-game-emoji" class="text-8xl">🐶</span>
-            </div>
-            <h3 id="desc-game-prompt" class="text-2xl font-black text-teal-900 mb-6">Con vật trong ảnh là gì?</h3>
-            <div id="desc-game-options" class="w-full flex flex-col gap-3"></div>
-        </div>
-    </div>
-
-    <!-- Screen: Memory Match Game -->
-    <div id="screen-memory" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-purple-50 hidden overflow-y-auto pt-6 px-4 pb-12">
-        <div class="w-full max-w-xl flex justify-between items-center mb-6">
-            <button type="button" onclick="window.exitMemoryGame()" id="mem-btn-exit" class="btn-3d px-4 py-2 bg-white text-purple-900 font-black rounded-2xl shadow-sm border border-purple-200">⬅️ Thoát</button>
-            <div class="bg-purple-600 px-4 py-2 rounded-2xl text-white font-black shadow-md"><span id="mem-lbl-pairs">Cặp</span>: <span id="memory-score">0</span> / <span id="memory-total-pairs">4</span></div>
-        </div>
-        <div class="bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-purple-300 shadow-2xl w-full max-w-xl text-center">
-            <h3 id="mem-title" class="text-2xl font-black text-purple-900 mb-2">🧠 Lật Hình Tìm Cặp (Memory Match)</h3>
-            <p id="mem-subtitle" class="text-sm text-purple-700 font-bold mb-6">Chạm vào thẻ để lật, nghe phát âm và tìm cặp đúng!</p>
-            <div id="memory-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6"></div>
-            
-            <div id="mem-post-game" class="hidden flex-col gap-3 pop-in bg-purple-50 p-6 rounded-3xl border-2 border-purple-200">
-                <h4 class="text-2xl font-game text-purple-800">🎉 Tuyệt Vời! Đã Hoàn Thành Ván!</h4>
-                <button type="button" onclick="window.startMemoryGame(4)" class="btn-3d w-full py-3 bg-purple-600 text-white font-game rounded-xl">🔄 Chơi Thêm Ván Nữa (New Round)</button>
-                <button type="button" onclick="window.startMemoryGame(6)" class="btn-3d w-full py-3 bg-indigo-600 text-white font-game rounded-xl">🔥 Thử Cấp Khó Hơn (6 Cặp Phức Tạp)</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Screen: Fruit Slicer -->
-    <div id="screen-slicer" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-slate-900 hidden">
-        <div class="absolute top-6 left-6 z-20"><button type="button" onclick="window.exitSlicer()" id="slice-btn-exit" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-600 font-black">Thoát</button></div>
-        <div class="absolute top-6 right-6 z-20 bg-orange-500 px-6 py-3 rounded-2xl text-white font-black text-xl shadow-lg"><span id="slice-lbl-score">Điểm</span>: <span id="slicer-score">0</span></div>
-        <canvas id="slicer-canvas"></canvas>
-    </div>
-
-    <script type="module">
-        let profiles = JSON.parse(localStorage.getItem('vuihoc_react_profiles_v31') || 'null') || [
-            { id: '1', name: 'An', emoji: '🐯', lang: 'vi', level: 'beginner', stars: 15, progress: {} },
-            { id: '2', name: 'Sofia', emoji: '🌸', lang: 'es', level: 'intermediate', stars: 28, progress: {} }
-        ];
-
-        let currentProfile = null;
-        let currentLang = 'vi';
-        let currentActiveLesson = null;
-        let currentLessonWordIdx = 0;
-
-        let turnTimerActive = false;
-        let turnTotalSeconds = 120;
-        let turnSecondsLeft = 120;
-        let turnTimerInterval = null;
-
-        function saveProfiles() {
-            localStorage.setItem('vuihoc_react_profiles_v31', JSON.stringify(profiles));
+        function saveState() {
+            localStorage.setItem('vuihoc_profiles_v32', JSON.stringify(STATE.profiles));
         }
 
-        const UI_TEXT = {
-            vi: {
-                switchProfile: '⬅️ Đổi Hồ Sơ',
-                timerTitle: 'Hẹn Giờ Lượt Chơi (Turn Timer)',
-                timerSub: 'Chọn thời gian và bắt đầu phiên chơi công bằng',
-                timerBtnStart: 'Bắt Đầu ⏱️',
-                timerBtnPause: 'Tạm Dừng',
-                timerBtnResume: 'Tiếp Tục',
-                alphaBtn: 'Bảng Chữ Cái',
-                memoryBtn: 'Lật Hình Cặp',
-                descBtn: 'Mô Tả Tranh',
-                slicerBtn: 'Chém Từ HD',
-                mapTitle: '📚 Bản Đồ Học Tập Thực Tế (7 Cấp Độ HD)',
-                exit: '⬅️ Thoát',
-                next: 'Tiếp Theo ➡️',
-                reportTitle: 'Hoàn Thành Cấp Độ!',
-                reportSub: 'Bạn đã nhận +5 ⭐. Muốn làm gì tiếp theo?',
-                newWordsBtn: '🔄 Học Thêm Từ Mới (New Words)',
-                nextLevelBtn: '⬆️ Thử Cấp Tiếp Theo (Next Level)',
-                continueBtn: '🏠 Về Trang Chủ (Dashboard)',
-                memTitle: '🧠 Lật Hình Tìm Cặp (Memory Match)',
-                memSub: 'Chạm vào thẻ để lật, nghe phát âm và tìm cặp đúng!',
-                memPairs: 'Cặp',
-                sliceScore: 'Điểm',
-                alertTimeUp: '⏰ Hết giờ lượt chơi! Đổi bạn khác nào!',
-                subTitleMain: 'Thế Giới Ngôn Ngữ Kỳ Diệu'
-            },
-            es: {
-                switchProfile: '⬅️ Cambiar Perfil',
-                timerTitle: 'Temporizador de Turno (Turn Timer)',
-                timerSub: 'Elige el tiempo para compartir turnos justamente',
-                timerBtnStart: 'Iniciar ⏱️',
-                timerBtnPause: 'Pausar',
-                timerBtnResume: 'Continuar',
-                alphaBtn: 'Alfabeto',
-                memoryBtn: 'Memoria de Parejas',
-                descBtn: 'Describir Imagen',
-                slicerBtn: 'Cortar Palabras',
-                mapTitle: '📚 Mapa de Aprendizaje (7 Niveles HD)',
-                exit: '⬅️ Salir',
-                next: 'Siguiente ➡️',
-                reportTitle: '¡Nivel Completado!',
-                reportSub: 'Has ganado +5 ⭐. ¿Qué quieres hacer?',
-                newWordsBtn: '🔄 Aprender Palabras Nuevas',
-                nextLevelBtn: '⬆️ Siguiente Nivel',
-                continueBtn: '🏠 Ir al Inicio (Dashboard)',
-                memTitle: '🧠 Memoria de Parejas (Memory Match)',
-                memSub: '¡Toca las tarjetas para voltearlas, escucha la pronunciación y encuentra las parejas!',
-                memPairs: 'Parejas',
-                sliceScore: 'Puntos',
-                alertTimeUp: '⏰ ¡Se acabó el tiempo del turno! ¡Cambien de jugador!',
-                subTitleMain: 'El Mundo Mágico de los Idiomas'
-            }
-        };
-
-        window.updateUILanguage = function() {
-            const t = UI_TEXT[currentLang];
-            const dashSwitch = document.getElementById('dash-btn-switch');
-            if(dashSwitch) dashSwitch.innerText = t.switchProfile;
-            const timerLabel = document.getElementById('timer-label');
-            if(timerLabel) timerLabel.innerText = t.timerTitle;
-            const timerSub = document.getElementById('timer-sub');
-            if(timerSub) timerSub.innerText = t.timerSub;
-            const aBtn = document.getElementById('arcade-btn-alpha');
-            if(aBtn) aBtn.innerText = t.alphaBtn;
-            const mBtn = document.getElementById('arcade-btn-memory');
-            if(mBtn) mBtn.innerText = t.memoryBtn;
-            const dBtn = document.getElementById('arcade-btn-describe');
-            if(dBtn) dBtn.innerText = t.descBtn;
-            const sBtn = document.getElementById('arcade-btn-slicer');
-            if(sBtn) sBtn.innerText = t.slicerBtn;
-            const cTitle = document.getElementById('curriculum-title');
-            if(cTitle) cTitle.innerHTML = `<span>📚</span> ${t.mapTitle}`;
-            const lExit = document.getElementById('lesson-btn-exit');
-            if(lExit) lExit.innerText = t.exit;
-            const lNext = document.getElementById('lesson-btn-next');
-            if(lNext) lNext.innerText = t.next;
-            const rTitle = document.getElementById('report-title');
-            if(rTitle) rTitle.innerText = t.reportTitle;
-            const rSub = document.getElementById('report-subtitle');
-            if(rSub) rSub.innerHTML = t.reportSub;
-            const btnNew = document.getElementById('btn-new-words');
-            if(btnNew) btnNew.innerText = t.newWordsBtn;
-            const btnNextLvl = document.getElementById('btn-next-level');
-            if(btnNextLvl) btnNextLvl.innerText = t.nextLevelBtn;
-            const btnCont = document.getElementById('btn-continue');
-            if(btnCont) btnCont.innerText = t.continueBtn;
-            const mTitle = document.getElementById('mem-title');
-            if(mTitle) mTitle.innerText = t.memTitle;
-            const mSub = document.getElementById('mem-subtitle');
-            if(mSub) mSub.innerText = t.memSub;
-            const mPairs = document.getElementById('mem-lbl-pairs');
-            if(mPairs) mPairs.innerText = t.memPairs;
-            const sScore = document.getElementById('slice-lbl-score');
-            if(sScore) sScore.innerText = t.sliceScore;
-            const descExit = document.getElementById('desc-btn-exit');
-            if(descExit) descExit.innerText = t.exit;
-            const memExit = document.getElementById('mem-btn-exit');
-            if(memExit) memExit.innerText = t.exit;
-            const sliceExit = document.getElementById('slice-btn-exit');
-            if(sliceExit) sliceExit.innerText = t.exit;
-            const subMain = document.getElementById('sub-title-main');
-            if(subMain) subMain.innerText = t.subTitleMain;
-        };
-
-        window.setTimerMinutes = function(mins) {
-            if(turnTimerActive) return;
-            turnTotalSeconds = mins * 60;
-            turnSecondsLeft = turnTotalSeconds;
-            const display = document.getElementById('turn-timer-display');
-            if(display) display.innerText = `${mins}:00`;
-            document.querySelectorAll('.timer-opt').forEach(btn => {
-                if(parseInt(btn.dataset.mins) === mins) {
-                    btn.className = "px-2.5 py-1 text-xs font-black bg-white rounded-xl shadow-sm timer-opt";
-                } else {
-                    btn.className = "px-2.5 py-1 text-xs font-black text-gray-600 rounded-xl timer-opt";
-                }
-            });
-        };
-
-        window.toggleTurnTimer = function() {
-            const btn = document.getElementById('timer-toggle-btn');
-            const display = document.getElementById('turn-timer-display');
-            const t = UI_TEXT[currentLang];
-            if(!turnTimerActive) {
-                turnTimerActive = true;
-                if(btn) { btn.innerText = t.timerBtnPause; btn.className = "px-4 py-2 bg-rose-500 text-white font-black rounded-2xl text-sm shadow-md"; }
-                turnTimerInterval = setInterval(() => {
-                    if(turnSecondsLeft > 0) {
-                        turnSecondsLeft--;
-                        const m = Math.floor(turnSecondsLeft / 60);
-                        const s = turnSecondsLeft % 60;
-                        if(display) display.innerText = `${m}:${s.toString().padStart(2,'0')}`;
-                    } else {
-                        clearInterval(turnTimerInterval);
-                        turnTimerActive = false;
-                        if(btn) { btn.innerText = t.timerBtnStart; btn.className = "px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md"; }
-                        alert(t.alertTimeUp);
-                        turnSecondsLeft = turnTotalSeconds;
-                        const m = Math.floor(turnSecondsLeft / 60);
-                        const s = turnSecondsLeft % 60;
-                        if(display) display.innerText = `${m}:${s.toString().padStart(2,'0')}`;
-                    }
-                }, 1000);
-            } else {
-                clearInterval(turnTimerInterval);
-                turnTimerActive = false;
-                if(btn) { btn.innerText = t.timerBtnResume; btn.className = "px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md"; }
-            }
-        };
-
-        window.speak = function(text, targetLang) {
+        function speak(text, forceLang) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
-                const lCode = targetLang || (currentLang === 'es' ? 'es-ES' : 'vi-VN');
+                const lCode = forceLang || (STATE.lang === 'es' ? 'es-ES' : 'vi-VN');
                 const utt = new SpeechSynthesisUtterance(text);
                 utt.lang = lCode;
                 window.speechSynthesis.speak(utt);
             }
-        };
+        }
 
-        window.triggerConfetti = function() {
-            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-        };
-
-        window.showScreen = function(sName) {
-            document.querySelectorAll('.screen-container').forEach(el => {
-                el.classList.add('screen-hidden');
-                el.classList.add('hidden');
-            });
-            const target = document.getElementById(`screen-${sName}`);
-            if (target) {
-                target.classList.remove('hidden');
-                setTimeout(() => target.classList.remove('screen-hidden'), 20);
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 130, spread: 90, origin: { y: 0.6 } });
             }
-        };
+        }
 
-        window.loadProfilesUI = function() {
-            const container = document.getElementById('profiles-container');
-            if (!container) return;
-            container.innerHTML = '';
-            profiles.forEach(p => {
-                const card = document.createElement('div');
-                card.className = "w-56 h-64 bg-white/95 backdrop-blur-md rounded-[2.5rem] border-4 border-amber-300 shadow-xl flex flex-col items-center justify-center p-6 cursor-pointer transform transition-all hover:-translate-y-2 relative group";
-                card.onclick = () => {
-                    currentProfile = p;
-                    if (p.lang && p.lang !== 'both') currentLang = p.lang;
-                    document.getElementById('dash-name').innerText = p.name;
-                    document.getElementById('dash-avatar').innerText = p.emoji;
-                    document.getElementById('dash-stars').innerText = p.stars;
-                    window.showScreen('dashboard');
-                    window.updateUILanguage();
-                    window.renderDashboardMap();
-                };
-                card.innerHTML = `
-                    <button onclick="event.stopPropagation(); window.openEditProfile('${p.id}')" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center text-sm shadow-sm">✏️</button>
-                    <span class="text-6xl mb-3">${p.emoji}</span>
-                    <h2 class="text-2xl font-black text-gray-800 mb-1">${p.name}</h2>
-                    <span class="text-xs font-black uppercase px-3 py-1 rounded-full bg-amber-100 text-amber-800 mb-3">⭐ ${p.stars} Stars</span>
-                `;
-                container.appendChild(card);
-            });
-        };
-
-        window.createProfile = function() {
-            const name = prompt("Tên bé hoặc người dùng mới? (Name):", "Bé " + Math.floor(Math.random()*100));
-            if (name) {
-                const newP = { id: Date.now().toString(), name, emoji: ['👦','👧','🐯','🐱','🦊','🐼'][Math.floor(Math.random()*6)], lang: 'vi', level: 'beginner', stars: 0, progress: {} };
-                profiles.push(newP);
-                saveProfiles();
-                window.loadProfilesUI();
-            }
-        };
-
-        window.openEditProfile = function(id) {
-            const p = profiles.find(item => item.id === id);
-            if(!p) return;
-            document.getElementById('prof-edit-id').value = p.id;
-            document.getElementById('prof-name').value = p.name;
-            document.getElementById('prof-emoji').value = p.emoji;
-            document.getElementById('prof-lang').value = p.lang || 'vi';
-            document.getElementById('prof-level').value = p.level || 'beginner';
-            document.getElementById('profile-modal').classList.remove('hidden');
-        };
-
-        window.closeProfileModal = function() {
-            document.getElementById('profile-modal').classList.add('hidden');
-        };
-
-        window.saveProfileData = function() {
-            const id = document.getElementById('prof-edit-id').value;
-            const name = document.getElementById('prof-name').value;
-            const emoji = document.getElementById('prof-emoji').value;
-            const lang = document.getElementById('prof-lang').value;
-            const level = document.getElementById('prof-level').value;
-
-            profiles = profiles.map(p => p.id === id ? { ...p, name, emoji, lang, level } : p);
-            saveProfiles();
-            window.closeProfileModal();
-            window.loadProfilesUI();
-            if (currentProfile && currentProfile.id === id) {
-                currentProfile = profiles.find(p => p.id === id);
-            }
-        };
-
-        window.deleteCurrentProfile = function() {
-            const id = document.getElementById('prof-edit-id').value;
-            if (confirm("Xóa vĩnh viễn hồ sơ này?")) {
-                profiles = profiles.filter(p => p.id !== id);
-                saveProfiles();
-                window.closeProfileModal();
-                window.loadProfilesUI();
-                window.showScreen('profiles');
-            }
-        };
-
-        window.deleteCurrentProfileFromSettings = function() {
-            if (!currentProfile) return;
-            if (confirm("Xóa vĩnh viễn hồ sơ hiện tại?")) {
-                profiles = profiles.filter(p => p.id !== currentProfile.id);
-                saveProfiles();
-                window.loadProfilesUI();
-                window.showScreen('profiles');
-            }
-        };
-
-        window.resetCurrentProfileProgress = function() {
-            const id = document.getElementById('prof-edit-id').value;
-            if (confirm("Đặt lại điểm và tiến trình của hồ sơ này?")) {
-                profiles = profiles.map(p => p.id === id ? { ...p, stars: 0, progress: {} } : p);
-                saveProfiles();
-                window.closeProfileModal();
-                window.loadProfilesUI();
-            }
-        };
-
-        window.openSettings = function() {
-            document.getElementById('settings-modal').classList.remove('hidden');
-        };
-        window.closeSettings = function() {
-            document.getElementById('settings-modal').classList.add('hidden');
-        };
-        window.toggleDarkMode = function(isDark) {
-            if(isDark) document.body.classList.add('dark-mode');
-            else document.body.classList.remove('dark-mode');
-        };
-        window.resetProgress = function() {
-            if(currentProfile && confirm("Đặt lại toàn bộ điểm?")) {
-                currentProfile.stars = 0; currentProfile.progress = {};
-                saveProfiles();
-                window.renderDashboardMap();
-                window.closeSettings();
-            }
-        };
-
-        window.openProfileModalForCurrent = function() {
-            if (currentProfile) window.openEditProfile(currentProfile.id);
-        };
-
-        window.toggleLanguage = function(l) {
-            currentLang = l;
-            document.getElementById('lang-vi').className = `px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${l==='vi'?'bg-amber-500 text-white shadow-sm':'text-gray-700'}`;
-            document.getElementById('lang-es').className = `px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${l==='es'?'bg-amber-500 text-white shadow-sm':'text-gray-700'}`;
-            window.updateUILanguage();
-            window.renderDashboardMap();
-        };
-
-        // Fully Populated 7 Categories with 4-6 rich items per level
+        // --- VOCABULARY & CURRICULUM DATABASE ---
         const TOPICS = [
-            { 
+            {
                 id: 'animals', vi: 'Động Vật', es: 'Animales', emoji: '🦁',
                 levels: {
-                    1: [{ vi: 'Chó', es: 'Perro', img: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80' },
+                    1: [
+                        { vi: 'Chó', es: 'Perro', img: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Mèo', es: 'Gato', img: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Chim', es: 'Pájaro', img: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Cá', es: 'Pez', img: 'https://images.unsplash.com/photo-1524704654690-b56c05c78a00?auto=format&fit=crop&w=600&q=80' }],
-                    2: [{ vi: 'Sư tử', es: 'León', img: 'https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Cá', es: 'Pez', img: 'https://images.unsplash.com/photo-1524704654690-b56c05c78a00?auto=format&fit=crop&w=600&q=80' }
+                    ],
+                    2: [
+                        { vi: 'Sư tử', es: 'León', img: 'https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Hổ', es: 'Tigre', img: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Bò', es: 'Vaca', img: 'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Ngựa', es: 'Caballo', img: 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=600&q=80' }],
-                    3: [{ vi: 'Voi', es: 'Elefante', img: 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Ngựa', es: 'Caballo', img: 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=600&q=80' }
+                    ],
+                    3: [
+                        { vi: 'Voi', es: 'Elefante', img: 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Khỉ', es: 'Mono', img: 'https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Gấu', es: 'Oso', img: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Hươu cao cổ', es: 'Jirafa', img: 'https://images.unsplash.com/photo-1534567153574-2b12153a87f0?auto=format&fit=crop&w=600&q=80' }],
-                    4: [{ vi: 'Thỏ', es: 'Conejo', img: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Hươu cao cổ', es: 'Jirafa', img: 'https://images.unsplash.com/photo-1534567153574-2b12153a87f0?auto=format&fit=crop&w=600&q=80' }
+                    ],
+                    4: [
+                        { vi: 'Thỏ', es: 'Conejo', img: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Sóc', es: 'Ardilla', img: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Cáo', es: 'Zorro', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Sói', es: 'Lobo', img: 'https://images.unsplash.com/photo-1561731216-c3a4d99437d5?auto=format&fit=crop&w=600&q=80' }],
-                    5: [{ vi: 'Rùa', es: 'Tortuga', img: 'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Ếch', es: 'Rana', img: 'https://images.unsplash.com/photo-1534067783941-51c9c23ecefd?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Rắn', es: 'Serpiente', img: 'https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?auto=format&fit=crop&w=600&q=80' }],
-                    6: [{ vi: 'Cá voi', es: 'Ballena', img: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Cá mập', es: 'Tiburón', img: 'https://images.unsplash.com/photo-1560275619-4d6236189f06?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Cá heo', es: 'Delfín', img: 'https://images.unsplash.com/photo-1570455855949-a34e40a049f7?auto=format&fit=crop&w=600&q=80' }],
-                    7: [{ vi: 'Đại bàng', es: 'Águila', img: 'https://images.unsplash.com/photo-1611689342806-0863700ce1e4?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Cú mèo', es: 'Búho', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=600&q=80' }]
+                        { vi: 'Cáo', es: 'Zorro', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=600&q=80' }
+                    ],
+                    5: [{ vi: 'Rùa', es: 'Tortuga', img: 'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=600&q=80' }],
+                    6: [{ vi: 'Cá voi', es: 'Ballena', img: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80' }],
+                    7: [{ vi: 'Đại bàng', es: 'Águila', img: 'https://images.unsplash.com/photo-1611689342806-0863700ce1e4?auto=format&fit=crop&w=600&q=80' }]
                 }
             },
-            { 
+            {
                 id: 'food', vi: 'Ẩm Thực', es: 'Comida', emoji: '🍜',
                 levels: {
-                    1: [{ vi: 'Táo', es: 'Manzana', img: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80' },
+                    1: [
+                        { vi: 'Táo', es: 'Manzana', img: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Chuối', es: 'Plátano', img: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Bánh mì', es: 'Pan', img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Nước', es: 'Agua', img: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=600&q=80' }],
-                    2: [{ vi: 'Phở', es: 'Sopa', img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Cam', es: 'Naranja', img: 'https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Trứng', es: 'Huevo', img: 'https://images.unsplash.com/photo-1516467508483-a7212febe31a?auto=format&fit=crop&w=600&q=80' }],
-                    3: [{ vi: 'Bánh ngọt', es: 'Pastel', img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Phô mai', es: 'Queso', img: 'https://images.unsplash.com/photo-1452195100486-9cc805987862?auto=format&fit=crop&w=600&q=80' }],
+                        { vi: 'Nước', es: 'Agua', img: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=600&q=80' }
+                    ],
+                    2: [{ vi: 'Phở', es: 'Sopa', img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80' }],
+                    3: [{ vi: 'Bánh ngọt', es: 'Pastel', img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80' }],
                     4: [{ vi: 'Dưa hấu', es: 'Sandía', img: 'https://images.unsplash.com/photo-1587049352847-4a222e784d38?auto=format&fit=crop&w=600&q=80' }],
                     5: [{ vi: 'Cà chua', es: 'Tomate', img: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=600&q=80' }],
                     6: [{ vi: 'Pizza', es: 'Pizza', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80' }],
                     7: [{ vi: 'Muối', es: 'Sal', img: 'https://images.unsplash.com/photo-1518117715206-c4d6823c68e1?auto=format&fit=crop&w=600&q=80' }]
                 }
             },
-            { 
-                id: 'colors', vi: 'Màu Sắc', es: 'Colores', emoji: '🎨',
-                levels: {
-                    1: [{ vi: 'Đỏ', es: 'Rojo', img: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Xanh dương', es: 'Azul', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Vàng', es: 'Amarillo', img: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80' }],
-                    2: [{ vi: 'Xanh lá', es: 'Verde', img: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Đen', es: 'Negro', img: 'https://images.unsplash.com/photo-1508873696983-2df5c920ac1c?auto=format&fit=crop&w=600&q=80' }],
-                    3: [{ vi: 'Trắng', es: 'Blanco', img: 'https://images.unsplash.com/photo-1483982258133-b7be267e8f9d?auto=format&fit=crop&w=600&q=80' }],
-                    4: [{ vi: 'Tím', es: 'Morado', img: 'https://images.unsplash.com/photo-1537640538966-79f369143f8f?auto=format&fit=crop&w=600&q=80' }],
-                    5: [{ vi: 'Tròn', es: 'Círculo', img: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80' }],
-                    6: [{ vi: 'Vuông', es: 'Cuadrado', img: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80' }],
-                    7: [{ vi: 'Cam', es: 'Naranja', img: 'https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=600&q=80' }]
-                }
-            },
-            { 
+            {
                 id: 'numbers', vi: 'Số Đếm & Toán Học', es: 'Números y Matemáticas', emoji: '🔢',
                 levels: {
-                    1: [{ vi: '1 - Một', es: '1 - Uno', img: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80' },
+                    1: [
+                        { vi: '1 - Một', es: '1 - Uno', img: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80' },
                         { vi: '2 - Hai', es: '2 - Dos', img: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=600&q=80' },
-                        { vi: '3 - Ba', es: '3 - Tres', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80' }],
+                        { vi: '3 - Ba', es: '3 - Tres', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80' }
+                    ],
                     2: [{ vi: '6 - Sáu', es: '6 - Seis', img: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&w=600&q=80' }],
                     3: [{ vi: '15 - Mười Lăm', es: '15 - Quince', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80' }],
                     4: [{ vi: '50 - Năm Mươi', es: '50 - Cincuenta', img: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=600&q=80' }],
@@ -694,399 +173,618 @@
                     6: [{ vi: '100 - Một Trăm', es: '100 - Cien', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80' }],
                     7: [{ vi: '2 + 3 = 5', es: '2 + 3 = 5', img: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80' }]
                 }
-            },
-            { 
-                id: 'body', vi: 'Cơ Thể', es: 'Cuerpo', emoji: '👀',
-                levels: {
-                    1: [{ vi: 'Mắt', es: 'Ojo', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Mũi', es: 'Nariz', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80' }],
-                    2: [{ vi: 'Miệng', es: 'Boca', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80' }],
-                    3: [{ vi: 'Tai', es: 'Oreja', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80' }],
-                    4: [{ vi: 'Tay', es: 'Mano', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80' }],
-                    5: [{ vi: 'Chân', es: 'Pie', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80' }],
-                    6: [{ vi: 'Tóc', es: 'Pelo', img: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=600&q=80' }],
-                    7: [{ vi: 'Răng', es: 'Diente', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80' }]
-                }
-            },
-            { 
-                id: 'home', vi: 'Nhà Cửa', es: 'Casa', emoji: '🏠',
-                levels: {
-                    1: [{ vi: 'Nhà', es: 'Casa', img: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Giường', es: 'Cama', img: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80' }],
-                    2: [{ vi: 'Cửa', es: 'Puerta', img: 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=600&q=80' }],
-                    3: [{ vi: 'Bàn', es: 'Mesa', img: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=600&q=80' }],
-                    4: [{ vi: 'Ghế', es: 'Silla', img: 'https://images.unsplash.com/photo-1580481077494-e3299ac25e94?auto=format&fit=crop&w=600&q=80' }],
-                    5: [{ vi: 'Tivi', es: 'Televisión', img: 'https://images.unsplash.com/photo-1593784991095-a205069470b6?auto=format&fit=crop&w=600&q=80' }],
-                    6: [{ vi: 'Sách', es: 'Libro', img: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80' }],
-                    7: [{ vi: 'Mẹ', es: 'Mamá', img: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=600&q=80' }]
-                }
-            },
-            { 
-                id: 'vehicles', vi: 'Phương Tiện', es: 'Vehículos', emoji: '🚗',
-                levels: {
-                    1: [{ vi: 'Xe ô tô', es: 'Coche', img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Xe đạp', es: 'Bicicleta', img: 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=600&q=80' }],
-                    2: [{ vi: 'Xe buýt', es: 'Autobús', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' }],
-                    3: [{ vi: 'Tàu hỏa', es: 'Tren', img: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Đường sắt', es: 'Vía', img: 'https://images.unsplash.com/photo-1515165562839-978bbcfc993a?auto=format&fit=crop&w=600&q=80' }],
-                    4: [{ vi: 'Máy bay', es: 'Avión', img: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=600&q=80' }],
-                    5: [{ vi: 'Thuyền', es: 'Barco', img: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80' }],
-                    6: [{ vi: 'Trực thăng', es: 'Helicóptero', img: 'https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=600&q=80' }],
-                    7: [{ vi: 'Tên lửa', es: 'Cohete', img: 'https://images.unsplash.com/photo-1517976487139-3f16dab6b18d?auto=format&fit=crop&w=600&q=80' }]
-                }
             }
         ];
 
-        const ALPHABET_VI = [
-            { char: 'A', word: 'Áo' }, { char: 'Ă', word: 'Ăn' }, { char: 'Â', word: 'Ấm' },
-            { char: 'B', word: 'Bóng' }, { char: 'C', word: 'Cá' }, { char: 'D', word: 'Dép' },
-            { char: 'Đ', word: 'Đèn' }, { char: 'E', word: 'Em' }, { char: 'Ê', word: 'Êm' },
-            { char: 'G', word: 'Gà' }, { char: 'H', word: 'Hoa' }, { char: 'I', word: 'In' },
-            { char: 'K', word: 'Kẹo' }, { char: 'L', word: 'Lá' }, { char: 'M', word: 'Mèo' },
-            { char: 'N', word: 'Nhà' }, { char: 'O', word: 'Ong' }, { char: 'Ô', word: 'Ô tô' },
-            { char: 'Ơ', word: 'Ớt' }, { char: 'P', word: 'Phở' }, { char: 'Q', word: 'Quả' },
-            { char: 'R', word: 'Rổ' }, { char: 'S', word: 'Sách' }, { char: 'T', word: 'Tay' },
-            { char: 'U', word: 'Ủ' }, { char: 'Ư', word: 'Ức' }, { char: 'V', word: 'Vịt' },
-            { char: 'X', word: 'Xe' }, { char: 'Y', word: 'Yếm' }
-        ];
-
-        const ALPHABET_ES = [
-            { char: 'A', word: 'Árbol' }, { char: 'B', word: 'Barco' }, { char: 'C', word: 'Casa' },
-            { char: 'D', word: 'Dedo' }, { char: 'E', word: 'Elefante' }, { char: 'F', word: 'Fuego' },
-            { char: 'G', word: 'Gato' }, { char: 'H', word: 'Hojas' }, { char: 'I', word: 'Isla' },
-            { char: 'J', word: 'Jirafa' }, { char: 'K', word: 'Koala' }, { char: 'L', word: 'León' },
-            { char: 'M', word: 'Mono' }, { char: 'N', word: 'Naranja' }, { char: 'O', word: 'Oso' },
-            { char: 'P', word: 'Perro' }, { char: 'Q', word: 'Queso' }, { char: 'R', word: 'Ratón' },
-            { char: 'S', word: 'Sol' }, { char: 'T', word: 'Tortuga' }, { char: 'U', word: 'Uva' },
-            { char: 'V', word: 'Vaca' }, { char: 'W', word: 'Wafle' }, { char: 'X', word: 'Xilófono' },
-            { char: 'Y', word: 'Yoyo' }, { char: 'Z', word: 'Zorro' }
-        ];
-
-        const DESCRIBE_DATA = {
-            vi: {
-                beginner: [
-                    { emoji: '🐶', text: 'Con chó màu vàng đang vẫy đuôi.', prompt: 'Con vật trong tranh là gì?', options: ['Con chó', 'Con mèo', 'Con chim'], correct: 0 },
-                    { emoji: '🍎', text: 'Quả táo đỏ mọng trên cành cây.', prompt: 'Đây là loại quả gì?', options: ['Quả táo', 'Quả chuối', 'Quả cam'], correct: 0 },
-                    { emoji: '🚗', text: 'Chiếc ô tô màu đỏ chạy trên đường.', prompt: 'Phương tiện này là gì?', options: ['Xe ô tô', 'Xe đạp', 'Tàu hỏa'], correct: 0 },
-                    { emoji: '🏠', text: 'Ngôi nhà nhỏ màu vàng có khu vườn xinh.', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Bệnh viện', 'Trường học'], correct: 0 }
-                ],
-                intermediate: [
-                    { emoji: '🌅', text: 'Buổi sáng bình minh trên biển, ông mặt trời đỏ rực nhô lên từ phía xa chiếu những tia nắng vàng óng ánh xuống mặt nước lăn tăn sóng.', prompt: 'Cảnh tượng trong tranh diễn ra vào lúc nào?', options: ['Buổi sáng bình minh', 'Buổi trưa nắng gắt', 'Đêm trăng sáng'], correct: 0 },
-                    { emoji: '🚲', text: 'Bé An đạp chiếc xe đạp màu xanh dương qua con đường làng rợp bóng tre xanh mát vào mỗi buổi chiều.', prompt: 'Bé An đang làm gì vào buổi chiều?', options: ['Đạp xe đạp qua đường làng', 'Chạy bộ công viên', 'Đi học vẽ tranh'], correct: 0 },
-                    { emoji: '🍜', text: 'Tô phở bò nóng hổi khói nghi ngút đặt trên bàn, kèm theo đĩa rau thơm tươi ngon và vài lát chanh tươi.', prompt: 'Món ăn được miêu tả là gì?', options: ['Tô phở bò nóng hổi', 'Bún chả giò', 'Mì ý sốt cà chua'], correct: 0 }
-                ],
-                advanced: [
-                    { emoji: '🏰', text: 'Lâu đài cổ kính nằm sừng sững trên đỉnh đồi cao, bao bọc bởi tường đá rêu phong và những cánh rừng nguyên sinh bạt ngàn sương mù bao phủ suốt bốn mùa.', prompt: 'Đặc điểm nào KHÔNG đúng với lâu đài trong đoạn văn?', options: ['Nằm ở thung lũng ngập tràn nắng', 'Nằm sừng sững trên đỉnh đồi cao', 'Bao bọc bởi tường đá rêu phong'], correct: 0 },
-                    { emoji: '🚀', text: 'Con tàu vũ trụ khổng lồ phóng vút qua bầu trời đêm đầy sao, bắt đầu hành trình khám phá những thiên hà xa xôi ngoài hệ mặt trời.', prompt: 'Mục đích hành trình của con tàu vũ trụ là gì?', options: ['Khám phá các thiên hà xa xôi', 'Quay về Trái Đất nghỉ ngơi', 'Bay vòng quanh mặt trăng'], correct: 0 },
-                    { emoji: '🌊', text: 'Đại dương xanh thẳm ẩn chứa vô số điều kỳ diệu với những rặng san hô rực rỡ sắc màu và hàng ngàn loài sinh vật biển bơi lội tung tăng.', prompt: 'Đại dương xanh thẳm chứa đựng điều gì?', options: ['Rặng san hô và sinh vật biển', 'Những tòa nhà chọc trời', 'Đường cao tốc hiện đại'], correct: 0 }
-                ]
-            },
-            es: {
-                beginner: [
-                    { emoji: '🐶', text: 'El perro marrón mueve su cola.', prompt: '¿Qué animal aparece en la imagen?', options: ['El perro', 'El gato', 'El pájaro'], correct: 0 },
-                    { emoji: '🍎', text: 'La manzana roja cuelga del árbol.', prompt: '¿Qué fruta es esta?', options: ['La manzana', 'El plátano', 'La uva'], correct: 0 },
-                    { emoji: '🚗', text: 'El coche rojo viaja por la calle.', prompt: '¿Qué vehículo es este?', options: ['El coche', 'La bicicleta', 'El avión'], correct: 0 },
-                    { emoji: '🏠', text: 'La pequeña casa amarilla con jardín.', prompt: '¿Qué lugar es este?', options: ['La casa', 'La escuela', 'El hospital'], correct: 0 }
-                ],
-                intermediate: [
-                    { emoji: '🌅', text: 'El amanecer en el mar muestra al sol brillante iluminando las suaves olas doradas de la mañana.', prompt: '¿En qué momento del día ocurre la escena?', options: ['Amanecer en la mañana', 'Mediodía soleado', 'Noche estrellada'], correct: 0 },
-                    { emoji: '🚲', text: 'Sofía monta su bicicleta azul por el camino rodeado de árboles verdes todas las tardes.', prompt: '¿Qué hace Sofía todas las tardes?', options: ['Monta su bicicleta por el camino', 'Juega al fútbol', 'Pinta cuadros'], correct: 0 },
-                    { emoji: '🍜', text: 'Un plato de sopa caliente y deliciosa acompañada de hierbas frescas y limón.', prompt: '¿Qué platillo se describe?', options: ['Una sopa caliente y deliciosa', 'Pan con queso', 'Ensalada verde'], correct: 0 }
-                ],
-                advanced: [
-                    { emoji: '🏰', text: 'El antiguo castillo se alza majestuoso sobre una colina alta, rodeado de murallas de piedra y bosques misteriosos cubiertos de neblina.', prompt: '¿Qué característica describe mejor al castillo?', options: ['Se alza majestuoso sobre una colina alta', 'Está en la playa tropical', 'Es una cabaña moderna'], correct: 0 },
-                    { emoji: '🚀', text: 'La gigantesca nave espacial cruza velozmente el cielo estrellado, iniciando su gran misión de explorar lejanas galaxias.', prompt: '¿Cuál es la misión de la nave espacial?', options: ['Explorar lejanas galaxias', 'Regresar a la Tierra', 'Orbitar la luna únicamente'], correct: 0 },
-                    { emoji: '🌊', text: 'El océano profundo esconde maravillas increíbles con arrecifes de coral brillantes y miles de coloridas especies marinas.', prompt: '¿Qué esconde el océano profundo?', options: ['Arrecifes de coral y especies marinas', 'Carros y edificios', 'Montañas de hielo'], correct: 0 }
-                ]
-            }
+        const ALPHABET = {
+            vi: [
+                { char: 'A', word: 'Áo' }, { char: 'Ă', word: 'Ăn' }, { char: 'Â', word: 'Ấm' },
+                { char: 'B', word: 'Bóng' }, { char: 'C', word: 'Cá' }, { char: 'D', word: 'Dép' },
+                { char: 'Đ', word: 'Đèn' }, { char: 'E', word: 'Em' }, { char: 'Ê', word: 'Êm' },
+                { char: 'G', word: 'Gà' }, { char: 'H', word: 'Hoa' }, { char: 'I', word: 'In' },
+                { char: 'K', word: 'Kẹo' }, { char: 'L', word: 'Lá' }, { char: 'M', word: 'Mèo' },
+                { char: 'N', word: 'Nhà' }, { char: 'O', word: 'Ong' }, { char: 'Ô', word: 'Ô tô' },
+                { char: 'Ơ', word: 'Ớt' }, { char: 'P', word: 'Phở' }, { char: 'Q', word: 'Quả' }
+            ],
+            es: [
+                { char: 'A', word: 'Árbol' }, { char: 'B', word: 'Barco' }, { char: 'C', word: 'Casa' },
+                { char: 'D', word: 'Dedo' }, { char: 'E', word: 'Elefante' }, { char: 'F', word: 'Fuego' },
+                { char: 'G', word: 'Gato' }, { char: 'H', word: 'Hojas' }, { char: 'I', word: 'Isla' },
+                { char: 'J', word: 'Jirafa' }, { char: 'K', word: 'Koala' }, { char: 'L', word: 'León' },
+                { char: 'M', word: 'Mono' }, { char: 'N', word: 'Naranja' }, { char: 'O', word: 'Oso' },
+                { char: 'P', word: 'Perro' }, { char: 'Q', word: 'Queso' }, { char: 'R', word: 'Ratón' }
+            ]
         };
 
-        window.renderDashboardMap = function() {
-            const container = document.getElementById('lessons-map');
-            if(!container) return;
-            container.innerHTML = '';
-
-            TOPICS.forEach(topic => {
-                const box = document.createElement('div');
-                box.className = "w-full p-6 rounded-[2.5rem] bg-white border-4 border-amber-200 shadow-xl flex flex-col items-center mb-6";
-                let levelsHTML = '';
-                [1,2,3,4,5,6,7].forEach(lvl => {
-                    const isDone = currentProfile && currentProfile.progress[topic.id]?.[lvl];
-                    levelsHTML += `
-                        <button onclick="window.startLesson('${topic.id}', ${lvl})" class="py-3.5 rounded-2xl flex flex-col items-center justify-center relative shadow-md active:translate-y-1 transition-all ${isDone?'bg-emerald-500 text-white border-b-4 border-emerald-700':'bg-amber-400 hover:bg-amber-500 text-white border-b-4 border-amber-600'}">
-                            ${isDone?'<span class="absolute -top-2 -right-2 text-base">⭐</span>':''}
-                            <span class="text-xl mb-0.5">${topic.emoji}</span>
-                            <span class="font-black text-xs uppercase">L${lvl}</span>
-                        </button>
-                    `;
-                });
-
-                box.innerHTML = `
-                    <div class="flex items-center gap-3 mb-6 bg-amber-50 px-6 py-2 rounded-full border border-amber-300 shadow-inner">
-                        <span class="text-3xl">${topic.emoji}</span>
-                        <h3 class="text-xl font-black text-gray-800">${topic[currentLang]}</h3>
-                    </div>
-                    <div class="grid grid-cols-4 sm:grid-cols-7 gap-3 w-full">${levelsHTML}</div>
-                `;
-                container.appendChild(box);
-            });
+        const DESCRIBE_QUESTIONS = {
+            vi: [
+                { emoji: '🐶', text: 'Con chó màu vàng đang vẫy đuôi.', prompt: 'Con vật trong tranh là gì?', options: ['Con chó', 'Con mèo', 'Con chim'], correct: 0 },
+                { emoji: '🍎', text: 'Quả táo đỏ mọng trên cành cây.', prompt: 'Đây là loại quả gì?', options: ['Quả táo', 'Quả chuối', 'Quả cam'], correct: 0 },
+                { emoji: '🚗', text: 'Chiếc ô tô màu đỏ chạy trên đường.', prompt: 'Phương tiện này là gì?', options: ['Xe ô tô', 'Xe đạp', 'Tàu hỏa'], correct: 0 }
+            ],
+            es: [
+                { emoji: '🐶', text: 'El perro marrón mueve su cola.', prompt: '¿Qué animal aparece en la imagen?', options: ['El perro', 'El gato', 'El pájaro'], correct: 0 },
+                { emoji: '🍎', text: 'La manzana roja cuelga del árbol.', prompt: '¿Qué fruta es esta?', options: ['La manzana', 'El plátano', 'La uva'], correct: 0 },
+                { emoji: '🚗', text: 'El coche rojo viaja por la calle.', prompt: '¿Qué vehículo es este?', options: ['El coche', 'La bicicleta', 'El avión'], correct: 0 }
+            ]
         };
 
-        window.startLesson = function(topicId, lvl) {
-            const topic = TOPICS.find(t => t.id === topicId);
-            if(!topic) return;
-            currentActiveLesson = { topic, lvl, words: topic.levels[lvl] || topic.levels[1] };
-            currentLessonWordIdx = 0;
-            window.showScreen('game');
-            window.loadLessonCard();
-        };
+        // --- RENDER ENGINE ---
+        function render() {
+            const root = document.getElementById('app');
+            root.innerHTML = '';
 
-        window.loadLessonCard = function() {
-            const w = currentActiveLesson.words[currentLessonWordIdx];
-            document.getElementById('game-progress').innerText = `${currentActiveLesson.topic[currentLang]} • L${currentActiveLesson.lvl} (${currentLessonWordIdx + 1}/${currentActiveLesson.words.length})`;
-            
-            const photoEl = document.getElementById('active-photo');
-            const fallbackEl = document.getElementById('active-emoji-fallback');
-            if (w.img) {
-                photoEl.style.display = 'block';
-                fallbackEl.style.display = 'none';
-                photoEl.src = w.img;
-            } else {
-                photoEl.style.display = 'none';
-                fallbackEl.style.display = 'block';
+            if (STATE.screen === 'profiles') {
+                root.innerHTML = renderProfilesScreen();
+            } else if (STATE.screen === 'dashboard') {
+                root.innerHTML = renderDashboardScreen();
+            } else if (STATE.screen === 'lesson') {
+                root.innerHTML = renderLessonScreen();
+            } else if (STATE.screen === 'alphabet') {
+                root.innerHTML = renderAlphabetScreen();
+            } else if (STATE.screen === 'describe') {
+                root.innerHTML = renderDescribeScreen();
+            } else if (STATE.screen === 'memory') {
+                root.innerHTML = renderMemoryScreen();
+            } else if (STATE.screen === 'slicer') {
+                root.innerHTML = renderSlicerScreen();
+                initSlicerCanvas();
             }
 
-            document.getElementById('active-word').innerText = w[currentLang];
-            window.speak(w[currentLang]);
-        };
-
-        window.playCurrentWordAudio = function() {
-            const w = currentActiveLesson.words[currentLessonWordIdx];
-            window.speak(w[currentLang]);
-        };
-
-        window.skipWord = function() {
-            if (currentLessonWordIdx < currentActiveLesson.words.length - 1) {
-                currentLessonWordIdx++;
-                window.loadLessonCard();
-            } else {
-                window.triggerConfetti();
-                if(currentProfile) {
-                    if(!currentProfile.progress[currentActiveLesson.topic.id]) currentProfile.progress[currentActiveLesson.topic.id] = {};
-                    if(!currentProfile.progress[currentActiveLesson.topic.id][currentActiveLesson.lvl]) {
-                        currentProfile.progress[currentActiveLesson.topic.id][currentActiveLesson.lvl] = true;
-                        currentProfile.stars += 5;
-                        saveProfiles();
-                    }
-                }
-                document.getElementById('report-modal').classList.remove('hidden');
-            }
-        };
-
-        window.restartSameLessonWithNewWords = function() {
-            document.getElementById('report-modal').classList.add('hidden');
-            if (currentActiveLesson) {
-                const shuffled = [...currentActiveLesson.words].sort(() => 0.5 - Math.random());
-                currentActiveLesson.words = shuffled;
-                currentLessonWordIdx = 0;
-                window.showScreen('game');
-                window.loadLessonCard();
-            }
-        };
-
-        window.advanceToNextLevel = function() {
-            document.getElementById('report-modal').classList.add('hidden');
-            if (currentActiveLesson) {
-                const nextLvl = currentActiveLesson.lvl < 7 ? currentActiveLesson.lvl + 1 : 1;
-                window.startLesson(currentActiveLesson.topic.id, nextLvl);
-            }
-        };
-
-        window.closeReportCard = function() {
-            document.getElementById('report-modal').classList.add('hidden');
-            window.showScreen('dashboard');
-            window.renderDashboardMap();
-        };
-
-        window.exitGame = function() {
-            window.showScreen('dashboard');
-            window.renderDashboardMap();
-        };
-
-        // Alphabet Modal
-        window.openAlphabetModal = function() {
-            const grid = document.getElementById('alphabet-grid');
-            if(!grid) return;
-            grid.innerHTML = '';
-            const list = currentLang === 'es' ? ALPHABET_ES : ALPHABET_VI;
-            document.getElementById('alphabet-modal-title').innerText = currentLang === 'es' ? '🪷 Alfabeto' : '🪷 Bảng Chữ Cái';
-            list.forEach(item => {
-                const card = document.createElement('div');
-                card.className = "bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 flex flex-col items-center justify-center cursor-pointer hover:scale-105 transition-transform";
-                card.onclick = () => window.speak(item.char, currentLang === 'es' ? 'es-ES' : 'vi-VN');
-                card.innerHTML = `<span class="text-3xl font-black text-amber-800">${item.char}</span><span class="text-xs font-bold text-gray-600 mt-1">${item.word}</span>`;
-                grid.appendChild(card);
-            });
-            document.getElementById('alphabet-modal').classList.remove('hidden');
-        };
-        window.closeAlphabetModal = function() {
-            document.getElementById('alphabet-modal').classList.add('hidden');
-        };
-
-        // Picture Description Game
-        let descIdx = 0;
-        let descQuestions = [];
-        window.startDescribeGame = function() {
-            const profLevel = currentProfile ? (currentProfile.level || 'beginner') : 'beginner';
-            const pool = DESCRIBE_DATA[currentLang][profLevel] || DESCRIBE_DATA[currentLang]['beginner'];
-            descQuestions = [...pool].sort(() => 0.5 - Math.random());
-            descIdx = 0;
-            window.showScreen('describe');
-            window.loadDescribeCard();
-        };
-        window.exitDescribeGame = function() { window.showScreen('dashboard'); };
-
-        window.loadDescribeCard = function() {
-            if (descIdx >= descQuestions.length) {
-                window.triggerConfetti();
-                if(currentProfile) { currentProfile.stars += 3; saveProfiles(); }
-                window.exitDescribeGame();
-                return;
-            }
-            const q = descQuestions[descIdx];
-            document.getElementById('desc-game-progress').innerText = `Thử Thách (${descIdx + 1}/${descQuestions.length})`;
-            document.getElementById('desc-game-emoji').innerText = q.emoji;
-            document.getElementById('desc-game-prompt').innerText = q.prompt;
-            window.speak(q.text);
-
-            const optContainer = document.getElementById('desc-game-options');
-            optContainer.innerHTML = '';
-            q.options.forEach((opt, i) => {
-                const btn = document.createElement('button');
-                btn.className = "py-4 bg-teal-500 hover:bg-teal-600 text-white font-black text-xl rounded-2xl shadow-md";
-                btn.innerText = opt;
-                btn.onclick = () => {
-                    if(i === q.correct) {
-                        window.triggerConfetti();
-                        descIdx++;
-                        setTimeout(window.loadDescribeCard, 800);
-                    } else {
-                        window.speak(currentLang === 'es' ? 'Inténtalo de nuevo' : 'Thử lại nhé');
-                    }
-                };
-                optContainer.appendChild(btn);
-            });
-        };
-
-        // Memory Game
-        window.startMemoryGame = function(pairsCount = 4) {
-            window.showScreen('memory');
-            document.getElementById('mem-post-game').classList.add('hidden');
-            document.getElementById('memory-grid').classList.remove('hidden');
-            loadMemoryGrid(pairsCount);
-        };
-        window.exitMemoryGame = function() { window.showScreen('dashboard'); };
-
-        function loadMemoryGrid(pairsCount) {
-            const grid = document.getElementById('memory-grid');
-            if(!grid) return;
-            grid.innerHTML = '';
-            document.getElementById('memory-total-pairs').innerText = pairsCount;
-            document.getElementById('memory-score').innerText = '0';
-
-            const pool = TOPICS[0].levels[1];
-            let subset = [...pool].sort(() => 0.5 - Math.random()).slice(0, pairsCount);
-            let deck = [];
-            subset.forEach(item => {
-                deck.push({ display: item[currentLang], speakText: item[currentLang], id: item.vi, type: 'text' });
-                deck.push({ display: `<img src="${item.img}" class="w-full h-full object-cover rounded-xl"/>`, speakText: item[currentLang], id: item.vi, type: 'img' });
-            });
-            deck.sort(() => 0.5 - Math.random());
-
-            let firstCardEl = null;
-            let firstCardObj = null;
-            let matches = 0;
-
-            deck.forEach(cardObj => {
-                const card = document.createElement('div');
-                card.className = "h-28 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center shadow-md overflow-hidden";
-                card.innerHTML = '❓';
-                card.onclick = () => {
-                    if(card.innerHTML !== '❓' || card.classList.contains('matched')) return;
-                    
-                    card.innerHTML = cardObj.display;
-                    card.className = "h-28 bg-white rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 text-purple-900 p-1 text-center shadow-md pop-in overflow-hidden";
-                    window.speak(cardObj.speakText);
-
-                    if(!firstCardEl) {
-                        firstCardEl = card;
-                        firstCardObj = cardObj;
-                    } else {
-                        if(firstCardObj.id === cardObj.id) {
-                            window.speak(currentLang === 'es' ? '¡Excelente! ¡Muy bien!' : 'Chính xác! Giỏi quá!');
-                            window.triggerConfetti();
-                            firstCardEl.classList.add('matched');
-                            card.classList.add('matched');
-                            firstCardEl = null; firstCardObj = null;
-                            matches++;
-                            document.getElementById('memory-score').innerText = matches;
-                            if(matches === pairsCount) {
-                                window.triggerConfetti();
-                                setTimeout(() => {
-                                    window.speak(currentLang === 'es' ? '¡Felicidades, ganaste el juego!' : 'Chúc mừng bé đã chiến thắng trò chơi!');
-                                    document.getElementById('memory-grid').classList.add('hidden');
-                                    document.getElementById('mem-post-game').classList.remove('hidden');
-                                    document.getElementById('mem-post-game').classList.add('flex');
-                                }, 800);
-                            }
-                        } else {
-                            const prev = firstCardEl;
-                            firstCardEl = null; firstCardObj = null;
-                            setTimeout(() => {
-                                prev.innerHTML = '❓';
-                                prev.className = "h-28 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center shadow-md overflow-hidden";
-                                card.innerHTML = '❓';
-                                card.className = "h-28 bg-white rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 text-purple-900 p-1 text-center shadow-md overflow-hidden";
-                            }, 800);
-                        }
-                    }
-                };
-                grid.appendChild(card);
-            });
+            // Render Modals
+            if (STATE.showSettings) root.innerHTML += renderSettingsModal();
+            if (STATE.showEditProfile) root.innerHTML += renderEditProfileModal();
+            if (STATE.showReport) root.innerHTML += renderReportModal();
         }
 
-        // Fruit Slicer
-        let slicerRunning = false;
-        window.startSlicerGame = function() {
-            window.showScreen('slicer');
+        // --- SCREENS ---
+        function renderProfilesScreen() {
+            return `
+                <div class="w-full flex flex-col items-center justify-center text-center mt-12">
+                    <div class="text-6xl mb-4 floating">🪷</div>
+                    <h1 class="text-5xl font-game text-amber-600 mb-2">Vui Học</h1>
+                    <p class="text-lg text-gray-500 font-bold mb-8 uppercase tracking-wider">Thế Giới Ngôn Ngữ Kỳ Diệu</p>
+                    
+                    <div class="flex flex-wrap justify-center gap-6 w-full mb-8">
+                        ${STATE.profiles.map(p => `
+                            <div onclick="selectProfile('${p.id}')" class="w-56 h-64 bg-white/95 backdrop-blur-md rounded-[2.5rem] border-4 border-amber-300 shadow-xl flex flex-col items-center justify-center p-6 cursor-pointer transform transition-all hover:-translate-y-2 relative group">
+                                <button onclick="event.stopPropagation(); openEditProfile('${p.id}')" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center text-sm shadow-sm">✏️</button>
+                                <span class="text-6xl mb-3">${p.emoji}</span>
+                                <h2 class="text-2xl font-black text-gray-800 mb-1">${p.name}</h2>
+                                <span class="text-amber-500 font-black text-sm bg-amber-50 px-3 py-1 rounded-full border border-amber-200">⭐ ${p.stars} Stars</span>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <button onclick="createProfile()" class="btn-3d px-8 py-4 bg-amber-500 text-white font-game text-xl rounded-[2rem] border-4 border-amber-600">➕ Thêm Tên Người Dùng</button>
+                    <button onclick="STATE.showSettings = true; render();" class="mt-6 text-sm font-bold text-gray-500 hover:text-amber-600">⚙️ Cài Đặt Chung</button>
+                </div>
+            `;
+        }
+
+        function renderDashboardScreen() {
+            const profile = STATE.profiles.find(p => p.id === STATE.currentProfileId) || STATE.profiles[0];
+            const t = STATE.lang === 'es' ? {
+                switch: '⬅️ Cambiar Perfil', alpha: 'Alfabeto', memory: 'Memoria', describe: 'Describir', slicer: 'Cortar', map: 'Mapa de Aprendizaje (7 Niveles HD)', timer: 'Temporizador'
+            } : {
+                switch: '⬅️ Đổi Hồ Sơ', alpha: 'Bảng Chữ Cái', memory: 'Lật Hình Cặp', describe: 'Mô Tả Tranh', slicer: 'Chém Từ HD', map: 'Bản Đồ Học Tập Thực Tế (7 Cấp Độ HD)', timer: 'Hẹn Giờ Lượt Chơi'
+            };
+
+            return `
+                <div class="w-full flex flex-col items-center pb-24">
+                    <div class="w-full flex justify-between items-center p-4 bg-white/90 backdrop-blur-md rounded-3xl shadow-lg border-2 border-amber-200 mb-6">
+                        <button onclick="STATE.screen = 'profiles'; render();" class="btn-3d px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold rounded-2xl text-sm">${t.switch}</button>
+                        
+                        <div class="flex items-center gap-3">
+                            <span class="text-3xl bg-amber-100 p-2 rounded-2xl shadow-inner">${profile.emoji}</span>
+                            <div class="text-left">
+                                <div class="font-black text-xl text-gray-800">${profile.name}</div>
+                                <div class="text-amber-600 font-black text-sm">⭐ <span>${profile.stars}</span> Stars</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <div class="flex bg-amber-100 rounded-2xl p-1 border border-amber-200">
+                                <button onclick="toggleLang('vi')" class="px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${STATE.lang==='vi'?'bg-amber-500 text-white shadow-sm':'text-gray-700'}">VI</button>
+                                <button onclick="toggleLang('es')" class="px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${STATE.lang==='es'?'bg-amber-500 text-white shadow-sm':'text-gray-700'}">ES</button>
+                            </div>
+                            <button onclick="STATE.showSettings = true; render();" class="p-2.5 bg-amber-100 hover:bg-amber-200 rounded-2xl text-sm shadow-sm text-gray-800">⚙️</button>
+                        </div>
+                    </div>
+
+                    <!-- Turn Timer Bar -->
+                    <div class="w-full bg-white/90 backdrop-blur-md p-4 rounded-3xl shadow-md border-2 border-amber-200 mb-6 flex flex-wrap items-center justify-between gap-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">⏳</span>
+                            <div>
+                                <div class="font-black text-gray-800 text-sm">${t.timer}</div>
+                                <div class="text-xs text-gray-500 font-bold">Phiên chơi công bằng cho các bé</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-black text-xl text-amber-600 bg-amber-50 px-4 py-1.5 rounded-2xl border border-amber-200">${Math.floor(STATE.timerSeconds/60)}:${(STATE.timerSeconds%60).toString().padStart(2,'0')}</span>
+                            <button onclick="toggleTimer()" class="px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md">${STATE.timerRunning ? 'Tạm Dừng' : 'Bắt Đầu'}</button>
+                            <button onclick="STATE.timerSeconds=120; render();" class="px-3 py-2 bg-gray-100 text-gray-700 font-black rounded-2xl text-sm">🔄</button>
+                        </div>
+                    </div>
+
+                    <!-- Arcade Buttons -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full mb-8">
+                        <button onclick="openAlphabet()" class="btn-3d py-4 bg-amber-500 text-white font-black text-base rounded-3xl flex flex-col items-center"><span class="text-3xl mb-1">🔤</span> ${t.alpha}</button>
+                        <button onclick="startMemory()" class="btn-3d py-4 bg-purple-600 text-white font-black text-base rounded-3xl flex flex-col items-center"><span class="text-3xl mb-1">🧠</span> ${t.memory}</button>
+                        <button onclick="startDescribe()" class="btn-3d py-4 bg-teal-600 text-white font-black text-base rounded-3xl flex flex-col items-center"><span class="text-3xl mb-1">🖼️</span> ${t.describe}</button>
+                        <button onclick="startSlicer()" class="btn-3d py-4 bg-orange-500 text-white font-black text-base rounded-3xl flex flex-col items-center"><span class="text-3xl mb-1">🍉</span> ${t.slicer}</button>
+                    </div>
+
+                    <!-- Roadmap -->
+                    <div class="w-full space-y-6">
+                        <h2 class="text-3xl font-game text-amber-900 text-center mb-6"><span>📚</span> ${t.map}</h2>
+                        ${TOPICS.map(topic => `
+                            <div class="w-full p-6 rounded-[2.5rem] bg-white border-4 border-amber-200 shadow-xl flex flex-col items-center mb-6">
+                                <div class="flex items-center gap-3 mb-6 bg-amber-50 px-6 py-2 rounded-full border border-amber-300 shadow-inner">
+                                    <span class="text-3xl">${topic.emoji}</span>
+                                    <h3 class="text-xl font-black text-gray-800">${topic[STATE.lang]}</h3>
+                                </div>
+                                <div class="grid grid-cols-4 sm:grid-cols-7 gap-3 w-full">
+                                    {[1,2,3,4,5,6,7].map(lvl => {
+                                        const isDone = profile.progress[topic.id]?.[lvl];
+                                        return `
+                                            <button onclick="startLesson('${topic.id}', ${lvl})" class="py-3.5 rounded-2xl flex flex-col items-center justify-center relative shadow-md active:translate-y-1 transition-all ${isDone?'bg-emerald-500 text-white border-b-4 border-emerald-700':'bg-amber-400 hover:bg-amber-500 text-white border-b-4 border-amber-600'}">
+                                                ${isDone?'<span class="absolute -top-2 -right-2 text-base">⭐</span>':''}
+                                                <span class="text-xl mb-0.5">${topic.emoji}</span>
+                                                <span class="font-black text-xs uppercase">L${lvl}</span>
+                                            </button>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderLessonScreen() {
+            const w = STATE.lessonWords[STATE.lessonIdx];
+            const topic = STATE.activeTopic;
+            return `
+                <div class="w-full max-w-md flex flex-col items-center pt-8 px-4 pb-12">
+                    <div class="w-full flex justify-between items-center mb-6">
+                        <button onclick="STATE.screen = 'dashboard'; render();" class="btn-3d px-4 py-2 bg-white rounded-2xl font-extrabold text-gray-800 shadow-sm border border-gray-200">⬅️ Thoát</button>
+                        <span class="font-black text-amber-800 uppercase tracking-widest text-sm bg-amber-100 px-4 py-1.5 rounded-full">${topic[STATE.lang]} • L${STATE.activeLevel} (${STATE.lessonIdx + 1}/${STATE.lessonWords.length})</span>
+                    </div>
+
+                    <div onclick="speak('${w[STATE.lang]}')" class="bg-white border-4 border-amber-300 rounded-[3rem] p-6 w-full flex flex-col items-center shadow-2xl mb-8 cursor-pointer overflow-hidden group">
+                        <div class="w-full h-72 rounded-3xl overflow-hidden mb-6 shadow-inner relative bg-gray-100 flex items-center justify-center">
+                            <img src="${w.img}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <h2 class="text-4xl font-black text-gray-800 text-center">${w[STATE.lang]}</h2>
+                    </div>
+
+                    <div class="flex flex-col items-center gap-4 w-full">
+                        <button onclick="speak('${w[STATE.lang]}')" class="w-24 h-24 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-4xl shadow-lg active:translate-y-1 text-white transition-all">🔊</button>
+                        <button onclick="nextLessonWord()" class="btn-3d w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black text-xl rounded-2xl">Tiếp Theo ➡️</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAlphabetScreen() {
+            const list = ALPHABET[STATE.lang];
+            return `
+                <div class="w-full max-w-2xl bg-white rounded-3xl p-6 border-4 border-amber-400 shadow-2xl flex flex-col my-8">
+                    <div class="flex justify-between items-center mb-4 border-b-2 pb-2">
+                        <h3 class="text-2xl font-game text-amber-700">🪷 Bảng Chữ Cái</h3>
+                        <button onclick="STATE.screen = 'dashboard'; render();" class="btn-3d px-4 py-2 bg-gray-200 rounded-xl font-bold">✕ Đóng</button>
+                    </div>
+                    <div class="grid grid-cols-4 sm:grid-cols-6 gap-3">
+                        ${list.map(item => `
+                            <div onclick="speak('${item.char}')" class="btn-3d bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer">
+                                <span class="text-3xl font-black text-amber-800">${item.char}</span>
+                                <span class="text-xs font-bold text-gray-600 mt-1">${item.word}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderDescribeScreen() {
+            const q = STATE.describeList[STATE.describeIdx];
+            if (!q) {
+                triggerConfetti();
+                return `
+                    <div class="w-full max-w-lg bg-white rounded-[3rem] p-8 shadow-2xl text-center my-12">
+                        <span class="text-7xl mb-4 block">🏆</span>
+                        <h3 class="text-3xl font-game text-teal-800 mb-4">Hoàn thành thử thách!</h3>
+                        <button onclick="STATE.screen = 'dashboard'; render();" class="btn-3d px-8 py-4 bg-teal-600 text-white font-game rounded-2xl">Về Trang Chủ</button>
+                    </div>
+                `;
+            }
+            return `
+                <div class="w-full max-w-lg bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-teal-300 shadow-2xl text-center my-8">
+                    <div class="flex justify-between w-full mb-4">
+                        <button onclick="STATE.screen = 'dashboard'; render();" class="btn-3d px-4 py-2 bg-gray-100 rounded-xl font-bold">⬅️ Thoát</button>
+                        <span class="font-bold text-teal-800">Thử Thách (${STATE.describeIdx + 1}/${STATE.describeList.length})</span>
+                    </div>
+                    <div class="text-8xl mb-4 floating">${q.emoji}</div>
+                    <p class="text-lg font-bold text-teal-900 mb-6 bg-teal-50 p-4 rounded-2xl">${q.text}</p>
+                    <h3 class="text-xl font-black text-gray-800 mb-6">${q.prompt}</h3>
+                    <div class="flex flex-col gap-3">
+                        ${q.options.map((opt, i) => `
+                            <button onclick="answerDescribe(${i},${q.correct})" class="btn-3d py-4 bg-teal-500 text-white font-black text-lg rounded-2xl">${opt}</button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderMemoryScreen() {
+            return `
+                <div class="w-full max-w-xl bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-purple-300 shadow-2xl text-center my-8">
+                    <div class="flex justify-between w-full mb-4">
+                        <button onclick="STATE.screen = 'dashboard'; render();" class="btn-3d px-4 py-2 bg-gray-100 rounded-xl font-bold">⬅️ Thoát</button>
+                        <span class="font-bold text-purple-800">Cặp: ${STATE.memoryMatches} / ${STATE.memoryPairs}</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-purple-900 mb-2">🧠 Lật Hình Tìm Cặp</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                        ${STATE.memoryDeck.map(card => `
+                            <div onclick="flipMemoryCard(${card.index})" class="h-28 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center shadow-md overflow-hidden ${card.matched ? 'bg-emerald-200 opacity-50' : card.flipped ? 'bg-white text-purple-900' : 'bg-purple-200'}">
+                                ${card.flipped || card.matched ? card.display : '❓'}
+                            </div>
+                        `).join('')}
+                    </div>
+                    ${STATE.memoryDone ? `
+                        <div class="flex flex-col gap-3 pop-in bg-purple-50 p-6 rounded-3xl border-2 border-purple-200">
+                            <h4 class="text-2xl font-game text-purple-800">🎉 Tuyệt Vời!</h4>
+                            <button onclick="startMemory(4)" class="btn-3d w-full py-3 bg-purple-600 text-white font-game rounded-xl">🔄 Chơi Thêm Ván Nữa</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function renderSlicerScreen() {
+            return `
+                <div class="fixed inset-0 z-[100] bg-slate-900 flex flex-col items-center">
+                    <div class="absolute top-6 left-6 z-20"><button onclick="STATE.screen = 'dashboard'; STATE.slicerActive = false; render();" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-600 font-black">Thoát</button></div>
+                    <div class="absolute top-6 right-6 z-20 bg-orange-500 px-6 py-3 rounded-2xl text-white font-black text-xl shadow-lg">Điểm: <span id="slicer-score-val">${STATE.slicerScore}</span></div>
+                    <canvas id="slicer-canvas"></canvas>
+                </div>
+            `;
+        }
+
+        // --- MODALS ---
+        function renderSettingsModal() {
+            return `
+                <div class="fixed inset-0 bg-black bg-opacity-60 z-[150] flex items-center justify-center p-4">
+                    <div class="bg-white rounded-3xl p-6 max-w-sm w-full border-4 border-amber-400 shadow-2xl text-left">
+                        <h3 class="text-2xl font-game mb-6 text-gray-800 border-b-2 pb-2">⚙️ Cài Đặt (Settings)</h3>
+                        <div class="mb-3">
+                            <button onclick="STATE.showSettings = false; openEditProfile(STATE.currentProfileId || STATE.profiles[0].id);" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-black py-3 rounded-xl border-2 border-blue-300 text-sm">✏️ Chỉnh Sửa Hồ Sơ Hiện Tại</button>
+                        </div>
+                        <div class="mb-3">
+                            <button onclick="resetAllProgress()" class="w-full bg-red-100 hover:bg-red-200 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm">🔄 Đặt Lại Điểm Toàn Bộ</button>
+                        </div>
+                        <div class="mb-6">
+                            <button onclick="deleteActiveProfile()" class="w-full bg-rose-100 hover:bg-rose-200 text-rose-700 font-black py-3 rounded-xl border-2 border-rose-300 text-sm">🗑️ Xóa Hồ Sơ Này</button>
+                        </div>
+                        <button onclick="STATE.showSettings = false; render();" class="btn-3d w-full bg-amber-600 text-white font-game py-3 rounded-2xl text-lg text-center">Đóng (Close)</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderEditProfileModal() {
+            const p = STATE.editTarget || STATE.profiles[0];
+            return `
+                <div class="fixed inset-0 bg-black bg-opacity-60 z-[160] flex items-center justify-center p-4">
+                    <div class="bg-white rounded-3xl p-6 max-w-sm w-full border-4 border-amber-400 shadow-2xl text-left">
+                        <h3 class="text-2xl font-game mb-6 text-gray-800 border-b-2 pb-2">✏️ Chỉnh Sửa Hồ Sơ</h3>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 font-bold mb-2">Tên:</label>
+                            <input type="text" id="edit-name" value="${p.name}" class="w-full bg-gray-100 border-2 border-gray-300 rounded-xl p-3 font-bold text-gray-800">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 font-bold mb-2">Avatar Emoji:</label>
+                            <input type="text" id="edit-emoji" maxlength="2" value="${p.emoji}" class="w-full bg-gray-100 border-2 border-gray-300 rounded-xl p-3 font-bold text-2xl text-center text-gray-800">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 font-bold mb-2">Ngôn ngữ học:</label>
+                            <select id="edit-lang" class="w-full bg-gray-100 border-2 border-gray-300 rounded-xl p-3 font-bold text-gray-800">
+                                <option value="vi" ${p.lang==='vi'?'selected':''}>Tiếng Việt</option>
+                                <option value="es" ${p.lang==='es'?'selected':''}>Español</option>
+                                <option value="both" ${p.lang==='both'?'selected':''}>Song ngữ</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <button onclick="resetProfileProgress('${p.id}')" class="w-full bg-amber-100 text-amber-800 font-black py-3 rounded-xl border-2 border-amber-300 text-sm">🔄 Đặt Lại Điểm Hồ Sơ Này</button>
+                        </div>
+                        <div class="mb-6">
+                            <button onclick="deleteProfile('${p.id}')" class="w-full bg-rose-100 text-rose-700 font-black py-3 rounded-xl border-2 border-rose-300 text-sm">🗑️ Xóa Hồ Sơ Này</button>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="STATE.showEditProfile = false; render();" class="btn-3d flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-2xl">Hủy</button>
+                            <button onclick="saveEditProfile('${p.id}')" class="btn-3d flex-1 bg-amber-600 text-white font-game py-3 rounded-2xl shadow-md">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderReportModal() {
+            return `
+                <div class="fixed inset-0 bg-black bg-opacity-60 z-[170] flex items-center justify-center p-4">
+                    <div class="bg-white rounded-[3rem] p-8 max-w-sm w-full border-4 border-amber-300 shadow-2xl text-center pop-in">
+                        <span class="text-7xl mb-4 block animate-bounce">🏆</span>
+                        <h3 class="text-3xl font-game text-amber-900 mb-2">Hoàn Thành Cấp Độ!</h3>
+                        <p class="text-gray-600 font-bold mb-6">Bạn đã nhận <span class="text-amber-600 font-black">+5 ⭐</span></p>
+                        
+                        <div class="flex flex-col gap-3">
+                            <button onclick="restartLesson()" class="btn-3d w-full bg-blue-500 text-white font-game py-3 rounded-2xl">🔄 Học Thêm Từ Mới</button>
+                            <button onclick="nextLevelLesson()" class="btn-3d w-full bg-emerald-500 text-white font-game py-3 rounded-2xl">⬆️ Thử Cấp Tiếp Theo</button>
+                            <button onclick="STATE.showReport = false; STATE.screen = 'dashboard'; render();" class="btn-3d w-full bg-amber-500 text-white font-game py-3 rounded-2xl">🏠 Về Trang Chủ</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- ACTIONS ---
+        function selectProfile(id) {
+            STATE.currentProfileId = id;
+            const p = STATE.profiles.find(item => item.id === id);
+            if (p && p.lang && p.lang !== 'both') STATE.lang = p.lang;
+            STATE.screen = 'dashboard';
+            render();
+        }
+
+        function createProfile() {
+            const name = prompt("Tên bé hoặc người dùng mới? (Name):", "Bé " + Math.floor(Math.random()*100));
+            if (name) {
+                const newP = { id: Date.now().toString(), name, emoji: ['👦','👧','🐯','🐱','🦊','🐼'][Math.floor(Math.random()*6)], lang: 'vi', level: 'beginner', stars: 0, progress: {} };
+                STATE.profiles.push(newP);
+                saveState();
+                render();
+            }
+        }
+
+        function openEditProfile(id) {
+            STATE.editTarget = STATE.profiles.find(p => p.id === id);
+            STATE.showEditProfile = true;
+            render();
+        }
+
+        function saveEditProfile(id) {
+            const name = document.getElementById('edit-name').value;
+            const emoji = document.getElementById('edit-emoji').value;
+            const lang = document.getElementById('edit-lang').value;
+            STATE.profiles = STATE.profiles.map(p => p.id === id ? { ...p, name, emoji, lang } : p);
+            saveState();
+            STATE.showEditProfile = false;
+            render();
+        }
+
+        function deleteProfile(id) {
+            if (confirm("Xóa vĩnh viễn hồ sơ này?")) {
+                STATE.profiles = STATE.profiles.filter(p => p.id !== id);
+                saveState();
+                STATE.showEditProfile = false;
+                STATE.screen = 'profiles';
+                render();
+            }
+        }
+
+        function deleteActiveProfile() {
+            const targetId = STATE.currentProfileId || STATE.profiles[0]?.id;
+            if (targetId && confirm("Xóa vĩnh viễn hồ sơ hiện tại?")) {
+                STATE.profiles = STATE.profiles.filter(p => p.id !== targetId);
+                saveState();
+                STATE.showSettings = false;
+                STATE.screen = 'profiles';
+                render();
+            }
+        }
+
+        function resetProfileProgress(id) {
+            if (confirm("Đặt lại điểm và tiến trình?")) {
+                STATE.profiles = STATE.profiles.map(p => p.id === id ? { ...p, stars: 0, progress: {} } : p);
+                saveState();
+                STATE.showEditProfile = false;
+                render();
+            }
+        }
+
+        function resetAllProgress() {
+            if (confirm("Đặt lại toàn bộ điểm và tiến trình các hồ sơ?")) {
+                STATE.profiles = STATE.profiles.map(p => ({ ...p, stars: 0, progress: {} }));
+                saveState();
+                render();
+            }
+        }
+
+        function toggleLang(l) {
+            STATE.lang = l;
+            render();
+        }
+
+        function toggleTimer() {
+            STATE.timerRunning = !STATE.timerRunning;
+            if (STATE.timerRunning) {
+                if (STATE.timerInterval) clearInterval(STATE.timerInterval);
+                STATE.timerInterval = setInterval(() => {
+                    if (STATE.timerSeconds > 0) {
+                        STATE.timerSeconds--;
+                        render();
+                    } else {
+                        clearInterval(STATE.timerInterval);
+                        STATE.timerRunning = false;
+                        alert("⏰ Hết giờ lượt chơi!");
+                        STATE.timerSeconds = 120;
+                        render();
+                    }
+                }, 1000);
+            } else {
+                clearInterval(STATE.timerInterval);
+            }
+            render();
+        }
+
+        function startLesson(topicId, lvl) {
+            const topic = TOPICS.find(t => t.id === topicId);
+            if (!topic) return;
+            STATE.activeTopic = topic;
+            STATE.activeLevel = lvl;
+            STATE.lessonWords = [...(topic.levels[lvl] || topic.levels[1])].sort(() => 0.5 - Math.random());
+            STATE.lessonIdx = 0;
+            STATE.screen = 'lesson';
+            render();
+        }
+
+        function nextLessonWord() {
+            if (STATE.lessonIdx + 1 < STATE.lessonWords.length) {
+                STATE.lessonIdx++;
+                render();
+            } else {
+                triggerConfetti();
+                const profile = STATE.profiles.find(p => p.id === STATE.currentProfileId);
+                if (profile) {
+                    if (!profile.progress[STATE.activeTopic.id]) profile.progress[STATE.activeTopic.id] = {};
+                    if (!profile.progress[STATE.activeTopic.id][STATE.activeLevel]) {
+                        profile.progress[STATE.activeTopic.id][STATE.activeLevel] = true;
+                        profile.stars += 5;
+                        saveState();
+                    }
+                }
+                STATE.showReport = true;
+                render();
+            }
+        }
+
+        function restartLesson() {
+            STATE.showReport = false;
+            STATE.lessonWords.sort(() => 0.5 - Math.random());
+            STATE.lessonIdx = 0;
+            render();
+        }
+
+        function nextLevelLesson() {
+            STATE.showReport = false;
+            const nextLvl = STATE.activeLevel < 7 ? STATE.activeLevel + 1 : 1;
+            startLesson(STATE.activeTopic.id, nextLvl);
+        }
+
+        function openAlphabet() {
+            STATE.screen = 'alphabet';
+            render();
+        }
+
+        function startDescribe() {
+            const pool = DESCRIBE_QUESTIONS[STATE.lang] || DESCRIBE_QUESTIONS['vi'];
+            STATE.describeList = [...pool].sort(() => 0.5 - Math.random());
+            STATE.describeIdx = 0;
+            STATE.screen = 'describe';
+            render();
+        }
+
+        function answerDescribe(selected, correct) {
+            if (selected === correct) {
+                triggerConfetti();
+                STATE.describeIdx++;
+                render();
+            } else {
+                speak(STATE.lang === 'es' ? 'Inténtalo de nuevo' : 'Thử lại nhé');
+            }
+        }
+
+        function startMemory(pairs = 4) {
+            STATE.memoryPairs = pairs;
+            STATE.memoryMatches = 0;
+            STATE.memoryDone = false;
+            const pool = TOPICS[0].levels[1];
+            const subset = [...pool].sort(() => 0.5 - Math.random()).slice(0, pairs);
+            let deck = [];
+            subset.forEach((item, idx) => {
+                deck.push({ id: item.vi, display: item[STATE.lang], speak: item[STATE.lang], type: 'text', index: idx * 2 });
+                deck.push({ id: item.vi, display: `<img src="${item.img}" class="w-full h-full object-cover rounded-xl"/>`, speak: item[STATE.lang], type: 'img', index: idx * 2 + 1 });
+            });
+            deck.sort(() => 0.5 - Math.random());
+            STATE.memoryDeck = deck.map((c, i) => ({ ...c, index: i, flipped: false, matched: false }));
+            STATE.screen = 'memory';
+            render();
+        }
+
+        function flipMemoryCard(index) {
+            const card = STATE.memoryDeck[index];
+            if (card.flipped || card.matched) return;
+            card.flipped = true;
+            speak(card.speak);
+
+            if (!STATE.memoryFirst) {
+                STATE.memoryFirst = card;
+            } else {
+                if (STATE.memoryFirst.id === card.id) {
+                    speak(STATE.lang === 'es' ? '¡Muy bien!' : 'Chính xác!');
+                    triggerConfetti();
+                    STATE.memoryDeck = STATE.memoryDeck.map(c => c.id === card.id ? { ...c, matched: true } : c);
+                    STATE.memoryFirst = null;
+                    STATE.memoryMatches++;
+                    if (STATE.memoryMatches === STATE.memoryPairs) {
+                        STATE.memoryDone = true;
+                    }
+                } else {
+                    const prev = STATE.memoryFirst;
+                    STATE.memoryFirst = null;
+                    setTimeout(() => {
+                        STATE.memoryDeck = STATE.memoryDeck.map(c => c.index === card.index || c.index === prev.index ? { ...c, flipped: false } : c);
+                        render();
+                    }, 800);
+                }
+            }
+            render();
+        }
+
+        function startSlicer() {
+            STATE.screen = 'slicer';
+            STATE.slicerActive = true;
+            STATE.slicerScore = 0;
+            render();
+        }
+
+        function initSlicerCanvas() {
             const canvas = document.getElementById('slicer-canvas');
-            if(!canvas) return;
+            if (!canvas) return;
             const ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            slicerRunning = true;
+
             let trail = [];
-            let items = [{ emoji: '🍎', word: 'Táo', x: canvas.width / 2, y: canvas.height + 50, vx: (Math.random() - 0.5) * 4, vy: -16 }];
+            let items = [{ emoji: '🍉', word: 'Táo', x: canvas.width / 2, y: canvas.height + 50, vx: 1, vy: -15 }];
 
             const handleMove = (e) => {
+                if (!STATE.slicerActive) return;
                 e.preventDefault();
                 const x = e.touches ? e.touches[0].clientX : e.clientX;
                 const y = e.touches ? e.touches[0].clientY : e.clientY;
                 trail.push({ x, y, age: 0 });
 
                 items.forEach(it => {
-                    if (Math.hypot(x - it.x, y - it.y) < 75) {
-                        window.speak(it.word);
-                        window.triggerConfetti();
+                    if (Math.hypot(x - it.x, y - it.y) < 70) {
+                        speak(it.word);
+                        triggerConfetti();
+                        STATE.slicerScore++;
+                        const scoreEl = document.getElementById('slicer-score-val');
+                        if (scoreEl) scoreEl.innerText = STATE.slicerScore;
                         it.y = -200;
                     }
                 });
             };
+
             canvas.onpointermove = handleMove;
             canvas.ontouchmove = handleMove;
 
             const loop = () => {
-                if(!slicerRunning) return;
+                if (!STATE.slicerActive) return;
                 ctx.fillStyle = '#0f172a';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -1097,39 +795,29 @@
                     ctx.strokeStyle = '#38bdf8';
                     ctx.lineWidth = 8;
                     ctx.lineCap = 'round';
-                    ctx.shadowBlur = 15;
-                    ctx.shadowColor = '#0ea5e9';
                     ctx.stroke();
-                    ctx.shadowBlur = 0;
                 }
                 trail.forEach(t => t.age++);
                 trail = trail.filter(t => t.age < 12);
 
                 if (Math.random() < 0.035) {
-                    const sampleWord = TOPICS[0].levels[1][Math.floor(Math.random() * TOPICS[0].levels[1].length)];
-                    items.push({ emoji: '🍉', word: sampleWord[currentLang], x: Math.random() * (canvas.width - 100) + 50, y: canvas.height + 50, vx: (Math.random() - 0.5) * 6, vy: -15 });
+                    items.push({ emoji: '🍉', word: STATE.lang === 'es' ? 'Sandía' : 'Dưa hấu', x: Math.random() * (canvas.width - 100) + 50, y: canvas.height + 50, vx: (Math.random() - 0.5) * 4, vy: -15 });
                 }
 
-                items.forEach((it, idx) => {
+                items.forEach((it) => {
                     it.x += it.vx; it.y += it.vy; it.vy += 0.35;
                     ctx.font = "70px sans-serif";
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
                     ctx.fillText(it.emoji, it.x, it.y);
-                    if (it.y > canvas.height + 150) items.splice(idx, 1);
                 });
                 requestAnimationFrame(loop);
             };
             requestAnimationFrame(loop);
-        };
-        window.exitSlicer = function() {
-            slicerRunning = false;
-            window.showScreen('dashboard');
-        };
+        }
 
         window.addEventListener('DOMContentLoaded', () => {
-            window.loadProfilesUI();
-            window.updateUILanguage();
+            render();
         });
     </script>
 </body>
