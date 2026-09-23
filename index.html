@@ -8,13 +8,15 @@
     <meta name="apple-mobile-web-app-title" content="Vui Học">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪷</text></svg>">
     
-    <title>Vui Học - Thế Giới Ngôn Ngữ</title>
+    <title>Vui Học - The Bilingual Language World</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
     
     <style>
-        :root { --bg-light: #fefae0; }
+        :root {
+            --primary: #f59e0b; --primary-dark: #d97706; --bg-light: #fdfaf6;
+        }
         body {
             font-family: 'Nunito', system-ui, sans-serif !important;
             background-color: var(--bg-light); color: #1f2937;
@@ -34,23 +36,22 @@
         body.dark-mode .bg-white { background-color: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important; }
         body.dark-mode .text-gray-800, body.dark-mode .text-gray-700 { color: #f8fafc !important; }
 
-        .screen-container { transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 1; transform: scale(1); width: 100%; display: flex; flex-direction: column; align-items: center; }
-        .screen-hidden { opacity: 0 !important; transform: scale(0.95) !important; pointer-events: none; position: absolute; display: none !important; }
+        .screen-container { transition: opacity 0.3s ease, transform 0.3s ease; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .screen-hidden { opacity: 0 !important; transform: scale(0.98) !important; pointer-events: none; position: absolute; display: none !important; z-index: -1; }
 
         .btn-3d {
             transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 6px 0px rgba(0,0,0,0.15), 0 10px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 0px rgba(0,0,0,0.15), 0 15px 20px rgba(0,0,0,0.1);
             transform: translateY(0); cursor: pointer; touch-action: manipulation;
         }
         .btn-3d:active {
-            transform: translateY(6px) !important; box-shadow: 0 0px 0px rgba(0,0,0,0.15), 0 4px 4px rgba(0,0,0,0.1) !important;
+            transform: translateY(8px) !important; box-shadow: 0 0px 0px rgba(0,0,0,0.15), 0 5px 5px rgba(0,0,0,0.1) !important;
         }
 
         .floating { animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
-        
-        .pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
+        .pop-in { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
         /* Chat bubbles for Conversation Mode */
         .chat-bubble { position: relative; background: #fff; border-radius: 1.5rem; padding: 1rem 1.5rem; border: 4px solid #e5e7eb; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
@@ -66,72 +67,96 @@
 <body id="app-body" class="min-h-screen flex flex-col items-center p-3 sm:p-6 cultural-bg">
     <div id="confetti-container"></div>
 
-    <!-- Profile Edit Modal -->
+    <div id="custom-alert" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[999] flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full border-4 border-amber-400 shadow-2xl text-center pop-in">
+            <div class="text-6xl mb-4 floating">🔔</div>
+            <h3 id="alert-msg" class="text-xl font-black text-gray-800 mb-6">Message</h3>
+            <button type="button" onclick="closeCustomAlert()" class="btn-3d w-full bg-amber-500 text-white font-game py-3 rounded-2xl">OK</button>
+        </div>
+    </div>
+
+    <div id="custom-confirm" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[999] flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full border-4 border-red-400 shadow-2xl text-center pop-in">
+            <div class="text-6xl mb-4 floating">⚠️</div>
+            <h3 id="confirm-msg" class="text-xl font-black text-gray-800 mb-6">Are you sure?</h3>
+            <div class="flex gap-3">
+                <button type="button" onclick="closeCustomConfirm(false)" class="btn-3d flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-2xl" id="confirm-no">No</button>
+                <button type="button" onclick="closeCustomConfirm(true)" class="btn-3d flex-1 bg-red-500 text-white font-game py-3 rounded-2xl" id="confirm-yes">Yes</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-prompt" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[999] flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full border-4 border-blue-400 shadow-2xl text-center pop-in">
+            <div class="text-6xl mb-4 floating">👋</div>
+            <h3 id="prompt-msg" class="text-xl font-black text-gray-800 mb-4">Enter Name:</h3>
+            <input type="text" id="prompt-input" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold mb-6 text-center" placeholder="...">
+            <div class="flex gap-3">
+                <button type="button" onclick="closeCustomPrompt(null)" class="btn-3d flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-2xl" id="prompt-cancel">Cancel</button>
+                <button type="button" onclick="submitCustomPrompt()" class="btn-3d flex-1 bg-blue-500 text-white font-game py-3 rounded-2xl" id="prompt-ok">Save</button>
+            </div>
+        </div>
+    </div>
+
     <div id="profile-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[160] flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full border-4 border-amber-400 shadow-2xl text-left pop-in">
-            <h3 id="prof-modal-title" class="text-2xl font-game mb-6 text-gray-800 border-b-2 pb-2">✏️ Chỉnh Sửa Hồ Sơ</h3>
+            <h3 class="text-2xl font-game mb-6 text-gray-800 border-b-2 pb-2" id="ui-edit-title">✏️ Chỉnh Sửa Hồ Sơ</h3>
             <input type="hidden" id="prof-edit-id" value="">
             <div class="mb-4">
-                <label id="lbl-prof-name" class="block text-gray-700 font-bold mb-2">Tên (Name):</label>
+                <label class="block text-gray-700 font-bold mb-2" id="ui-edit-name">Tên (Name):</label>
                 <input type="text" id="prof-name" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold" placeholder="VD: An, Sofia...">
             </div>
             <div class="mb-4">
-                <label id="lbl-prof-emoji" class="block text-gray-700 font-bold mb-2">Biểu tượng (Emoji):</label>
+                <label class="block text-gray-700 font-bold mb-2" id="ui-edit-emoji">Biểu tượng (Emoji):</label>
                 <input type="text" id="prof-emoji" maxlength="2" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold text-2xl text-center" placeholder="🐯">
             </div>
             <div class="mb-4">
-                <label id="lbl-prof-lang" class="block text-gray-700 font-bold mb-2">Ngôn ngữ (Language):</label>
+                <label class="block text-gray-700 font-bold mb-2" id="ui-edit-lang">Ngôn ngữ (Language):</label>
                 <select id="prof-lang" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold">
                     <option value="vi">🇻🇳 Tiếng Việt</option>
                     <option value="es">🇪🇸 Español</option>
                 </select>
             </div>
             <div class="mb-4">
-                <button type="button" onclick="resetCurrentProfileProgress()" id="btn-reset-prof" class="btn-3d w-full bg-amber-100 text-amber-700 font-black py-3 rounded-xl border-2 border-amber-300 text-sm">🔄 Đặt Lại Điểm Hồ Sơ Này</button>
+                <button type="button" onclick="window.resetCurrentProfileProgress()" class="w-full bg-amber-100 hover:bg-amber-200 text-amber-700 font-black py-3 rounded-xl border-2 border-amber-300 text-sm" id="ui-edit-reset">🔄 Đặt Lại Điểm</button>
             </div>
             <div class="mb-6">
-                <button type="button" onclick="deleteCurrentProfile()" id="btn-del-prof" class="btn-3d w-full bg-red-100 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm">🗑️ Xóa Hồ Sơ Này</button>
+                <button type="button" onclick="window.deleteCurrentProfile()" class="w-full bg-red-100 hover:bg-red-200 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm" id="ui-edit-delete">🗑️ Xóa Hồ Sơ Này</button>
             </div>
             <div class="flex gap-3">
-                <button type="button" onclick="closeProfileModal()" id="btn-cancel-prof" class="btn-3d flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-2xl">Hủy</button>
-                <button type="button" onclick="saveProfileData()" id="btn-save-prof" class="btn-3d flex-1 bg-amber-600 text-white font-game py-3 rounded-2xl shadow-md">Lưu</button>
+                <button type="button" onclick="window.closeProfileModal()" class="btn-3d flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-2xl" id="ui-edit-cancel">Hủy</button>
+                <button type="button" onclick="window.saveProfileData()" class="btn-3d flex-1 bg-amber-600 text-white font-game py-3 rounded-2xl shadow-md" id="ui-edit-save">Lưu</button>
             </div>
         </div>
     </div>
 
-    <!-- Settings Modal -->
     <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[150] flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full border-4 border-amber-400 shadow-2xl text-left pop-in">
-            <h3 id="settings-title" class="text-2xl font-game mb-6 text-gray-800 border-b-2 pb-2">⚙️ Cài Đặt (Settings)</h3>
+            <h3 class="text-2xl font-game mb-6 text-gray-800 border-b-2 pb-2" id="ui-set-title">⚙️ Cài Đặt (Settings)</h3>
             <div class="mb-4 flex justify-between items-center bg-gray-100 p-3 rounded-xl border-2 border-gray-300">
-                <label id="lbl-dark-mode" class="text-gray-700 font-bold">Ban đêm (Dark Mode):</label>
-                <input type="checkbox" id="dark-mode-toggle" class="w-6 h-6 cursor-pointer" onclick="toggleDarkMode(this.checked)">
+                <label class="text-gray-700 font-bold" id="ui-set-dark">Ban đêm (Dark Mode):</label>
+                <input type="checkbox" id="dark-mode-toggle" class="w-6 h-6 cursor-pointer" onclick="window.toggleDarkMode(this.checked)">
             </div>
             <div class="mb-3">
-                <button type="button" onclick="openProfileModalForCurrent();" id="btn-edit-prof-settings" class="btn-3d w-full bg-blue-100 text-blue-700 font-black py-3 rounded-xl border-2 border-blue-300 text-sm">✏️ Chỉnh Sửa Hồ Sơ Hiện Tại</button>
+                <button type="button" onclick="window.openProfileModalForCurrent();" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-black py-3 rounded-xl border-2 border-blue-300 text-sm" id="ui-set-edit">✏️ Chỉnh Sửa Hồ Sơ Hiện Tại</button>
             </div>
             <div class="mb-3">
-                <button type="button" onclick="resetProgress();" id="btn-reset-all" class="btn-3d w-full bg-red-100 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm">🔄 Đặt Lại Điểm Toàn Bộ</button>
+                <button type="button" onclick="window.resetProgress();" class="w-full bg-red-100 hover:bg-red-200 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm" id="ui-set-resetAll">🔄 Đặt Lại Điểm Toàn Bộ</button>
             </div>
-            <div class="mb-6">
-                <button type="button" onclick="deleteCurrentProfileFromSettings();" id="btn-del-prof-settings" class="btn-3d w-full bg-rose-100 text-rose-700 font-black py-3 rounded-xl border-2 border-rose-300 text-sm">🗑️ Xóa Hồ Sơ Này</button>
-            </div>
-            <button type="button" onclick="closeSettings()" id="btn-close-settings" class="btn-3d w-full bg-amber-600 text-white font-game py-3 rounded-2xl border-b-4 border-amber-800 text-lg text-center">Đóng (Close)</button>
+            <button type="button" onclick="window.closeSettings()" class="btn-3d mt-4 w-full bg-amber-600 text-white font-game py-3 rounded-2xl border-b-4 border-amber-800 text-lg text-center" id="ui-set-close">Đóng (Close)</button>
         </div>
     </div>
 
-    <!-- Alphabet Modal -->
     <div id="alphabet-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-[150] flex flex-col items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 max-w-2xl w-full border-4 border-amber-400 shadow-2xl flex flex-col max-h-[90vh] pop-in">
             <div class="flex justify-between items-center mb-4 border-b-2 pb-2">
                 <h3 id="alphabet-modal-title" class="text-2xl font-game text-amber-700">🪷 Bảng Chữ Cái (Alphabet)</h3>
-                <button type="button" onclick="closeAlphabetModal()" id="btn-close-alpha" class="btn-3d px-4 py-2 bg-gray-200 rounded-xl font-bold">✕ Đóng</button>
+                <button type="button" onclick="window.closeAlphabetModal()" class="btn-3d px-4 py-2 bg-gray-200 rounded-xl font-bold" id="ui-alpha-close">✕ Đóng</button>
             </div>
             <div id="alphabet-grid" class="flex-1 overflow-y-auto grid grid-cols-4 sm:grid-cols-6 gap-3 p-2"></div>
         </div>
     </div>
 
-    <!-- Post-Lesson Progression Menu Modal -->
     <div id="report-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[170] flex items-center justify-center p-4">
         <div class="bg-white rounded-[3rem] p-8 max-w-sm w-full border-4 border-amber-300 shadow-2xl text-center pop-in">
             <span class="text-7xl mb-4 block animate-bounce">🏆</span>
@@ -139,29 +164,33 @@
             <p id="report-subtitle" class="text-gray-600 font-bold mb-6">Bạn đã nhận <span class="text-amber-600 font-black">+5 ⭐</span>.</p>
             
             <div class="flex flex-col gap-3">
-                <button type="button" onclick="restartSameLessonWithNewWords()" id="btn-new-words" class="btn-3d w-full bg-blue-500 text-white font-game text-base py-3 rounded-2xl shadow-md">🔄 Học Thêm Từ Mới (Review)</button>
-                <button type="button" onclick="advanceToNextLevel()" id="btn-next-level" class="btn-3d w-full bg-emerald-500 text-white font-game text-base py-3 rounded-2xl shadow-md">⬆️ Thử Cấp Tiếp Theo (Next)</button>
-                <button type="button" onclick="closeReportCard()" id="btn-continue" class="btn-3d w-full bg-amber-500 text-white font-game text-base py-3 rounded-2xl shadow-md">🏠 Về Trang Chủ (Home)</button>
+                <button type="button" onclick="window.restartSameLessonWithNewWords()" id="btn-new-words" class="btn-3d w-full bg-blue-500 hover:bg-blue-600 text-white font-game text-base py-3 rounded-2xl shadow-md">🔄 Học Thêm Từ Mới</button>
+                <button type="button" onclick="window.advanceToNextLevel()" id="btn-next-level" class="btn-3d w-full bg-emerald-500 hover:bg-emerald-600 text-white font-game text-base py-3 rounded-2xl shadow-md">⬆️ Thử Cấp Tiếp Theo</button>
+                <button type="button" onclick="window.closeReportCard()" id="btn-continue" class="btn-3d w-full bg-amber-500 hover:bg-amber-600 text-white font-game text-base py-3 rounded-2xl shadow-md">🏠 Về Trang Chủ</button>
             </div>
         </div>
     </div>
 
-    <!-- Screen 1: Profiles -->
+    
+    <!-- Screen 1: Profiles (Redesigned & Bilingual) -->
     <div id="screen-profiles" class="screen-container flex-1 w-full max-w-4xl flex flex-col items-center justify-center text-center">
-        <header class="mb-10 w-full mt-4 relative">
-            <button type="button" onclick="openSettings()" class="absolute top-0 right-0 btn-3d px-4 py-2 bg-white text-gray-700 font-bold rounded-2xl border-2 border-gray-300 text-sm shadow-sm">⚙️</button>
-            <div class="text-6xl mb-4 floating">🪷</div>
-            <h1 class="text-4xl sm:text-6xl font-game text-amber-600 mb-2 drop-shadow-sm">Vui Học</h1>
+        <header class="mb-8 w-full mt-4 relative flex flex-col items-center">
+            <div class="absolute top-0 right-0 flex gap-2">
+                <button type="button" onclick="window.setGlobalLang('vi')" id="g-lang-vi" class="px-3 py-1 bg-amber-500 text-white font-black rounded-lg shadow-md text-sm">VI</button>
+                <button type="button" onclick="window.setGlobalLang('es')" id="g-lang-es" class="px-3 py-1 bg-white text-gray-700 font-black rounded-lg shadow-sm border border-gray-300 text-sm">ES</button>
+            </div>
+            <div class="text-6xl mb-4 floating mt-8">🪷</div>
+            <h1 class="text-5xl sm:text-7xl font-game text-amber-600 mb-2 drop-shadow-sm tracking-tight" id="home-title">Vui Học</h1>
             <p id="sub-title-main" class="text-sm sm:text-xl text-gray-500 font-bold mb-6 tracking-wide uppercase">Thế Giới Ngôn Ngữ Kỳ Diệu</p>
         </header>
         <div id="profiles-container" class="flex flex-wrap justify-center gap-6 w-full mb-8"></div>
-        <button type="button" onclick="createProfile()" id="add-profile-btn" class="btn-3d px-8 py-4 bg-amber-500 text-white font-game text-xl rounded-[2rem] border-4 border-amber-600">➕ Thêm Tên Người Dùng</button>
+        <button type="button" onclick="window.handleCreateProfile()" id="add-profile-btn" class="btn-3d px-8 py-4 bg-amber-500 hover:bg-amber-600 text-white font-game text-xl rounded-[2rem] border-4 border-amber-600">➕ Thêm Tên Người Dùng</button>
     </div>
 
     <!-- Screen 2: Dashboard -->
     <div id="screen-dashboard" class="screen-container screen-hidden flex-1 w-full max-w-4xl flex-col items-center pb-24 mt-2">
         <div class="w-full flex justify-between items-center p-4 bg-white/90 backdrop-blur-md rounded-3xl shadow-lg border-2 border-amber-200 mb-6">
-            <button type="button" onclick="showScreen('profiles')" id="dash-btn-switch" class="btn-3d px-4 py-2 bg-amber-100 text-amber-900 font-extrabold rounded-2xl text-sm">⬅️ Đổi Hồ Sơ</button>
+            <button type="button" onclick="window.showScreen('profiles')" id="dash-btn-switch" class="btn-3d px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold rounded-2xl text-sm">⬅️ Đổi Hồ Sơ</button>
             
             <div class="flex items-center gap-3">
                 <span id="dash-avatar" class="text-3xl bg-amber-100 p-2 rounded-2xl shadow-inner">🐯</span>
@@ -173,17 +202,17 @@
 
             <div class="flex items-center gap-2">
                 <div class="flex bg-amber-100 rounded-2xl p-1 border border-amber-200">
-                    <button type="button" onclick="toggleLanguage('vi')" id="lang-vi" class="px-3 py-1.5 rounded-xl text-sm font-black bg-amber-500 text-white shadow-sm">VI</button>
-                    <button type="button" onclick="toggleLanguage('es')" id="lang-es" class="px-3 py-1.5 rounded-xl text-sm font-black text-gray-700">ES</button>
+                    <button type="button" onclick="window.toggleLanguage('vi')" id="lang-vi" class="px-3 py-1.5 rounded-xl text-sm font-black bg-amber-500 text-white shadow-sm">VI</button>
+                    <button type="button" onclick="window.toggleLanguage('es')" id="lang-es" class="px-3 py-1.5 rounded-xl text-sm font-black text-gray-700">ES</button>
                 </div>
-                <button type="button" onclick="openSettings()" class="p-2.5 bg-amber-100 rounded-2xl text-sm shadow-sm text-gray-800">⚙️</button>
+                <button type="button" onclick="window.openSettings()" class="p-2.5 bg-amber-100 hover:bg-amber-200 rounded-2xl text-sm shadow-sm text-gray-800">⚙️</button>
             </div>
         </div>
 
         <!-- Turn Timer Bar -->
         <div class="w-full bg-white/90 backdrop-blur-md p-4 rounded-3xl shadow-md border-2 border-amber-200 mb-6 flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-2">
-                <span class="text-2xl">⏳</span>
+                <span class="text-2xl shake">⏳</span>
                 <div>
                     <div id="timer-label" class="font-black text-gray-800 text-sm">Hẹn Giờ Lượt Chơi</div>
                     <div id="timer-sub" class="text-xs text-gray-500 font-bold">Thời gian phiên chơi công bằng</div>
@@ -191,30 +220,30 @@
             </div>
             <div class="flex flex-wrap items-center gap-3">
                 <div class="flex bg-gray-100 p-1 rounded-2xl gap-1 border">
-                    <button type="button" onclick="setTimerMinutes(2)" class="timer-opt px-2.5 py-1 text-xs font-black bg-white rounded-xl shadow-sm" data-mins="2">2m</button>
-                    <button type="button" onclick="setTimerMinutes(5)" class="timer-opt px-2.5 py-1 text-xs font-black text-gray-600 rounded-xl" data-mins="5">5m</button>
-                    <button type="button" onclick="setTimerMinutes(10)" class="timer-opt px-2.5 py-1 text-xs font-black text-gray-600 rounded-xl" data-mins="10">10m</button>
+                    <button type="button" onclick="window.setTimerMinutes(2)" class="timer-opt px-2.5 py-1 text-xs font-black bg-white rounded-xl shadow-sm" data-mins="2">2m</button>
+                    <button type="button" onclick="window.setTimerMinutes(5)" class="timer-opt px-2.5 py-1 text-xs font-black text-gray-600 rounded-xl" data-mins="5">5m</button>
+                    <button type="button" onclick="window.setTimerMinutes(10)" class="timer-opt px-2.5 py-1 text-xs font-black text-gray-600 rounded-xl" data-mins="10">10m</button>
                 </div>
                 <span id="turn-timer-display" class="font-black text-xl text-amber-600 bg-amber-50 px-4 py-1.5 rounded-2xl border border-amber-200">2:00</span>
-                <button type="button" onclick="toggleTurnTimer()" id="timer-toggle-btn" class="btn-3d px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md">Bắt Đầu ⏱️</button>
+                <button type="button" onclick="window.toggleTurnTimer()" id="timer-toggle-btn" class="btn-3d px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md">Bắt Đầu ⏱️</button>
             </div>
         </div>
 
-        <!-- Quick Games Bar (Added Conversations) -->
+        <!-- Quick Games Bar -->
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 w-full mb-8">
-            <button type="button" onclick="openAlphabetModal()" class="btn-3d py-4 bg-amber-500 text-white font-black text-sm rounded-3xl flex flex-col items-center">
+            <button type="button" onclick="window.openAlphabetModal()" class="btn-3d py-4 bg-amber-500 hover:bg-amber-600 text-white font-black text-sm rounded-3xl flex flex-col items-center">
                 <span class="text-3xl mb-1 floating">🔤</span> <span id="arcade-btn-alpha">Bảng Chữ Cái</span>
             </button>
-            <button type="button" onclick="startMemoryGame(4)" class="btn-3d py-4 bg-purple-600 text-white font-black text-sm rounded-3xl flex flex-col items-center">
+            <button type="button" onclick="window.startMemoryGame()" class="btn-3d py-4 bg-purple-600 hover:bg-purple-700 text-white font-black text-sm rounded-3xl flex flex-col items-center">
                 <span class="text-3xl mb-1 floating">🧠</span> <span id="arcade-btn-memory">Lật Hình Cặp</span>
             </button>
-            <button type="button" onclick="startDescribeGame()" class="btn-3d py-4 bg-teal-600 text-white font-black text-sm rounded-3xl flex flex-col items-center">
+            <button type="button" onclick="window.startDescribeGame()" class="btn-3d py-4 bg-teal-600 hover:bg-teal-700 text-white font-black text-sm rounded-3xl flex flex-col items-center">
                 <span class="text-3xl mb-1 floating">🖼️</span> <span id="arcade-btn-describe">Mô Tả Tranh</span>
             </button>
-            <button type="button" onclick="startSlicerGame()" class="btn-3d py-4 bg-orange-500 text-white font-black text-sm rounded-3xl flex flex-col items-center">
+            <button type="button" onclick="window.startSlicerGame()" class="btn-3d py-4 bg-orange-500 hover:bg-orange-600 text-white font-black text-sm rounded-3xl flex flex-col items-center">
                 <span class="text-3xl mb-1 floating">🍉</span> <span id="arcade-btn-slicer">Chém Từ HD</span>
             </button>
-            <button type="button" onclick="startConversationMode()" class="btn-3d py-4 bg-rose-500 text-white font-black text-sm rounded-3xl flex flex-col items-center sm:col-span-1 col-span-2">
+            <button type="button" onclick="window.startConversationMode()" class="btn-3d py-4 bg-rose-500 hover:bg-rose-600 text-white font-black text-sm rounded-3xl flex flex-col items-center sm:col-span-1 col-span-2">
                 <span class="text-3xl mb-1 floating">💬</span> <span id="arcade-btn-convo">Hội Thoại</span>
             </button>
         </div>
@@ -229,11 +258,11 @@
     <!-- Screen 3: Lesson Screen -->
     <div id="screen-game" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-[#fefae0] overflow-y-auto pt-8 px-4 pb-12">
         <div class="w-full max-w-md flex justify-between items-center mb-6">
-            <button type="button" onclick="exitGame()" id="lesson-btn-exit" class="btn-3d px-4 py-2 bg-white rounded-2xl font-extrabold text-gray-800 shadow-sm border border-gray-200">⬅️ Thoát</button>
+            <button type="button" onclick="window.exitGame()" id="lesson-btn-exit" class="btn-3d px-4 py-2 bg-white hover:bg-gray-50 rounded-2xl font-extrabold text-gray-800 shadow-sm border border-gray-200">⬅️ Thoát</button>
             <span id="game-progress" class="font-black text-amber-800 uppercase tracking-widest text-sm bg-amber-100 px-4 py-1.5 rounded-full">Topic • L1</span>
         </div>
 
-        <div id="active-card" onclick="playCurrentWordAudio()" class="btn-3d bg-white border-4 border-amber-300 rounded-[3rem] p-6 w-full max-w-md flex flex-col items-center shadow-2xl mb-8 group overflow-hidden">
+        <div id="active-card" onclick="window.playCurrentWordAudio()" class="btn-3d bg-white border-4 border-amber-300 rounded-[3rem] p-6 w-full max-w-md flex flex-col items-center shadow-2xl mb-8 group overflow-hidden">
             <div class="w-full h-72 rounded-3xl overflow-hidden mb-6 shadow-inner relative bg-gray-100 flex items-center justify-center">
                 <img id="active-photo" src="" alt="HD Photo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.style.display='none'; document.getElementById('active-emoji-fallback').style.display='block';">
                 <span id="active-emoji-fallback" class="text-8xl hidden">🔢</span>
@@ -242,15 +271,15 @@
         </div>
 
         <div class="flex flex-col items-center gap-4 w-full max-w-md">
-            <button type="button" onclick="playCurrentWordAudio()" class="btn-3d w-24 h-24 bg-red-500 text-white rounded-full flex items-center justify-center text-4xl shadow-lg">🔊</button>
-            <button type="button" onclick="skipWord()" id="lesson-btn-next" class="btn-3d w-full py-4 bg-amber-500 text-white font-black text-xl rounded-2xl">Tiếp Theo ➡️</button>
+            <button type="button" onclick="window.playCurrentWordAudio()" class="btn-3d w-24 h-24 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-4xl shadow-lg">🔊</button>
+            <button type="button" onclick="window.skipWord()" id="lesson-btn-next" class="btn-3d w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black text-xl rounded-2xl">Tiếp Theo ➡️</button>
         </div>
     </div>
 
     <!-- Screen 4: Picture Description Game -->
     <div id="screen-describe" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-teal-50 overflow-y-auto pt-8 px-4 pb-12">
         <div class="w-full max-w-lg flex justify-between items-center mb-6">
-            <button type="button" onclick="exitDescribeGame()" id="desc-btn-exit" class="btn-3d px-4 py-2 bg-white text-teal-800 font-black rounded-2xl border border-teal-200">⬅️ Thoát</button>
+            <button type="button" onclick="window.exitDescribeGame()" id="desc-btn-exit" class="btn-3d px-4 py-2 bg-white hover:bg-gray-50 text-teal-800 font-black rounded-2xl border border-teal-200">⬅️ Thoát</button>
             <span id="desc-game-progress" class="font-black text-teal-900 bg-teal-100 px-4 py-1.5 rounded-full">Thử Thách (1)</span>
         </div>
         <div class="bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-teal-300 shadow-2xl w-full max-w-lg text-center pop-in">
@@ -265,7 +294,7 @@
     <!-- Screen 5: Memory Match Game -->
     <div id="screen-memory" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-purple-50 overflow-y-auto pt-6 px-4 pb-12">
         <div class="w-full max-w-xl flex justify-between items-center mb-6">
-            <button type="button" onclick="exitMemoryGame()" id="mem-btn-exit" class="btn-3d px-4 py-2 bg-white text-purple-900 font-black rounded-2xl border border-purple-200">⬅️ Thoát</button>
+            <button type="button" onclick="window.exitMemoryGame()" id="mem-btn-exit" class="btn-3d px-4 py-2 bg-white hover:bg-gray-50 text-purple-900 font-black rounded-2xl border border-purple-200">⬅️ Thoát</button>
             <div class="bg-purple-600 px-4 py-2 rounded-2xl text-white font-black shadow-md"><span id="mem-lbl-pairs">Cặp</span>: <span id="memory-score">0</span> / <span id="memory-total-pairs">4</span></div>
         </div>
         <div class="bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-purple-300 shadow-2xl w-full max-w-xl text-center pop-in">
@@ -275,8 +304,8 @@
             
             <div id="mem-post-game" class="hidden flex-col gap-3 pop-in bg-purple-50 p-6 rounded-3xl border-2 border-purple-200">
                 <h4 class="text-2xl font-game text-purple-800" id="mem-victory-msg">🎉 Tuyệt Vời!</h4>
-                <button type="button" onclick="startMemoryGame(4)" id="btn-mem-replay" class="btn-3d w-full py-3 bg-purple-600 text-white font-game rounded-xl">🔄 Chơi Thêm Ván Nữa (4 Cặp)</button>
-                <button type="button" onclick="startMemoryGame(6)" id="btn-mem-hard" class="btn-3d w-full py-3 bg-indigo-600 text-white font-game rounded-xl">🔥 Cấp Khó Hơn (6 Cặp)</button>
+                <button type="button" onclick="window.startMemoryGame(4)" id="btn-mem-replay" class="btn-3d w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-game rounded-xl">🔄 Chơi Thêm Ván Nữa</button>
+                <button type="button" onclick="window.startMemoryGame(6)" id="btn-mem-hard" class="btn-3d w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-game rounded-xl">🔥 Cấp Khó Hơn</button>
             </div>
         </div>
     </div>
@@ -284,7 +313,7 @@
     <!-- Screen 6: Conversation Mode (Hội Thoại) -->
     <div id="screen-convo" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-rose-50 overflow-y-auto pt-8 px-4 pb-12">
         <div class="w-full max-w-lg flex justify-between items-center mb-6">
-            <button type="button" onclick="exitConversationMode()" id="convo-btn-exit" class="btn-3d px-4 py-2 bg-white text-rose-800 font-black rounded-2xl border border-rose-200">⬅️ Thoát</button>
+            <button type="button" onclick="window.exitConversationMode()" id="convo-btn-exit" class="btn-3d px-4 py-2 bg-white hover:bg-gray-50 text-rose-800 font-black rounded-2xl border border-rose-200">⬅️ Thoát</button>
             <span id="convo-topic-lbl" class="font-black text-rose-900 bg-rose-200 px-4 py-1.5 rounded-full">💬 Hội Thoại</span>
         </div>
         <div class="bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-rose-300 shadow-2xl w-full max-w-lg flex flex-col min-h-[450px]">
@@ -292,27 +321,32 @@
                 <!-- Chat lines injected here -->
             </div>
             <div class="w-full mt-auto pt-8 flex gap-3">
-                <button type="button" onclick="playConvoAudio()" class="btn-3d w-16 h-16 bg-red-500 rounded-2xl flex items-center justify-center text-3xl shadow-md text-white">🔊</button>
-                <button type="button" onclick="nextConvoLine()" id="convo-btn-next" class="btn-3d flex-1 py-4 bg-rose-500 text-white font-black text-xl rounded-2xl shadow-md">Tiếp Theo ➡️</button>
+                <button type="button" onclick="window.playConvoAudio()" class="btn-3d w-16 h-16 bg-red-500 hover:bg-red-600 rounded-2xl flex items-center justify-center text-3xl shadow-md text-white">🔊</button>
+                <button type="button" onclick="window.nextConvoLine()" id="convo-btn-next" class="btn-3d flex-1 py-4 bg-rose-500 hover:bg-rose-600 text-white font-black text-xl rounded-2xl shadow-md">Tiếp Theo ➡️</button>
             </div>
         </div>
     </div>
 
     <!-- Screen 7: Fruit Slicer -->
     <div id="screen-slicer" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-slate-900">
-        <div class="absolute top-6 left-6 z-20"><button type="button" onclick="exitSlicer()" id="slice-btn-exit" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-600 font-black">Thoát</button></div>
+        <div class="absolute top-6 left-6 z-20"><button type="button" onclick="window.exitSlicer()" id="slice-btn-exit" class="btn-3d px-5 py-3 bg-white text-red-600 font-black rounded-2xl">Thoát</button></div>
         <div class="absolute top-6 right-6 z-20 bg-orange-500 px-6 py-3 rounded-2xl text-white font-black text-xl shadow-lg"><span id="slice-lbl-score">Điểm</span>: <span id="slicer-score">0</span></div>
         <canvas id="slicer-canvas"></canvas>
     </div>
 
     <script>
-        let profiles = JSON.parse(localStorage.getItem('vuihoc_v38_data') || 'null') || [
+        // --- 1. GLOBAL STATE & UTILS ---
+        let profiles = JSON.parse(localStorage.getItem('vuihoc_v36_data') || 'null') || [
             { id: '1', name: 'Bé An', emoji: '👦', lang: 'vi', level: 'beginner', stars: 10, progress: {} },
             { id: '2', name: 'Sofia', emoji: '👧', lang: 'es', level: 'intermediate', stars: 25, progress: {} }
         ];
         let currentProfile = null;
-        let currentLang = 'vi';
+        let currentLang = 'vi'; // Global app UI language. Overridden by profile lang on select.
         
+        // Custom Modals State Callbacks
+        let promptCallback = null;
+        let confirmCallback = null;
+
         let turnTimerActive = false;
         let turnTotalSeconds = 120;
         let turnSecondsLeft = 120;
@@ -320,12 +354,72 @@
 
         let currentActiveLesson = null;
         let currentLessonWordIdx = 0;
+
         let activeConvo = null;
         let convoLineIdx = 0;
 
-        function saveProfiles() { localStorage.setItem('vuihoc_v38_data', JSON.stringify(profiles)); }
+        function saveProfiles() { localStorage.setItem('vuihoc_v36_data', JSON.stringify(profiles)); }
 
-        // --- FULLY RESTORED MASSIVE DATASETS (6-8 items per level) ---
+        // --- 2. CUSTOM MODAL CONTROLLERS (Replacing Alert/Prompt/Confirm) ---
+        window.showCustomAlert = function(msg) {
+            document.getElementById('alert-msg').innerText = msg;
+            document.getElementById('custom-alert').classList.remove('hidden');
+        };
+        window.closeCustomAlert = function() {
+            document.getElementById('custom-alert').classList.add('hidden');
+        };
+
+        window.showCustomConfirm = function(msg, callback) {
+            document.getElementById('confirm-msg').innerText = msg;
+            confirmCallback = callback;
+            document.getElementById('custom-confirm').classList.remove('hidden');
+        };
+        window.closeCustomConfirm = function(result) {
+            document.getElementById('custom-confirm').classList.add('hidden');
+            if (confirmCallback) {
+                confirmCallback(result);
+                confirmCallback = null;
+            }
+        };
+
+        window.showCustomPrompt = function(msg, defaultText, callback) {
+            document.getElementById('prompt-msg').innerText = msg;
+            document.getElementById('prompt-input').value = defaultText || "";
+            promptCallback = callback;
+            document.getElementById('custom-prompt').classList.remove('hidden');
+            document.getElementById('prompt-input').focus();
+        };
+        window.closeCustomPrompt = function(isCancel) {
+            document.getElementById('custom-prompt').classList.add('hidden');
+            if (isCancel) {
+                promptCallback = null;
+                return;
+            }
+            if (promptCallback) {
+                promptCallback(document.getElementById('prompt-input').value);
+                promptCallback = null;
+            }
+        };
+        window.submitCustomPrompt = function() {
+            window.closeCustomPrompt(false);
+        };
+
+        // --- 3. ROBUST AUDIO ENGINE ---
+        window.speak = function(text, targetLang) {
+            try {
+                if (!('speechSynthesis' in window)) return;
+                window.speechSynthesis.cancel();
+                const lCode = targetLang || (currentLang === 'es' ? 'es-ES' : 'vi-VN');
+                const utt = new SpeechSynthesisUtterance(text);
+                utt.lang = lCode;
+                utt.rate = 0.9;
+                window.speechSynthesis.speak(utt);
+            } catch (e) {
+                console.error("Audio error:", e);
+            }
+        };
+
+        // --- 4. MASSIVE DATASETS ---
         const ALPHABET_VI = [
             { char: 'A', word: 'Áo' }, { char: 'Ă', word: 'Ăn' }, { char: 'Â', word: 'Ấm' },
             { char: 'B', word: 'Bóng' }, { char: 'C', word: 'Cá' }, { char: 'D', word: 'Dép' },
@@ -359,32 +453,24 @@
                         { vi: 'Mèo', es: 'Gato', img: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Chim', es: 'Pájaro', img: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Cá', es: 'Pez', img: 'https://images.unsplash.com/photo-1524704654690-b56c05c78a00?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Gà', es: 'Pollo', img: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Vịt', es: 'Pato', img: 'https://images.unsplash.com/photo-1555169062-01347abf78fb?auto=format&fit=crop&w=600&q=80' }],
+                        { vi: 'Gà', es: 'Pollo', img: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=600&q=80' }],
                     2: [{ vi: 'Sư tử', es: 'León', img: 'https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Hổ', es: 'Tigre', img: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Bò', es: 'Vaca', img: 'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Lợn', es: 'Cerdo', img: 'https://images.unsplash.com/photo-1516467508483-a7212febe31a?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Ngựa', es: 'Caballo', img: 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Cừu', es: 'Oveja', img: 'https://images.unsplash.com/photo-1484557077796-8ffc45130e94?auto=format&fit=crop&w=600&q=80' }],
+                        { vi: 'Ngựa', es: 'Caballo', img: 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=600&q=80' }],
                     3: [{ vi: 'Voi', es: 'Elefante', img: 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Khỉ', es: 'Mono', img: 'https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Gấu', es: 'Oso', img: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Hươu', es: 'Ciervo', img: 'https://images.unsplash.com/photo-1484406566165-985b496c5f78?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Ngựa vằn', es: 'Cebra', img: 'https://images.unsplash.com/photo-1526095179574-86e545346ae9?auto=format&fit=crop&w=600&q=80' }],
+                        { vi: 'Hươu', es: 'Ciervo', img: 'https://images.unsplash.com/photo-1484406566165-985b496c5f78?auto=format&fit=crop&w=600&q=80' }],
                     4: [{ vi: 'Thỏ', es: 'Conejo', img: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Sóc', es: 'Ardilla', img: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Cáo', es: 'Zorro', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Sói', es: 'Lobo', img: 'https://images.unsplash.com/photo-1561731216-c3a4d99437d5?auto=format&fit=crop&w=600&q=80' }],
+                        { vi: 'Cáo', es: 'Zorro', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=600&q=80' }],
                     5: [{ vi: 'Rùa', es: 'Tortuga', img: 'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Ếch', es: 'Rana', img: 'https://images.unsplash.com/photo-1534067783941-51c9c23ecefd?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Rắn', es: 'Serpiente', img: 'https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?auto=format&fit=crop&w=600&q=80' }],
+                        { vi: 'Ếch', es: 'Rana', img: 'https://images.unsplash.com/photo-1534067783941-51c9c23ecefd?auto=format&fit=crop&w=600&q=80' }],
                     6: [{ vi: 'Cá voi', es: 'Ballena', img: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Cá mập', es: 'Tiburón', img: 'https://images.unsplash.com/photo-1560275619-4d6236189f06?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Cá heo', es: 'Delfín', img: 'https://images.unsplash.com/photo-1570455855949-a34e40a049f7?auto=format&fit=crop&w=600&q=80' }],
+                        { vi: 'Cá mập', es: 'Tiburón', img: 'https://images.unsplash.com/photo-1560275619-4d6236189f06?auto=format&fit=crop&w=600&q=80' }],
                     7: [{ vi: 'Đại bàng', es: 'Águila', img: 'https://images.unsplash.com/photo-1611689342806-0863700ce1e4?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Cú mèo', es: 'Búho', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Thiên nga', es: 'Cisne', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80' }]
+                        { vi: 'Cú mèo', es: 'Búho', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=600&q=80' }]
                 }
             },
             { 
@@ -392,12 +478,9 @@
                 levels: {
                     1: [{ vi: 'Táo', es: 'Manzana', img: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Chuối', es: 'Plátano', img: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Bánh mì', es: 'Pan', img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Nước', es: 'Agua', img: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Sữa', es: 'Leche', img: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=600&q=80' }],
+                        { vi: 'Bánh mì', es: 'Pan', img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80' }],
                     2: [{ vi: 'Phở', es: 'Sopa', img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Cam', es: 'Naranja', img: 'https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=600&q=80' },
-                        { vi: 'Trứng', es: 'Huevo', img: 'https://images.unsplash.com/photo-1516467508483-a7212febe31a?auto=format&fit=crop&w=600&q=80' }],
+                        { vi: 'Cam', es: 'Naranja', img: 'https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=600&q=80' }],
                     3: [{ vi: 'Bánh ngọt', es: 'Pastel', img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80' },
                         { vi: 'Phô mai', es: 'Queso', img: 'https://images.unsplash.com/photo-1452195100486-9cc805987862?auto=format&fit=crop&w=600&q=80' }],
                     4: [{ vi: 'Dưa hấu', es: 'Sandía', img: 'https://images.unsplash.com/photo-1587049352847-4a222e784d38?auto=format&fit=crop&w=600&q=80' },
@@ -411,37 +494,34 @@
                 }
             },
             { 
-                id: 'colors', vi: 'Màu & Khối', es: 'Colores', emoji: '🎨',
+                id: 'colors', vi: 'Màu Sắc', es: 'Colores', emoji: '🎨',
                 levels: {
                     1: [{ vi: 'Đỏ', es: 'Rojo', img: 'https://placehold.co/600x400/ef4444/FFF?text=Red' },
                         { vi: 'Xanh dương', es: 'Azul', img: 'https://placehold.co/600x400/3b82f6/FFF?text=Blue' },
-                        { vi: 'Vàng', es: 'Amarillo', img: 'https://placehold.co/600x400/eab308/FFF?text=Yellow' },
-                        { vi: 'Cam', es: 'Naranja', img: 'https://placehold.co/600x400/f97316/FFF?text=Orange' }],
+                        { vi: 'Vàng', es: 'Amarillo', img: 'https://placehold.co/600x400/eab308/FFF?text=Yellow' }],
                     2: [{ vi: 'Xanh lá', es: 'Verde', img: 'https://placehold.co/600x400/22c55e/FFF?text=Green' },
                         { vi: 'Đen', es: 'Negro', img: 'https://placehold.co/600x400/000000/FFF?text=Black' }],
                     3: [{ vi: 'Trắng', es: 'Blanco', img: 'https://placehold.co/600x400/ffffff/000?text=White' },
                         { vi: 'Xám', es: 'Gris', img: 'https://placehold.co/600x400/6b7280/FFF?text=Gray' }],
                     4: [{ vi: 'Tím', es: 'Morado', img: 'https://placehold.co/600x400/a855f7/FFF?text=Purple' },
                         { vi: 'Hồng', es: 'Rosa', img: 'https://placehold.co/600x400/ec4899/FFF?text=Pink' }],
-                    5: [{ vi: 'Hình tròn', es: 'Círculo', img: 'https://placehold.co/600x400/FFF/000?text=O' }],
-                    6: [{ vi: 'Hình vuông', es: 'Cuadrado', img: 'https://placehold.co/600x400/FFF/000?text=%5B%5D' }],
-                    7: [{ vi: 'Hình tam giác', es: 'Triángulo', img: 'https://placehold.co/600x400/FFF/000?text=^' }]
+                    5: [{ vi: 'Tròn', es: 'Círculo', img: 'https://placehold.co/600x400/FFF/000?text=O' }],
+                    6: [{ vi: 'Vuông', es: 'Cuadrado', img: 'https://placehold.co/600x400/FFF/000?text=%5B%5D' }],
+                    7: [{ vi: 'Cam', es: 'Naranja', img: 'https://placehold.co/600x400/f97316/FFF?text=Orange' }]
                 }
             },
             { 
-                id: 'numbers', vi: 'Số Đếm & Toán', es: 'Números', emoji: '🔢',
+                id: 'numbers', vi: 'Số Đếm', es: 'Números', emoji: '🔢',
                 levels: {
                     1: [{ vi: '1 - Một', es: '1 - Uno', img: 'https://placehold.co/600x400/f59e0b/FFF?text=1' },
                         { vi: '2 - Hai', es: '2 - Dos', img: 'https://placehold.co/600x400/f59e0b/FFF?text=2' },
                         { vi: '3 - Ba', es: '3 - Tres', img: 'https://placehold.co/600x400/f59e0b/FFF?text=3' },
-                        { vi: '4 - Bốn', es: '4 - Cuatro', img: 'https://placehold.co/600x400/f59e0b/FFF?text=4' },
-                        { vi: '5 - Năm', es: '5 - Cinco', img: 'https://placehold.co/600x400/f59e0b/FFF?text=5' }],
-                    2: [{ vi: '6 - Sáu', es: '6 - Seis', img: 'https://placehold.co/600x400/f59e0b/FFF?text=6' },
+                        { vi: '4 - Bốn', es: '4 - Cuatro', img: 'https://placehold.co/600x400/f59e0b/FFF?text=4' }],
+                    2: [{ vi: '5 - Năm', es: '5 - Cinco', img: 'https://placehold.co/600x400/f59e0b/FFF?text=5' },
+                        { vi: '6 - Sáu', es: '6 - Seis', img: 'https://placehold.co/600x400/f59e0b/FFF?text=6' },
                         { vi: '7 - Bảy', es: '7 - Siete', img: 'https://placehold.co/600x400/f59e0b/FFF?text=7' },
-                        { vi: '8 - Tám', es: '8 - Ocho', img: 'https://placehold.co/600x400/f59e0b/FFF?text=8' },
-                        { vi: '9 - Chín', es: '9 - Nueve', img: 'https://placehold.co/600x400/f59e0b/FFF?text=9' },
-                        { vi: '10 - Mười', es: '10 - Diez', img: 'https://placehold.co/600x400/f59e0b/FFF?text=10' }],
-                    3: [{ vi: '11 - Mười một', es: '11 - Once', img: 'https://placehold.co/600x400/10b981/FFF?text=11' },
+                        { vi: '8 - Tám', es: '8 - Ocho', img: 'https://placehold.co/600x400/f59e0b/FFF?text=8' }],
+                    3: [{ vi: '10 - Mười', es: '10 - Diez', img: 'https://placehold.co/600x400/10b981/FFF?text=10' },
                         { vi: '15 - Mười lăm', es: '15 - Quince', img: 'https://placehold.co/600x400/10b981/FFF?text=15' },
                         { vi: '20 - Hai mươi', es: '20 - Veinte', img: 'https://placehold.co/600x400/10b981/FFF?text=20' }],
                     4: [{ vi: '30 - Ba mươi', es: '30 - Treinta', img: 'https://placehold.co/600x400/3b82f6/FFF?text=30' },
@@ -499,22 +579,42 @@
         ];
 
         const DESCRIBE_QUESTIONS = {
-            vi: [
-                { emoji: '🐶', text: 'Con chó màu vàng đang vẫy đuôi.', prompt: 'Con vật trong tranh là gì?', options: ['Con chó', 'Con mèo', 'Con chim'], correct: 0 },
-                { emoji: '🍎', text: 'Quả táo đỏ mọng trên cành cây.', prompt: 'Đây là loại quả gì?', options: ['Quả táo', 'Quả chuối', 'Quả cam'], correct: 0 },
-                { emoji: '🚗', text: 'Chiếc ô tô màu đỏ chạy trên đường.', prompt: 'Phương tiện này là gì?', options: ['Xe ô tô', 'Xe đạp', 'Tàu hỏa'], correct: 0 },
-                { emoji: '🌅', text: 'Ông mặt trời đỏ rực nhô lên từ phía xa chiếu những tia nắng vàng.', prompt: 'Cảnh tượng này diễn ra lúc nào?', options: ['Bình minh', 'Đêm tối', 'Trưa nắng'], correct: 0 },
-                { emoji: '🏰', text: 'Lâu đài cổ kính nằm sừng sững trên đỉnh đồi cao.', prompt: 'Lâu đài nằm ở đâu?', options: ['Đỉnh đồi cao', 'Dưới biển', 'Trong rừng'], correct: 0 },
-                { emoji: '🚀', text: 'Con tàu vũ trụ bay vào không gian khám phá các vì sao.', prompt: 'Tàu vũ trụ đang bay đi đâu?', options: ['Vào không gian', 'Xuống biển', 'Đến trường học'], correct: 0 }
-            ],
-            es: [
-                { emoji: '🐶', text: 'El perro marrón mueve su cola.', prompt: '¿Qué animal aparece en la imagen?', options: ['El perro', 'El gato', 'El pájaro'], correct: 0 },
-                { emoji: '🍎', text: 'La manzana roja cuelga del árbol.', prompt: '¿Qué fruta es esta?', options: ['La manzana', 'El plátano', 'La uva'], correct: 0 },
-                { emoji: '🚗', text: 'El coche rojo viaja por la calle.', prompt: '¿Qué vehículo es este?', options: ['El coche', 'La bicicleta', 'El avión'], correct: 0 },
-                { emoji: '🌅', text: 'El sol brillante ilumina las olas doradas de la mañana.', prompt: '¿En qué momento del día ocurre?', options: ['Amanecer', 'Noche oscura', 'Mediodía'], correct: 0 },
-                { emoji: '🏰', text: 'El antiguo castillo se alza majestuoso sobre una colina alta.', prompt: '¿Dónde está el castillo?', options: ['En una colina alta', 'Bajo el mar', 'En el bosque'], correct: 0 },
-                { emoji: '🚀', text: 'La nave espacial cruza el cielo para explorar estrellas.', prompt: '¿Hacia dónde vuela la nave?', options: ['Al espacio', 'Al océano', 'A la escuela'], correct: 0 }
-            ]
+            vi: {
+                beginner: [
+                    { emoji: '🐶', text: 'Con chó màu vàng đang vẫy đuôi.', prompt: 'Con vật trong tranh là gì?', options: ['Con chó', 'Con mèo', 'Con chim'], correct: 0 },
+                    { emoji: '🍎', text: 'Quả táo đỏ mọng trên cành cây.', prompt: 'Đây là loại quả gì?', options: ['Quả táo', 'Quả chuối', 'Quả cam'], correct: 0 },
+                    { emoji: '🚗', text: 'Chiếc ô tô màu đỏ chạy trên đường.', prompt: 'Phương tiện này là gì?', options: ['Xe ô tô', 'Xe đạp', 'Tàu hỏa'], correct: 0 },
+                    { emoji: '🏠', text: 'Ngôi nhà nhỏ màu vàng có khu vườn xinh.', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Bệnh viện', 'Trường học'], correct: 0 }
+                ],
+                intermediate: [
+                    { emoji: '🌅', text: 'Buổi sáng bình minh trên biển, ông mặt trời đỏ rực nhô lên từ phía xa chiếu những tia nắng vàng óng ánh xuống mặt nước.', prompt: 'Cảnh tượng này diễn ra lúc nào?', options: ['Buổi sáng bình minh', 'Buổi trưa nắng gắt', 'Đêm trăng sáng'], correct: 0 },
+                    { emoji: '🚲', text: 'Bé An đạp chiếc xe đạp màu xanh dương qua con đường làng rợp bóng tre xanh mát vào mỗi buổi chiều.', prompt: 'Bé An đang làm gì?', options: ['Đạp xe đạp', 'Chạy bộ', 'Đi bơi'], correct: 0 },
+                    { emoji: '🍜', text: 'Tô phở bò nóng hổi khói nghi ngút đặt trên bàn, kèm theo đĩa rau thơm tươi ngon.', prompt: 'Món ăn được miêu tả là gì?', options: ['Tô phở bò', 'Bún chả', 'Cơm tấm'], correct: 0 }
+                ],
+                advanced: [
+                    { emoji: '🏰', text: 'Lâu đài cổ kính nằm sừng sững trên đỉnh đồi cao, bao bọc bởi tường đá rêu phong và những cánh rừng nguyên sinh bạt ngàn sương mù.', prompt: 'Đặc điểm của lâu đài là gì?', options: ['Nằm trên đỉnh đồi cao', 'Nằm dưới đáy biển', 'Nằm giữa thành phố'], correct: 0 },
+                    { emoji: '🚀', text: 'Con tàu vũ trụ khổng lồ phóng vút qua bầu trời đêm đầy sao, bắt đầu hành trình khám phá những thiên hà xa xôi.', prompt: 'Mục đích của con tàu là gì?', options: ['Khám phá thiên hà xa xôi', 'Bay quanh Trái Đất', 'Chở khách đi du lịch'], correct: 0 },
+                    { emoji: '🌊', text: 'Đại dương xanh thẳm ẩn chứa vô số điều kỳ diệu với những rặng san hô rực rỡ sắc màu và hàng ngàn loài sinh vật biển.', prompt: 'Đại dương ẩn chứa điều gì?', options: ['Rặng san hô rực rỡ', 'Cây cổ thụ', 'Sa mạc cát'], correct: 0 }
+                ]
+            },
+            es: {
+                beginner: [
+                    { emoji: '🐶', text: 'El perro marrón mueve su cola.', prompt: '¿Qué animal aparece en la imagen?', options: ['El perro', 'El gato', 'El pájaro'], correct: 0 },
+                    { emoji: '🍎', text: 'La manzana roja cuelga del árbol.', prompt: '¿Qué fruta es esta?', options: ['La manzana', 'El plátano', 'La uva'], correct: 0 },
+                    { emoji: '🚗', text: 'El coche rojo viaja por la calle.', prompt: '¿Qué vehículo es este?', options: ['El coche', 'La bicicleta', 'El avión'], correct: 0 },
+                    { emoji: '🏠', text: 'La pequeña casa amarilla con jardín.', prompt: '¿Qué lugar es este?', options: ['La casa', 'La escuela', 'El hospital'], correct: 0 }
+                ],
+                intermediate: [
+                    { emoji: '🌅', text: 'El amanecer en el mar muestra al sol brillante iluminando las suaves olas doradas de la mañana.', prompt: '¿En qué momento del día ocurre?', options: ['Amanecer', 'Mediodía', 'Noche estrellada'], correct: 0 },
+                    { emoji: '🚲', text: 'Sofía monta su bicicleta azul por el camino rodeado de árboles verdes.', prompt: '¿Qué hace Sofía?', options: ['Monta su bicicleta', 'Juega al fútbol', 'Pinta cuadros'], correct: 0 },
+                    { emoji: '🍜', text: 'Un plato de sopa caliente y deliciosa acompañada de hierbas frescas y limón.', prompt: '¿Qué platillo se describe?', options: ['Una sopa caliente', 'Pan con queso', 'Ensalada verde'], correct: 0 }
+                ],
+                advanced: [
+                    { emoji: '🏰', text: 'El antiguo castillo se alza majestuoso sobre una colina alta, rodeado de murallas de piedra y bosques misteriosos.', prompt: '¿Dónde se alza el castillo?', options: ['Sobre una colina alta', 'En la playa', 'Bajo el mar'], correct: 0 },
+                    { emoji: '🚀', text: 'La gigantesca nave espacial cruza velozmente el cielo estrellado, iniciando su gran misión de explorar lejanas galaxias.', prompt: '¿Cuál es la misión de la nave?', options: ['Explorar lejanas galaxias', 'Regresar a la Tierra', 'Volar en círculo'], correct: 0 },
+                    { emoji: '🌊', text: 'El océano profundo esconde maravillas increíbles con arrecifes de coral brillantes y miles de coloridas especies marinas.', prompt: '¿Qué esconde el océano?', options: ['Arrecifes de coral', 'Edificios altos', 'Montañas nevadas'], correct: 0 }
+                ]
+            }
         };
 
         const CONVERSATIONS = [
@@ -535,11 +635,9 @@
                 mapTitle: 'Bản Đồ Học Tập Thực Tế', exit: '⬅️ Thoát', next: 'Tiếp Theo ➡️',
                 reportTitle: 'Hoàn Thành Cấp Độ!', newWordsBtn: '🔄 Lặp Lại Cấp Độ Này', nextLevelBtn: '⬆️ Thử Cấp Tiếp Theo', continueBtn: '🏠 Về Trang Chủ',
                 memTitle: '🧠 Lật Hình Tìm Cặp', memSub: 'Chạm vào thẻ để lật, nghe phát âm và tìm cặp đúng!', alertTimeUp: '⏰ Hết giờ lượt chơi! Đổi bạn khác nào!',
-                subTitleMain: 'Thế Giới Ngôn Ngữ Kỳ Diệu',
-                settingsTitle: '⚙️ Cài Đặt (Settings)', darkMode: 'Ban đêm (Dark Mode):', editProfCurrent: '✏️ Chỉnh Sửa Hồ Sơ Hiện Tại', resetAll: '🔄 Đặt Lại Điểm Toàn Bộ', deleteProf: '🗑️ Xóa Hồ Sơ Này', close: 'Đóng (Close)',
-                profModalTitle: '✏️ Chỉnh Sửa Hồ Sơ', profName: 'Tên (Name):', profEmoji: 'Biểu tượng (Emoji):', profLang: 'Ngôn ngữ học:', profReset: '🔄 Đặt Lại Điểm Hồ Sơ Này', profDel: '🗑️ Xóa Hồ Sơ Này', profCancel: 'Hủy', profSave: 'Lưu',
-                alphaTitle: '🪷 Bảng Chữ Cái', btnCloseAlpha: '✕ Đóng',
-                memPairs: 'Cặp', sliceScore: 'Điểm'
+                subTitleMain: 'Thế Giới Ngôn Ngữ Kỳ Diệu', homeTitle: 'Vui Học', addProfBtn: '➕ Thêm Tên Người Dùng', editProfTitle: '✏️ Chỉnh Sửa Hồ Sơ',
+                setTitle: '⚙️ Cài Đặt (Settings)', setDark: 'Ban đêm (Dark Mode):', setEditCurr: '✏️ Chỉnh Sửa Hồ Sơ Hiện Tại', setResetAll: '🔄 Đặt Lại Điểm Toàn Bộ',
+                editProfName: 'Tên (Name):', editProfEmoji: 'Biểu tượng (Emoji):', editProfLang: 'Ngôn ngữ (Language):', editProfReset: '🔄 Đặt Lại Điểm', editProfDel: '🗑️ Xóa Hồ Sơ Này', editProfCancel: 'Hủy', editProfSave: 'Lưu', alphaClose: '✕ Đóng'
             },
             es: {
                 switchProfile: '⬅️ Cambiar Perfil', timerTitle: 'Temporizador', timerSub: 'Turnos justos para todos',
@@ -547,17 +645,21 @@
                 mapTitle: 'Mapa de Aprendizaje HD', exit: '⬅️ Salir', next: 'Siguiente ➡️',
                 reportTitle: '¡Nivel Completado!', newWordsBtn: '🔄 Repetir este Nivel', nextLevelBtn: '⬆️ Siguiente Nivel', continueBtn: '🏠 Ir al Inicio',
                 memTitle: '🧠 Memoria de Parejas', memSub: '¡Toca las tarjetas para voltearlas y encontrar parejas!', alertTimeUp: '⏰ ¡Se acabó el tiempo! ¡Cambien de jugador!',
-                subTitleMain: 'El Mundo Mágico de los Idiomas',
-                settingsTitle: '⚙️ Ajustes', darkMode: 'Modo Oscuro:', editProfCurrent: '✏️ Editar Perfil Actual', resetAll: '🔄 Restablecer Todo', deleteProf: '🗑️ Eliminar Perfil', close: 'Cerrar',
-                profModalTitle: '✏️ Editar Perfil', profName: 'Nombre:', profEmoji: 'Emoji:', profLang: 'Idioma:', profReset: '🔄 Restablecer Puntos', profDel: '🗑️ Eliminar Perfil', profCancel: 'Cancelar', profSave: 'Guardar',
-                alphaTitle: '🪷 Alfabeto', btnCloseAlpha: '✕ Cerrar',
-                memPairs: 'Parejas', sliceScore: 'Puntos'
+                subTitleMain: 'El Mundo Mágico de los Idiomas', homeTitle: 'Vui Học / Aprender', addProfBtn: '➕ Añadir Perfil', editProfTitle: '✏️ Editar Perfil',
+                setTitle: '⚙️ Ajustes', setDark: 'Modo Oscuro:', setEditCurr: '✏️ Editar Perfil Actual', setResetAll: '🔄 Restablecer Todo',
+                editProfName: 'Nombre:', editProfEmoji: 'Emoji:', editProfLang: 'Idioma:', editProfReset: '🔄 Restablecer Puntos', editProfDel: '🗑️ Eliminar Perfil', editProfCancel: 'Cancelar', editProfSave: 'Guardar', alphaClose: '✕ Cerrar'
             }
         };
 
-        // --- STREAMING_CHUNK: Core App Engine ---
-        
-        function updateUILanguage() {
+        // --- 5. UI CONTROLLERS ---
+        window.setGlobalLang = function(l) {
+            currentLang = l;
+            document.getElementById('g-lang-vi').className = `px-3 py-1 rounded-lg text-sm font-black transition-colors ${l==='vi'?'bg-amber-500 text-white shadow-md':'bg-white text-gray-700 border border-gray-300'}`;
+            document.getElementById('g-lang-es').className = `px-3 py-1 rounded-lg text-sm font-black transition-colors ${l==='es'?'bg-amber-500 text-white shadow-md':'bg-white text-gray-700 border border-gray-300'}`;
+            updateUILanguage();
+        };
+
+        window.updateUILanguage = function() {
             const t = UI_TEXT[currentLang];
             const setTxt = (id, txt) => { const el = document.getElementById(id); if (el) el.innerHTML = txt; };
             setTxt('dash-btn-switch', t.switchProfile); setTxt('timer-label', t.timerTitle); setTxt('timer-sub', t.timerSub);
@@ -567,23 +669,19 @@
             setTxt('lesson-btn-exit', t.exit); setTxt('lesson-btn-next', t.next);
             setTxt('report-title', t.reportTitle); setTxt('btn-new-words', t.newWordsBtn); setTxt('btn-next-level', t.nextLevelBtn); setTxt('btn-continue', t.continueBtn);
             setTxt('mem-title', t.memTitle); setTxt('mem-subtitle', t.memSub); setTxt('desc-btn-exit', t.exit); setTxt('mem-btn-exit', t.exit); setTxt('slice-btn-exit', t.exit); setTxt('convo-btn-exit', t.exit); setTxt('convo-btn-next', t.next);
-            setTxt('sub-title-main', t.subTitleMain);
-            setTxt('settings-title', t.settingsTitle); setTxt('lbl-dark-mode', t.darkMode); setTxt('btn-edit-prof-settings', t.editProfCurrent); setTxt('btn-reset-all', t.resetAll); setTxt('btn-del-prof-settings', t.deleteProf); setTxt('btn-close-settings', t.close);
-            setTxt('prof-modal-title', t.profModalTitle); setTxt('lbl-prof-name', t.profName); setTxt('lbl-prof-emoji', t.profEmoji); setTxt('lbl-prof-lang', t.profLang); setTxt('btn-reset-prof', t.profReset); setTxt('btn-del-prof', t.profDel); setTxt('btn-cancel-prof', t.profCancel); setTxt('btn-save-prof', t.profSave);
-            setTxt('alphabet-modal-title', t.alphaTitle); setTxt('btn-close-alpha', t.btnCloseAlpha);
-            setTxt('mem-lbl-pairs', t.memPairs); setTxt('slice-lbl-score', t.sliceScore);
+            setTxt('sub-title-main', t.subTitleMain); setTxt('home-title', t.homeTitle); setTxt('add-profile-btn', t.addProfBtn);
+            setTxt('ui-edit-title', t.editProfTitle); setTxt('ui-edit-name', t.editProfName); setTxt('ui-edit-emoji', t.editProfEmoji); setTxt('ui-edit-lang', t.editProfLang); setTxt('ui-edit-reset', t.editProfReset); setTxt('ui-edit-delete', t.editProfDel); setTxt('ui-edit-cancel', t.editProfCancel); setTxt('ui-edit-save', t.editProfSave);
+            setTxt('ui-set-title', t.setTitle); setTxt('ui-set-dark', t.setDark); setTxt('ui-set-edit', t.setEditCurr); setTxt('ui-set-resetAll', t.setResetAll);
+            setTxt('ui-alpha-close', t.alphaClose);
             
             const timerBtn = document.getElementById('timer-toggle-btn');
             if(timerBtn) {
-                if(turnTimerActive) {
-                    timerBtn.innerText = currentLang === 'es' ? 'Pausar' : 'Tạm Dừng';
-                } else {
-                    timerBtn.innerText = currentLang === 'es' ? 'Iniciar ⏱️' : 'Bắt Đầu ⏱️';
-                }
+                if(turnTimerActive) { timerBtn.innerText = currentLang === 'es' ? 'Pausar' : 'Tạm Dừng'; } 
+                else { timerBtn.innerText = currentLang === 'es' ? 'Iniciar ⏱️' : 'Bắt Đầu ⏱️'; }
             }
-        }
+        };
 
-        function setTimerMinutes(mins) {
+        window.setTimerMinutes = function(mins) {
             if(turnTimerActive) return;
             turnTotalSeconds = mins * 60;
             turnSecondsLeft = turnTotalSeconds;
@@ -592,9 +690,9 @@
             document.querySelectorAll('.timer-opt').forEach(btn => {
                 btn.className = parseInt(btn.dataset.mins) === mins ? "timer-opt px-2.5 py-1 text-xs font-black bg-white rounded-xl shadow-sm" : "timer-opt px-2.5 py-1 text-xs font-black text-gray-600 rounded-xl";
             });
-        }
+        };
 
-        function toggleTurnTimer() {
+        window.toggleTurnTimer = function() {
             const btn = document.getElementById('timer-toggle-btn');
             const display = document.getElementById('turn-timer-display');
             if(!turnTimerActive) {
@@ -608,7 +706,7 @@
                         clearInterval(turnTimerInterval);
                         turnTimerActive = false;
                         if(btn) { btn.innerText = currentLang==='es'?'Iniciar ⏱️':'Bắt Đầu ⏱️'; btn.className = "btn-3d px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md"; }
-                        alert(UI_TEXT[currentLang].alertTimeUp);
+                        window.showCustomAlert(UI_TEXT[currentLang].alertTimeUp);
                         turnSecondsLeft = turnTotalSeconds;
                         if(display) display.innerText = `${Math.floor(turnSecondsLeft / 60)}:${(turnSecondsLeft % 60).toString().padStart(2,'0')}`;
                     }
@@ -618,17 +716,15 @@
                 turnTimerActive = false;
                 if(btn) { btn.innerText = currentLang==='es'?'Continuar':'Tiếp Tục'; btn.className = "btn-3d px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md"; }
             }
-        }
+        };
 
-        function showScreen(sName) {
+        window.showScreen = function(sName) {
             document.querySelectorAll('.screen-container').forEach(el => el.classList.add('screen-hidden'));
             const target = document.getElementById(`screen-${sName}`);
-            if (target) {
-                target.classList.remove('screen-hidden');
-            }
-        }
+            if (target) target.classList.remove('screen-hidden');
+        };
 
-        function loadProfilesUI() {
+        window.loadProfilesUI = function() {
             const container = document.getElementById('profiles-container');
             if (!container) return;
             container.innerHTML = '';
@@ -641,115 +737,124 @@
                     document.getElementById('dash-name').innerText = p.name;
                     document.getElementById('dash-avatar').innerText = p.emoji;
                     document.getElementById('dash-stars').innerText = p.stars;
-                    updateUILanguage();
-                    renderDashboardMap();
+                    window.updateUILanguage();
+                    window.renderDashboardMap();
                     document.getElementById('lang-vi').className = `px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${currentLang==='vi'?'bg-amber-500 text-white shadow-sm':'text-gray-700'}`;
                     document.getElementById('lang-es').className = `px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${currentLang==='es'?'bg-amber-500 text-white shadow-sm':'text-gray-700'}`;
-                    showScreen('dashboard');
+                    window.showScreen('dashboard');
                 };
                 card.innerHTML = `
-                    <button onclick="event.stopPropagation(); openEditProfile('${p.id}')" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center text-sm shadow-sm hover:bg-amber-200">✏️</button>
+                    <button onclick="event.stopPropagation(); window.openEditProfile('${p.id}')" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center text-sm shadow-sm hover:bg-amber-200">✏️</button>
                     <span class="text-6xl mb-3">${p.emoji}</span>
                     <h2 class="text-2xl font-black text-gray-800 mb-1">${p.name}</h2>
                     <span class="text-xs font-black uppercase px-3 py-1 rounded-full bg-amber-100 text-amber-800 mb-3">⭐ ${p.stars} Stars</span>
                 `;
                 container.appendChild(card);
             });
-        }
+        };
 
-        function createProfile() {
-            const name = prompt("Tên bé hoặc người dùng mới? (Name):", "Bé " + Math.floor(Math.random()*100));
-            if (name) {
-                profiles.push({ id: Date.now().toString(), name, emoji: ['👦','👧','🐯','🐱','🦊','🐼'][Math.floor(Math.random()*6)], lang: 'vi', level: 'beginner', stars: 0, progress: {} });
-                saveProfiles(); loadProfilesUI();
-            }
-        }
+        window.handleCreateProfile = function() {
+            window.showCustomPrompt("Tên bé hoặc người dùng mới? (Name):", "Bé " + Math.floor(Math.random()*100), (name) => {
+                if (name && name.trim().length > 0) {
+                    profiles.push({ id: Date.now().toString(), name, emoji: ['👦','👧','🐯','🐱','🦊','🐼'][Math.floor(Math.random()*6)], lang: currentLang, level: 'beginner', stars: 0, progress: {} });
+                    saveProfiles(); window.loadProfilesUI();
+                }
+            });
+        };
 
-        function openEditProfile(id) {
+        window.openEditProfile = function(id) {
             const p = profiles.find(item => item.id === id);
             if(!p) return;
             document.getElementById('prof-edit-id').value = p.id;
             document.getElementById('prof-name').value = p.name;
             document.getElementById('prof-emoji').value = p.emoji;
             document.getElementById('prof-lang').value = p.lang || 'vi';
+            document.getElementById('prof-level').value = p.level || 'beginner';
             document.getElementById('profile-modal').classList.remove('hidden');
-        }
+        };
 
-        function closeProfileModal() { document.getElementById('profile-modal').classList.add('hidden'); }
+        window.closeProfileModal = function() { document.getElementById('profile-modal').classList.add('hidden'); };
 
-        function saveProfileData() {
+        window.saveProfileData = function() {
             const id = document.getElementById('prof-edit-id').value;
             const name = document.getElementById('prof-name').value;
             const emoji = document.getElementById('prof-emoji').value;
             const lang = document.getElementById('prof-lang').value;
-            profiles = profiles.map(p => p.id === id ? { ...p, name, emoji, lang } : p);
-            saveProfiles(); closeProfileModal(); loadProfilesUI();
+            const level = document.getElementById('prof-level').value;
+            profiles = profiles.map(p => p.id === id ? { ...p, name, emoji, lang, level } : p);
+            saveProfiles(); window.closeProfileModal(); window.loadProfilesUI();
             if (currentProfile && currentProfile.id === id) {
                 currentProfile = profiles.find(p => p.id === id);
-                toggleLanguage(currentProfile.lang || 'vi');
-                document.getElementById('dash-name').innerText = currentProfile.name;
-                document.getElementById('dash-avatar').innerText = currentProfile.emoji;
-            }
-        }
-
-        function deleteCurrentProfile() {
-            const id = document.getElementById('prof-edit-id').value;
-            if (confirm("Xóa vĩnh viễn hồ sơ này? (Delete Profile permanently?)")) {
-                profiles = profiles.filter(p => p.id !== id);
-                saveProfiles(); closeProfileModal(); loadProfilesUI(); showScreen('profiles');
-            }
-        }
-
-        function resetCurrentProfileProgress() {
-            const id = document.getElementById('prof-edit-id').value;
-            if (confirm("Đặt lại điểm hồ sơ này? (Reset stars & progress?)")) {
-                profiles = profiles.map(p => p.id === id ? { ...p, stars: 0, progress: {} } : p);
-                saveProfiles(); closeProfileModal(); loadProfilesUI();
-                if(currentProfile && currentProfile.id === id) {
-                    currentProfile.stars = 0; currentProfile.progress = {};
-                    document.getElementById('dash-stars').innerText = '0';
-                    renderDashboardMap();
+                if (currentProfile.lang && currentProfile.lang !== 'both') {
+                    currentLang = currentProfile.lang;
+                    window.updateUILanguage(); window.renderDashboardMap();
                 }
             }
-        }
+        };
 
-        function openSettings() { document.getElementById('settings-modal').classList.remove('hidden'); }
-        function closeSettings() { document.getElementById('settings-modal').classList.add('hidden'); }
-        function toggleDarkMode(isDark) { isDark ? document.body.classList.add('dark-mode') : document.body.classList.remove('dark-mode'); }
+        window.deleteCurrentProfile = function() {
+            const id = document.getElementById('prof-edit-id').value;
+            window.showCustomConfirm("Xóa vĩnh viễn hồ sơ này? (Delete Profile permanently?)", (result) => {
+                if (result) {
+                    profiles = profiles.filter(p => p.id !== id);
+                    saveProfiles(); window.closeProfileModal(); window.loadProfilesUI(); window.showScreen('profiles');
+                }
+            });
+        };
+
+        window.resetCurrentProfileProgress = function() {
+            const id = document.getElementById('prof-edit-id').value;
+            window.showCustomConfirm("Đặt lại điểm hồ sơ này? (Reset stars & progress?)", (result) => {
+                if (result) {
+                    profiles = profiles.map(p => p.id === id ? { ...p, stars: 0, progress: {} } : p);
+                    saveProfiles(); window.closeProfileModal(); window.loadProfilesUI();
+                    if(currentProfile && currentProfile.id === id) {
+                        currentProfile.stars = 0; currentProfile.progress = {};
+                        document.getElementById('dash-stars').innerText = '0';
+                        window.renderDashboardMap();
+                    }
+                }
+            });
+        };
+
+        window.openSettings = function() { document.getElementById('settings-modal').classList.remove('hidden'); };
+        window.closeSettings = function() { document.getElementById('settings-modal').classList.add('hidden'); };
+        window.toggleDarkMode = function(isDark) { isDark ? document.body.classList.add('dark-mode') : document.body.classList.remove('dark-mode'); };
         
-        function openProfileModalForCurrent() { 
-            if (currentProfile) { closeSettings(); openEditProfile(currentProfile.id); } 
-        }
+        window.openProfileModalForCurrent = function() { 
+            if (currentProfile) { window.closeSettings(); window.openEditProfile(currentProfile.id); } 
+        };
         
-        function deleteCurrentProfileFromSettings() {
+        window.deleteCurrentProfileFromSettings = function() {
             if (!currentProfile) return;
-            if (confirm("Xóa vĩnh viễn hồ sơ hiện tại?")) {
-                profiles = profiles.filter(p => p.id !== currentProfile.id);
-                saveProfiles(); closeSettings(); loadProfilesUI(); showScreen('profiles');
-            }
-        }
-
-        function resetProgress() {
-            if(confirm("Đặt lại toàn bộ điểm tất cả các hồ sơ?")) {
-                profiles = profiles.map(p => ({...p, stars: 0, progress: {}}));
-                if(currentProfile) {
-                    currentProfile.stars = 0;
-                    currentProfile.progress = {};
-                    document.getElementById('dash-stars').innerText = '0';
+            window.showCustomConfirm("Xóa vĩnh viễn hồ sơ hiện tại?", (result) => {
+                if(result) {
+                    profiles = profiles.filter(p => p.id !== currentProfile.id);
+                    saveProfiles(); window.closeSettings(); window.loadProfilesUI(); window.showScreen('profiles');
                 }
-                saveProfiles(); loadProfilesUI(); renderDashboardMap(); closeSettings();
-            }
-        }
+            });
+        };
 
-        // --- STREAMING_CHUNK: Building Lesson Runner & Map ---
-        function toggleLanguage(l) {
+        window.resetProgress = function() {
+            window.showCustomConfirm("Đặt lại toàn bộ điểm tất cả các hồ sơ?", (result) => {
+                if(result) {
+                    profiles = profiles.map(p => ({...p, stars: 0, progress: {}}));
+                    if(currentProfile) currentProfile.stars = 0;
+                    saveProfiles(); window.loadProfilesUI(); window.renderDashboardMap(); window.closeSettings();
+                }
+            });
+        };
+
+        window.toggleLanguage = function(l) {
             currentLang = l;
             document.getElementById('lang-vi').className = `px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${l==='vi'?'bg-amber-500 text-white shadow-sm':'text-gray-700'}`;
             document.getElementById('lang-es').className = `px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${l==='es'?'bg-amber-500 text-white shadow-sm':'text-gray-700'}`;
-            updateUILanguage(); renderDashboardMap();
-        }
+            window.updateUILanguage(); window.renderDashboardMap();
+        };
 
-        function renderDashboardMap() {
+        // --- 6. GAME LOGIC ---
+
+        window.renderDashboardMap = function() {
             const container = document.getElementById('lessons-map');
             if(!container) return;
             container.innerHTML = '';
@@ -760,7 +865,7 @@
                 [1,2,3,4,5,6,7].forEach(lvl => {
                     const isDone = currentProfile && currentProfile.progress[topic.id]?.[lvl];
                     levelsHTML += `
-                        <button onclick="startLesson('${topic.id}', ${lvl})" class="py-3.5 rounded-2xl flex flex-col items-center justify-center relative shadow-md active:translate-y-1 transition-all ${isDone?'bg-emerald-500 text-white border-b-4 border-emerald-700':'bg-amber-400 hover:bg-amber-500 text-white border-b-4 border-amber-600'}">
+                        <button onclick="window.startLesson('${topic.id}', ${lvl})" class="py-3.5 rounded-2xl flex flex-col items-center justify-center relative shadow-md active:translate-y-1 transition-all ${isDone?'bg-emerald-500 text-white border-b-4 border-emerald-700':'bg-amber-400 hover:bg-amber-500 text-white border-b-4 border-amber-600'}">
                             ${isDone?'<span class="absolute -top-2 -right-2 text-base pop-in">⭐</span>':''}
                             <span class="text-xl mb-0.5">${topic.emoji}</span>
                             <span class="font-black text-xs uppercase">L${lvl}</span>
@@ -770,40 +875,39 @@
                 box.innerHTML = `<div class="flex items-center gap-3 mb-6 bg-amber-50 px-6 py-2 rounded-full border border-amber-300 shadow-inner"><span class="text-3xl">${topic.emoji}</span><h3 class="text-xl font-black text-gray-800">${topic[currentLang]}</h3></div><div class="grid grid-cols-4 sm:grid-cols-7 gap-3 w-full">${levelsHTML}</div>`;
                 container.appendChild(box);
             });
-        }
+        };
 
-        function startLesson(topicId, lvl) {
+        window.startLesson = function(topicId, lvl) {
             const topic = TOPICS.find(t => t.id === topicId);
             if(!topic) return;
             currentActiveLesson = { topic, lvl, words: topic.levels[lvl] || topic.levels[1] };
             currentLessonWordIdx = 0;
-            showScreen('game');
-            loadLessonCard();
-        }
+            window.showScreen('game');
+            window.loadLessonCard();
+        };
 
-        function loadLessonCard() {
+        window.loadLessonCard = function() {
             const w = currentActiveLesson.words[currentLessonWordIdx];
             document.getElementById('game-progress').innerText = `${currentActiveLesson.topic[currentLang]} • L${currentActiveLesson.lvl} (${currentLessonWordIdx + 1}/${currentActiveLesson.words.length})`;
             const photoEl = document.getElementById('active-photo');
             const fallbackEl = document.getElementById('active-emoji-fallback');
             if (w.img && w.img.includes('http')) { 
                 photoEl.style.display = 'block'; fallbackEl.style.display = 'none'; photoEl.src = w.img; 
-            } 
-            else { 
+            } else { 
                 photoEl.style.display = 'none'; fallbackEl.style.display = 'block'; fallbackEl.innerText = w.img ? w.img : w[currentLang].substring(0,1); 
             }
             document.getElementById('active-word').innerText = w[currentLang];
-            speak(w[currentLang]);
-        }
+            window.speak(w[currentLang]);
+        };
 
-        function playCurrentWordAudio() { speak(currentActiveLesson.words[currentLessonWordIdx][currentLang]); }
+        window.playCurrentWordAudio = function() { window.speak(currentActiveLesson.words[currentLessonWordIdx][currentLang]); };
 
-        function skipWord() {
+        window.skipWord = function() {
             if (currentLessonWordIdx < currentActiveLesson.words.length - 1) {
                 currentLessonWordIdx++;
-                loadLessonCard();
+                window.loadLessonCard();
             } else {
-                triggerConfetti();
+                window.triggerConfetti();
                 if(currentProfile) {
                     if(!currentProfile.progress[currentActiveLesson.topic.id]) currentProfile.progress[currentActiveLesson.topic.id] = {};
                     if(!currentProfile.progress[currentActiveLesson.topic.id][currentActiveLesson.lvl]) {
@@ -811,36 +915,34 @@
                         currentProfile.stars += 5;
                         saveProfiles();
                         document.getElementById('dash-stars').innerText = currentProfile.stars;
-                        renderDashboardMap();
                     }
                 }
                 document.getElementById('report-modal').classList.remove('hidden');
             }
-        }
+        };
 
-        function restartSameLessonWithNewWords() {
+        window.restartSameLessonWithNewWords = function() {
             document.getElementById('report-modal').classList.add('hidden');
             currentActiveLesson.words = [...currentActiveLesson.words].sort(() => 0.5 - Math.random());
             currentLessonWordIdx = 0;
-            loadLessonCard();
-        }
+            window.loadLessonCard();
+        };
 
-        function advanceToNextLevel() {
+        window.advanceToNextLevel = function() {
             document.getElementById('report-modal').classList.add('hidden');
             const nextLvl = currentActiveLesson.lvl < 7 ? currentActiveLesson.lvl + 1 : 1;
-            startLesson(currentActiveLesson.topic.id, nextLvl);
-        }
+            window.startLesson(currentActiveLesson.topic.id, nextLvl);
+        };
 
-        function closeReportCard() {
+        window.closeReportCard = function() {
             document.getElementById('report-modal').classList.add('hidden');
-            showScreen('dashboard');
-        }
+            window.showScreen('dashboard');
+            window.renderDashboardMap();
+        };
 
-        function exitGame() { showScreen('dashboard'); }
+        window.exitGame = function() { window.showScreen('dashboard'); window.renderDashboardMap(); };
 
-        // --- STREAMING_CHUNK: Games Logic ---
-
-        function openAlphabetModal() {
+        window.openAlphabetModal = function() {
             const grid = document.getElementById('alphabet-grid');
             if(!grid) return;
             grid.innerHTML = '';
@@ -848,30 +950,31 @@
             list.forEach(item => {
                 const card = document.createElement('div');
                 card.className = "btn-3d bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 flex flex-col items-center justify-center cursor-pointer";
-                card.onclick = () => speak(item.char, currentLang === 'es' ? 'es-ES' : 'vi-VN');
+                card.onclick = () => window.speak(item.char, currentLang === 'es' ? 'es-ES' : 'vi-VN');
                 card.innerHTML = `<span class="text-3xl font-black text-amber-800">${item.char}</span><span class="text-xs font-bold text-gray-600 mt-1">${item.word}</span>`;
                 grid.appendChild(card);
             });
             document.getElementById('alphabet-modal').classList.remove('hidden');
-        }
-        function closeAlphabetModal() { document.getElementById('alphabet-modal').classList.add('hidden'); }
+        };
+        window.closeAlphabetModal = function() { document.getElementById('alphabet-modal').classList.add('hidden'); };
 
-        let descIdx = 0; let descQuestions = [];
-        function startDescribeGame() {
-            descQuestions = [...(DESCRIBE_QUESTIONS[currentLang] || DESCRIBE_QUESTIONS['vi'])].sort(() => 0.5 - Math.random());
-            descIdx = 0; showScreen('describe'); loadDescribeCard();
-        }
-        function loadDescribeCard() {
+        window.startDescribeGame = function() {
+            const profLevel = currentProfile ? (currentProfile.level || 'beginner') : 'beginner';
+            const pool = DESCRIBE_DATA[currentLang][profLevel] || DESCRIBE_DATA[currentLang]['beginner'];
+            descQuestions = [...pool].sort(() => 0.5 - Math.random());
+            descIdx = 0; window.showScreen('describe'); window.loadDescribeCard();
+        };
+        window.loadDescribeCard = function() {
             if (descIdx >= descQuestions.length) {
-                triggerConfetti();
+                window.triggerConfetti();
                 if(currentProfile) { currentProfile.stars += 3; saveProfiles(); document.getElementById('dash-stars').innerText = currentProfile.stars; }
-                exitDescribeGame(); return;
+                window.exitDescribeGame(); return;
             }
             const q = descQuestions[descIdx];
             document.getElementById('desc-game-progress').innerText = `Thử Thách (${descIdx + 1}/${descQuestions.length})`;
             document.getElementById('desc-game-emoji').innerText = q.emoji;
             document.getElementById('desc-game-prompt').innerText = q.prompt;
-            speak(q.text);
+            window.speak(q.text);
 
             const optContainer = document.getElementById('desc-game-options');
             optContainer.innerHTML = '';
@@ -880,28 +983,26 @@
                 btn.className = "btn-3d py-4 bg-teal-500 text-white font-black text-xl rounded-2xl shadow-md";
                 btn.innerText = opt;
                 btn.onclick = () => {
-                    if(i === q.correct) { triggerConfetti(); descIdx++; setTimeout(loadDescribeCard, 800); }
-                    else { speak(currentLang === 'es' ? 'Inténtalo de nuevo' : 'Thử lại nhé'); }
+                    if(i === q.correct) { window.triggerConfetti(); descIdx++; setTimeout(window.loadDescribeCard, 800); }
+                    else { window.speak(currentLang === 'es' ? 'Inténtalo de nuevo' : 'Thử lại nhé'); }
                 };
                 optContainer.appendChild(btn);
             });
-        }
-        function exitDescribeGame() { showScreen('dashboard'); }
+        };
+        window.exitDescribeGame = function() { window.showScreen('dashboard'); };
 
-        function startMemoryGame(pairsCount = 4) { showScreen('memory'); document.getElementById('mem-post-game').classList.add('hidden'); document.getElementById('memory-grid').classList.remove('hidden'); loadMemoryGrid(pairsCount); }
-        function loadMemoryGrid(pairsCount) {
+        window.startMemoryGame = function(pairsCount = 4) { window.showScreen('memory'); document.getElementById('mem-post-game').classList.add('hidden'); document.getElementById('memory-grid').classList.remove('hidden'); window.loadMemoryGrid(pairsCount); };
+        window.loadMemoryGrid = function(pairsCount) {
             const grid = document.getElementById('memory-grid'); grid.innerHTML = '';
-            document.getElementById('memory-total-pairs').innerText = pairsCount; document.getElementById('memory-score').innerText = '0';
-
             let pool = TOPICS[0].levels[1].concat(TOPICS[1].levels[1]); // Mix animals and food
             let subset = [...pool].sort(() => 0.5 - Math.random()).slice(0, pairsCount);
             let deck = [];
             subset.forEach(item => {
                 deck.push({ display: item[currentLang], speakText: item[currentLang], id: item.vi });
-                if(item.img.includes('http')) {
+                if(item.img && item.img.includes('http')) {
                     deck.push({ display: `<img src="${item.img}" class="w-full h-full object-cover rounded-xl"/>`, speakText: item[currentLang], id: item.vi });
                 } else {
-                    deck.push({ display: `<span class="text-4xl">${item.img}</span>`, speakText: item[currentLang], id: item.vi });
+                    deck.push({ display: `<span class="text-4xl">${item.img || item[currentLang].substring(0,1)}</span>`, speakText: item[currentLang], id: item.vi });
                 }
             });
             deck.sort(() => 0.5 - Math.random());
@@ -915,19 +1016,18 @@
                     if(card.innerHTML !== '❓' || card.classList.contains('matched')) return;
                     card.innerHTML = cardObj.display;
                     card.className = "h-28 bg-white rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 text-purple-900 p-1 text-center pop-in overflow-hidden";
-                    speak(cardObj.speakText);
+                    window.speak(cardObj.speakText);
 
                     if(!firstCardEl) { firstCardEl = card; firstCardObj = cardObj; } 
                     else {
                         if(firstCardObj.id === cardObj.id) {
-                            speak(currentLang === 'es' ? '¡Excelente!' : 'Chính xác!'); triggerConfetti();
+                            window.speak(currentLang === 'es' ? '¡Excelente!' : 'Chính xác!'); window.triggerConfetti();
                             firstCardEl.classList.add('matched'); card.classList.add('matched');
                             firstCardEl = null; firstCardObj = null; matches++;
-                            document.getElementById('memory-score').innerText = matches;
                             if(matches === pairsCount) {
-                                triggerConfetti();
+                                window.triggerConfetti();
                                 setTimeout(() => {
-                                    speak(currentLang === 'es' ? '¡Ganaste!' : 'Chúc mừng bé!');
+                                    window.speak(currentLang === 'es' ? '¡Ganaste!' : 'Chúc mừng bé!');
                                     document.getElementById('memory-grid').classList.add('hidden');
                                     document.getElementById('mem-post-game').classList.remove('hidden');
                                     document.getElementById('mem-post-game').classList.add('flex');
@@ -944,21 +1044,21 @@
                 };
                 grid.appendChild(card);
             });
-        }
-        function exitMemoryGame() { showScreen('dashboard'); }
+        };
+        window.exitMemoryGame = function() { window.showScreen('dashboard'); };
 
         // Hội Thoại (Conversation Mode)
-        function startConversationMode() {
+        window.startConversationMode = function() {
             activeConvo = CONVERSATIONS[Math.floor(Math.random() * CONVERSATIONS.length)][currentLang];
             convoLineIdx = 0;
             document.getElementById('convo-topic-lbl').innerText = `💬 ${activeConvo.title}`;
             document.getElementById('convo-chat-area').innerHTML = '';
-            showScreen('convo');
-            renderConvoLine();
-        }
-        function renderConvoLine() {
+            window.showScreen('convo');
+            window.renderConvoLine();
+        };
+        window.renderConvoLine = function() {
             if (convoLineIdx >= activeConvo.dialogue.length) {
-                triggerConfetti(); setTimeout(exitConversationMode, 1500); return;
+                window.triggerConfetti(); setTimeout(window.exitConversationMode, 1500); return;
             }
             const line = activeConvo.dialogue[convoLineIdx];
             const area = document.getElementById('convo-chat-area');
@@ -970,16 +1070,16 @@
                 row.innerHTML = `<div class="chat-bubble chat-right bg-rose-100 border-rose-300 text-xl font-black text-rose-900 max-w-[75%]">${line.t}</div><span class="text-5xl floating">${line.e}</span>`;
             }
             area.appendChild(row);
-            speak(line.t);
-        }
-        function playConvoAudio() { if (activeConvo && activeConvo.dialogue[convoLineIdx]) speak(activeConvo.dialogue[convoLineIdx].t); }
-        function nextConvoLine() { convoLineIdx++; renderConvoLine(); }
-        function exitConversationMode() { showScreen('dashboard'); }
+            window.speak(line.t);
+        };
+        window.playConvoAudio = function() { if (activeConvo && activeConvo.dialogue[convoLineIdx]) window.speak(activeConvo.dialogue[convoLineIdx].t); };
+        window.nextConvoLine = function() { convoLineIdx++; window.renderConvoLine(); };
+        window.exitConversationMode = function() { window.showScreen('dashboard'); };
 
         // Slicer Game
         let slicerRunning = false;
-        function startSlicerGame() {
-            showScreen('slicer');
+        window.startSlicerGame = function() {
+            window.showScreen('slicer');
             const canvas = document.getElementById('slicer-canvas');
             if(!canvas) return;
             const ctx = canvas.getContext('2d');
@@ -996,7 +1096,7 @@
                 trail.push({ x, y, age: 0 });
                 items.forEach(it => {
                     if (Math.hypot(x - it.x, y - it.y) < 75) {
-                        speak(it.word); triggerConfetti(); it.y = -200; score++; document.getElementById('slicer-score').innerText = score;
+                        window.speak(it.word); window.triggerConfetti(); it.y = -200; score++; document.getElementById('slicer-score').innerText = score;
                     }
                 });
             };
@@ -1016,7 +1116,7 @@
                 if (Math.random() < 0.035) {
                     const pool = TOPICS[0].levels[1].concat(TOPICS[1].levels[1]); // Mix animals/food
                     const sampleWord = pool[Math.floor(Math.random() * pool.length)];
-                    let emoji = '🍉'; // Placeholder if no emoji defined directly in dataset
+                    let emoji = '🍉'; 
                     if(sampleWord.vi==='Chó') emoji='🐶'; else if(sampleWord.vi==='Mèo') emoji='🐱'; else if(sampleWord.vi==='Táo') emoji='🍎'; else if(sampleWord.vi==='Chuối') emoji='🍌';
                     items.push({ emoji: emoji, word: sampleWord[currentLang], x: Math.random() * (canvas.width - 100) + 50, y: canvas.height + 50, vx: (Math.random() - 0.5) * 6, vy: -15 });
                 }
@@ -1030,12 +1130,12 @@
                 requestAnimationFrame(loop);
             };
             requestAnimationFrame(loop);
-        }
-        function exitSlicer() { slicerRunning = false; showScreen('dashboard'); }
+        };
+        window.exitSlicer = function() { slicerRunning = false; window.showScreen('dashboard'); };
 
-        // Start App
         window.addEventListener('DOMContentLoaded', () => {
-            loadProfilesUI();
+            window.loadProfilesUI();
+            window.setGlobalLang(currentLang);
         });
     </script>
 </body>
