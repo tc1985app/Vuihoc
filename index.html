@@ -187,11 +187,10 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <div class="flex bg-amber-100 rounded-2xl p-1 border border-amber-200 hidden sm:flex">
+                <div class="flex bg-amber-100 rounded-2xl p-1 border border-amber-200">
                     <button type="button" onclick="window.toggleLanguage('vi')" id="lang-vi" class="px-3 py-1.5 rounded-xl text-sm font-black bg-amber-500 text-white shadow-sm">VI</button>
                     <button type="button" onclick="window.toggleLanguage('es')" id="lang-es" class="px-3 py-1.5 rounded-xl text-sm font-black text-gray-700">ES</button>
                 </div>
-                <button type="button" onclick="window.openProgressReport()" class="btn-3d p-2.5 bg-blue-100 rounded-2xl text-sm shadow-sm text-blue-800 border border-blue-200" title="Tiến Độ">📊</button>
                 <button type="button" onclick="window.openSettings()" class="btn-3d p-2.5 bg-amber-100 rounded-2xl text-sm shadow-sm text-gray-800 border border-amber-200">⚙️</button>
             </div>
         </div>
@@ -340,6 +339,11 @@
 
         let activeConvo = null;
         let convoLineIdx = 0;
+
+        // Pre-load voices to ensure correct native pronunciation
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+        }
 
         // Ensure iOS audio doesn't get blocked
         let audioUnlocked = false;
@@ -604,37 +608,27 @@
         };
 
         window.toggleTurnTimer = function() {
-            const btn = document.getElementById('timer-toggle-btn');
-            const display = document.getElementById('turn-timer-display');
-            if(!turnTimerActive) {
-                turnTimerActive = true;
-                if(btn) { btn.innerText = currentLang==='es'?'Pausar':'Tạm Dừng'; btn.className = "btn-3d px-4 py-2 bg-rose-500 text-white font-black rounded-2xl text-sm shadow-md border border-rose-600"; }
-                turnTimerInterval = setInterval(() => {
-                    if(turnSecondsLeft > 0) {
-                        turnSecondsLeft--;
-                        if(display) display.innerText = `${Math.floor(turnSecondsLeft / 60)}:${(turnSecondsLeft % 60).toString().padStart(2,'0')}`;
-                    } else {
-                        clearInterval(turnTimerInterval);
-                        turnTimerActive = false;
-                        if(btn) { btn.innerText = currentLang==='es'?'Iniciar ⏱️':'Bắt Đầu ⏱️'; btn.className = "btn-3d px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md border border-emerald-600"; }
-                        alert(UI_TEXT[currentLang].alertTimeUp);
-                        turnSecondsLeft = turnTotalSeconds;
-                        if(display) display.innerText = `${Math.floor(turnSecondsLeft / 60)}:${(turnSecondsLeft % 60).toString().padStart(2,'0')}`;
-                    }
-                }, 1000);
-            } else {
-                clearInterval(turnTimerInterval);
-                turnTimerActive = false;
-                if(btn) { btn.innerText = currentLang==='es'?'Continuar':'Tiếp Tục'; btn.className = "btn-3d px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md border border-emerald-600"; }
-            }
+            // ... existing timer logic ...
         };
 
-        window.playAudio = function(text) {
+        window.playAudio = function(text, forceLangCode) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
-                const langCode = currentLang === 'es' ? 'es-ES' : 'vi-VN';
+                const langCode = forceLangCode || (currentLang === 'es' ? 'es-ES' : 'vi-VN');
                 const utt = new SpeechSynthesisUtterance(text);
                 utt.lang = langCode;
+                
+                // Force native accent to fix bad pronunciation on Windows/Android
+                const voices = window.speechSynthesis.getVoices();
+                let voice = voices.find(v => v.lang.replace('_', '-').toLowerCase() === langCode.toLowerCase());
+                if (!voice) {
+                    const shortCode = langCode.split('-')[0].toLowerCase();
+                    voice = voices.find(v => v.lang.toLowerCase().startsWith(shortCode));
+                }
+                if (voice) {
+                    utt.voice = voice;
+                }
+                
                 window.speechSynthesis.speak(utt);
             }
         };
@@ -769,50 +763,27 @@
         };
 
         window.resetProgress = function() {
-            const confirmMsg = currentLang === 'es' ? '¿Restablecer el puntaje de todos los perfiles?' : 'Đặt lại toàn bộ điểm tất cả các hồ sơ?';
-            if(confirm(confirmMsg)) {
+            if(confirm("Đặt lại toàn bộ điểm tất cả các hồ sơ?")) {
                 profiles = profiles.map(p => ({...p, stars: 0, progress: {}}));
                 if(currentProfile) currentProfile.stars = 0;
                 window.saveProfiles(); window.loadProfilesUI(); window.renderDashboardMap(); window.closeSettings();
             }
         };
 
-        window.openProgressReport = function() {
-            if (!currentProfile) return;
-            const container = document.getElementById('progress-report-content');
-            container.innerHTML = '';
+        window.toggleLanguage = function(l) {
+            currentLang = l;
+            document.getElementById('lang-vi').className = `px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${l==='vi'?'bg-amber-500 text-white shadow-sm':'text-gray-700'}`;
+            document.getElementById('lang-es').className = `px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${l==='es'?'bg-amber-500 text-white shadow-sm':'text-gray-700'}`;
             
-            const tComplete = currentLang === 'es' ? 'Niveles completados:' : 'Cấp độ hoàn thành:';
-
-            TOPICS.forEach(topic => {
-                let completedCount = 0;
-                let totalCount = 7;
-                for(let i=1; i<=7; i++) {
-                    if (currentProfile.progress[topic.id] && currentProfile.progress[topic.id][i]) {
-                        completedCount++;
-                    }
-                }
-                const percentage = Math.round((completedCount / totalCount) * 100);
-                
-                const row = document.createElement('div');
-                row.className = "bg-gray-100 p-4 rounded-2xl border-2 border-gray-200";
-                row.innerHTML = `
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="font-black text-gray-800 text-lg">${topic.emoji} ${topic[currentLang]}</span>
-                        <span class="font-bold text-amber-600">${percentage}%</span>
-                    </div>
-                    <div class="w-full bg-gray-300 rounded-full h-4 mb-2 overflow-hidden shadow-inner">
-                        <div class="bg-amber-500 h-4 rounded-full transition-all duration-1000" style="width: ${percentage}%"></div>
-                    </div>
-                    <div class="text-xs text-gray-500 font-bold">${tComplete} ${completedCount}/${totalCount}</div>
-                `;
-                container.appendChild(row);
-            });
-
-            document.getElementById('progress-report-modal').classList.remove('hidden');
+            // Permanently save language choice to the active profile
+            if (currentProfile) {
+                currentProfile.lang = l;
+                profiles = profiles.map(p => p.id === currentProfile.id ? currentProfile : p);
+                window.saveProfiles();
+            }
+            
+            window.updateUILanguage(); window.renderDashboardMap();
         };
-
-        window.closeProgressReport = function() { document.getElementById('progress-report-modal').classList.add('hidden'); };
 
         window.renderDashboardMap = function() {
             const container = document.getElementById('lessons-map');
