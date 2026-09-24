@@ -9,6 +9,7 @@
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪷</text></svg>">
     
     <title>Vui Học - Thế Giới Ngôn Ngữ</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
@@ -53,19 +54,14 @@
         .pop-in { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* Chat bubbles for Conversation Mode */
         .chat-bubble { position: relative; background: #fff; border-radius: 1.5rem; padding: 1rem 1.5rem; border: 4px solid #e5e7eb; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .chat-left::after { content: ''; position: absolute; border: 12px solid transparent; border-right-color: #e5e7eb; border-left: 0; left: -16px; top: 50%; margin-top: -12px; }
         .chat-right::after { content: ''; position: absolute; border: 12px solid transparent; border-left-color: #e5e7eb; border-right: 0; right: -16px; top: 50%; margin-top: -12px; }
-        body.dark-mode .chat-bubble { background: #1e293b; border-color: #334155; }
-        body.dark-mode .chat-left::after { border-right-color: #334155; }
-        body.dark-mode .chat-right::after { border-left-color: #334155; }
-
+        
         canvas { display: block; width: 100%; height: 100%; touch-action: none; }
     </style>
 </head>
 <body id="app-body" class="min-h-screen flex flex-col items-center p-3 sm:p-6 cultural-bg">
-    <!-- Stream Confetti & Base Modals -->
     <div id="confetti-container" style="position:fixed; inset:0; pointer-events:none; z-index:9999;"></div>
 
     <!-- PROFILE EDIT MODAL -->
@@ -84,8 +80,8 @@
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2" id="ui-edit-lang-lbl">Ngôn ngữ học:</label>
                 <select id="prof-lang" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold">
-                    <option value="vi" id="opt-vi">🇻🇳 Tiếng Việt</option>
-                    <option value="es" id="opt-es">🇪🇸 Español</option>
+                    <option value="vi">🇻🇳 Tiếng Việt</option>
+                    <option value="es">🇪🇸 Español</option>
                 </select>
             </div>
             <div class="mb-4">
@@ -211,19 +207,19 @@
         <!-- Quick Games Bar -->
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 w-full mb-8">
             <button type="button" onclick="window.openAlphabetModal()" class="btn-3d py-4 bg-amber-500 text-white font-black text-sm rounded-3xl flex flex-col items-center shadow-lg">
-                <span class="text-3xl mb-1 floating">🔤</span> <span id="arcade-btn-alpha">Bảng Chữ Cái</span>
+                <span class="text-4xl mb-2 floating">🔤</span> <span id="arcade-btn-alpha">Bảng Chữ Cái</span>
             </button>
             <button type="button" onclick="window.startMemoryGame()" class="btn-3d py-4 bg-purple-600 text-white font-black text-sm rounded-3xl flex flex-col items-center shadow-lg">
-                <span class="text-3xl mb-1 floating">🧠</span> <span id="arcade-btn-memory">Lật Hình Cặp</span>
+                <span class="text-4xl mb-2 floating">🧠</span> <span id="arcade-btn-memory">Lật Hình Cặp</span>
             </button>
             <button type="button" onclick="window.startDescribeGame()" class="btn-3d py-4 bg-teal-600 text-white font-black text-sm rounded-3xl flex flex-col items-center shadow-lg">
-                <span class="text-3xl mb-1 floating">🖼️</span> <span id="arcade-btn-describe">Mô Tả Tranh</span>
+                <span class="text-4xl mb-2 floating">🖼️</span> <span id="arcade-btn-describe">Mô Tả Tranh</span>
             </button>
             <button type="button" onclick="window.startSlicerGame()" class="btn-3d py-4 bg-orange-500 text-white font-black text-sm rounded-3xl flex flex-col items-center shadow-lg">
-                <span class="text-3xl mb-1 floating">🍉</span> <span id="arcade-btn-slicer">Chém Từ HD</span>
+                <span class="text-4xl mb-2 floating">🍉</span> <span id="arcade-btn-slicer">Chém Từ HD</span>
             </button>
             <button type="button" onclick="window.startConversationMode()" class="btn-3d py-4 bg-rose-500 text-white font-black text-sm rounded-3xl flex flex-col items-center sm:col-span-1 col-span-2 shadow-lg">
-                <span class="text-3xl mb-1 floating">💬</span> <span id="arcade-btn-convo">Hội Thoại</span>
+                <span class="text-4xl mb-2 floating">💬</span> <span id="arcade-btn-convo">Hội Thoại</span>
             </button>
         </div>
 
@@ -241,7 +237,7 @@
             <span id="game-progress" class="font-black text-amber-800 uppercase tracking-widest text-sm bg-amber-100 px-4 py-1.5 rounded-full border border-amber-300">Topic • L1</span>
         </div>
 
-        <div id="active-card" onclick="window.playCurrentWordAudio()" class="btn-3d bg-white border-4 border-amber-300 rounded-[3rem] p-6 w-full max-w-md flex flex-col items-center shadow-2xl mb-8 group overflow-hidden">
+        <div id="active-card" onclick="window.playCurrentWordAudio()" class="btn-3d bg-white border-4 border-amber-300 rounded-[3rem] p-6 w-full max-w-md flex flex-col items-center shadow-2xl mb-8 cursor-pointer overflow-hidden group">
             <div class="w-full h-72 rounded-3xl overflow-hidden mb-6 shadow-inner relative bg-gray-100 flex items-center justify-center">
                 <img id="active-photo" src="" alt="HD Photo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.style.display='none'; document.getElementById('active-emoji-fallback').style.display='block';">
                 <span id="active-emoji-fallback" class="text-8xl hidden">🔢</span>
@@ -293,7 +289,7 @@
     <div id="screen-convo" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-rose-50 overflow-y-auto pt-8 px-4 pb-12">
         <div class="w-full max-w-lg flex justify-between items-center mb-6">
             <button type="button" onclick="window.exitConversationMode()" id="convo-btn-exit" class="btn-3d px-4 py-2 bg-white text-rose-800 font-black rounded-2xl border border-rose-200">⬅️ Thoát</button>
-            <span id="convo-topic-lbl" class="font-black text-rose-900 bg-rose-200 px-4 py-1.5 rounded-full">💬 Hội Thoại</span>
+            <span id="convo-topic-lbl" class="font-black text-rose-900 bg-rose-200 px-4 py-1.5 rounded-full border border-rose-300">💬 Hội Thoại</span>
         </div>
         <div class="bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-rose-300 shadow-2xl w-full max-w-lg flex flex-col min-h-[450px]">
             <div id="convo-chat-area" class="flex-1 w-full flex flex-col gap-6 pt-4">
@@ -316,7 +312,7 @@
     <!-- 🌟 JAVASCRIPT ENGINE 🌟 -->
     <script>
         // --- 1. GLOBAL STATE & INITIALIZATION ---
-        let profiles = JSON.parse(localStorage.getItem('vuihoc_v40_data') || 'null') || [
+        let profiles = JSON.parse(localStorage.getItem('vuihoc_v41_data') || 'null') || [
             { id: '1', name: 'Bé An', emoji: '👦', lang: 'vi', level: 'beginner', stars: 10, progress: {} },
             { id: '2', name: 'Sofia', emoji: '👧', lang: 'es', level: 'intermediate', stars: 25, progress: {} }
         ];
@@ -346,9 +342,15 @@
         document.body.addEventListener('touchstart', unlockAudio, { once: true });
         document.body.addEventListener('click', unlockAudio, { once: true });
 
-        window.saveProfiles = function() { localStorage.setItem('vuihoc_v40_data', JSON.stringify(profiles)); }
+        window.saveProfiles = function() { localStorage.setItem('vuihoc_v41_data', JSON.stringify(profiles)); }
 
         // --- 2. MASSIVE CURRICULUM DATASETS ---
+        
+        // Helper to generate SVG images for abstract concepts (colors/numbers) so they never break
+        const genSVG = (emoji, bgColor = 'fdfaf6') => {
+            return `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23${bgColor}"/><text x="50" y="55" font-size="50" text-anchor="middle" dominant-baseline="middle">${emoji}</text></svg>`;
+        };
+
         const ALPHABET_VI = [ { char: 'A', word: 'Áo' }, { char: 'Ă', word: 'Ăn' }, { char: 'Â', word: 'Ấm' }, { char: 'B', word: 'Bóng' }, { char: 'C', word: 'Cá' }, { char: 'D', word: 'Dép' }, { char: 'Đ', word: 'Đèn' }, { char: 'E', word: 'Em' }, { char: 'Ê', word: 'Êm' }, { char: 'G', word: 'Gà' }, { char: 'H', word: 'Hoa' }, { char: 'I', word: 'In' }, { char: 'K', word: 'Kẹo' }, { char: 'L', word: 'Lá' }, { char: 'M', word: 'Mèo' }, { char: 'N', word: 'Nhà' }, { char: 'O', word: 'Ong' }, { char: 'Ô', word: 'Ô tô' }, { char: 'Ơ', word: 'Ớt' }, { char: 'P', word: 'Phở' }, { char: 'Q', word: 'Quả' }, { char: 'R', word: 'Rổ' }, { char: 'S', word: 'Sách' }, { char: 'T', word: 'Tay' }, { char: 'U', word: 'Ủ' }, { char: 'Ư', word: 'Ức' }, { char: 'V', word: 'Vịt' }, { char: 'X', word: 'Xe' }, { char: 'Y', word: 'Yếm' } ];
         const ALPHABET_ES = [ { char: 'A', word: 'Árbol' }, { char: 'B', word: 'Barco' }, { char: 'C', word: 'Casa' }, { char: 'D', word: 'Dedo' }, { char: 'E', word: 'Elefante' }, { char: 'F', word: 'Fuego' }, { char: 'G', word: 'Gato' }, { char: 'H', word: 'Hojas' }, { char: 'I', word: 'Isla' }, { char: 'J', word: 'Jirafa' }, { char: 'K', word: 'Koala' }, { char: 'L', word: 'León' }, { char: 'M', word: 'Mono' }, { char: 'N', word: 'Naranja' }, { char: 'O', word: 'Oso' }, { char: 'P', word: 'Perro' }, { char: 'Q', word: 'Queso' }, { char: 'R', word: 'Ratón' }, { char: 'S', word: 'Sol' }, { char: 'T', word: 'Tortuga' }, { char: 'U', word: 'Uva' }, { char: 'V', word: 'Vaca' }, { char: 'W', word: 'Wafle' }, { char: 'X', word: 'Xilófono' }, { char: 'Y', word: 'Yoyo' }, { char: 'Z', word: 'Zorro' } ];
 
@@ -356,85 +358,337 @@
             { 
                 id: 'animals', vi: 'Động Vật', es: 'Animales', emoji: '🦁',
                 levels: {
-                    1: [{ vi: 'Chó', es: 'Perro', img: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80' }, { vi: 'Mèo', es: 'Gato', img: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80' }, { vi: 'Chim', es: 'Pájaro', img: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&w=600&q=80' }, { vi: 'Cá', es: 'Pez', img: 'https://images.unsplash.com/photo-1524704654690-b56c05c78a00?auto=format&fit=crop&w=600&q=80' }, { vi: 'Gà', es: 'Pollo', img: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=600&q=80' }],
-                    2: [{ vi: 'Sư tử', es: 'León', img: 'https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=600&q=80' }, { vi: 'Hổ', es: 'Tigre', img: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=600&q=80' }, { vi: 'Bò', es: 'Vaca', img: 'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?auto=format&fit=crop&w=600&q=80' }, { vi: 'Ngựa', es: 'Caballo', img: 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=600&q=80' }],
-                    3: [{ vi: 'Voi', es: 'Elefante', img: 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=600&q=80' }, { vi: 'Khỉ', es: 'Mono', img: 'https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?auto=format&fit=crop&w=600&q=80' }, { vi: 'Gấu', es: 'Oso', img: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?auto=format&fit=crop&w=600&q=80' }, { vi: 'Hươu', es: 'Ciervo', img: 'https://images.unsplash.com/photo-1484406566165-985b496c5f78?auto=format&fit=crop&w=600&q=80' }],
-                    4: [{ vi: 'Thỏ', es: 'Conejo', img: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=600&q=80' }, { vi: 'Sóc', es: 'Ardilla', img: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=600&q=80' }, { vi: 'Cáo', es: 'Zorro', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=600&q=80' }],
-                    5: [{ vi: 'Rùa', es: 'Tortuga', img: 'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=600&q=80' }, { vi: 'Ếch', es: 'Rana', img: 'https://images.unsplash.com/photo-1534067783941-51c9c23ecefd?auto=format&fit=crop&w=600&q=80' }, { vi: 'Rắn', es: 'Serpiente', img: 'https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?auto=format&fit=crop&w=600&q=80' }],
-                    6: [{ vi: 'Cá voi', es: 'Ballena', img: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80' }, { vi: 'Cá mập', es: 'Tiburón', img: 'https://images.unsplash.com/photo-1560275619-4d6236189f06?auto=format&fit=crop&w=600&q=80' }],
-                    7: [{ vi: 'Đại bàng', es: 'Águila', img: 'https://images.unsplash.com/photo-1611689342806-0863700ce1e4?auto=format&fit=crop&w=600&q=80' }, { vi: 'Cú mèo', es: 'Búho', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=600&q=80' }]
+                    1: [
+                        { vi: 'Chó', es: 'Perro', img: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Mèo', es: 'Gato', img: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Chim', es: 'Pájaro', img: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Cá', es: 'Pez', img: 'https://images.unsplash.com/photo-1524704654690-b56c05c78a00?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Gà', es: 'Pollo', img: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Vịt', es: 'Pato', img: 'https://images.unsplash.com/photo-1555169062-01347abf78fb?auto=format&fit=crop&w=600&q=80' }
+                    ],
+                    2: [
+                        { vi: 'Sư tử', es: 'León', img: 'https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Hổ', es: 'Tigre', img: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Bò', es: 'Vaca', img: 'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Ngựa', es: 'Caballo', img: 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Lợn', es: 'Cerdo', img: genSVG('🐷') },
+                        { vi: 'Cừu', es: 'Oveja', img: genSVG('🐑') }
+                    ],
+                    3: [
+                        { vi: 'Voi', es: 'Elefante', img: 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Khỉ', es: 'Mono', img: 'https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Gấu', es: 'Oso', img: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Hươu', es: 'Ciervo', img: 'https://images.unsplash.com/photo-1484406566165-985b496c5f78?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Chuột', es: 'Ratón', img: genSVG('🐭') },
+                        { vi: 'Thỏ', es: 'Conejo', img: genSVG('🐰') }
+                    ],
+                    4: [
+                        { vi: 'Sóc', es: 'Ardilla', img: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Cáo', es: 'Zorro', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Sói', es: 'Lobo', img: genSVG('🐺') },
+                        { vi: 'Dơi', es: 'Murciélago', img: genSVG('🦇') },
+                        { vi: 'Nhím', es: 'Erizo', img: genSVG('🦔') }
+                    ],
+                    5: [
+                        { vi: 'Rùa', es: 'Tortuga', img: 'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Ếch', es: 'Rana', img: 'https://images.unsplash.com/photo-1534067783941-51c9c23ecefd?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Rắn', es: 'Serpiente', img: 'https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Cá sấu', es: 'Cocodrilo', img: genSVG('🐊') },
+                        { vi: 'Thằn lằn', es: 'Lagarto', img: genSVG('🦎') }
+                    ],
+                    6: [
+                        { vi: 'Cá voi', es: 'Ballena', img: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Cá mập', es: 'Tiburón', img: 'https://images.unsplash.com/photo-1560275619-4d6236189f06?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Cá heo', es: 'Delfín', img: genSVG('🐬') },
+                        { vi: 'Bạch tuộc', es: 'Pulpo', img: genSVG('🐙') },
+                        { vi: 'Cua', es: 'Cangrejo', img: genSVG('🦀') }
+                    ],
+                    7: [
+                        { vi: 'Đại bàng', es: 'Águila', img: 'https://images.unsplash.com/photo-1611689342806-0863700ce1e4?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Cú mèo', es: 'Búho', img: 'https://images.unsplash.com/photo-1516934024546-a6dcff7767b5?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Thiên nga', es: 'Cisne', img: genSVG('🦢') },
+                        { vi: 'Đà điểu', es: 'Avestruz', img: genSVG('🦤') },
+                        { vi: 'Cánh cụt', es: 'Pingüino', img: genSVG('🐧') }
+                    ]
                 }
             },
             { 
                 id: 'food', vi: 'Ẩm Thực', es: 'Comida', emoji: '🍜',
                 levels: {
-                    1: [{ vi: 'Táo', es: 'Manzana', img: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80' }, { vi: 'Chuối', es: 'Plátano', img: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=600&q=80' }, { vi: 'Bánh mì', es: 'Pan', img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80' }],
-                    2: [{ vi: 'Phở', es: 'Sopa', img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80' }, { vi: 'Cam', es: 'Naranja', img: 'https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=600&q=80' }],
-                    3: [{ vi: 'Bánh ngọt', es: 'Pastel', img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80' }, { vi: 'Phô mai', es: 'Queso', img: 'https://images.unsplash.com/photo-1452195100486-9cc805987862?auto=format&fit=crop&w=600&q=80' }],
-                    4: [{ vi: 'Dưa hấu', es: 'Sandía', img: 'https://images.unsplash.com/photo-1587049352847-4a222e784d38?auto=format&fit=crop&w=600&q=80' }, { vi: 'Dâu tây', es: 'Fresa', img: 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=600&q=80' }],
-                    5: [{ vi: 'Cà chua', es: 'Tomate', img: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=600&q=80' }, { vi: 'Khoai tây', es: 'Patata', img: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=600&q=80' }],
-                    6: [{ vi: 'Pizza', es: 'Pizza', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80' }, { vi: 'Kem', es: 'Helado', img: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=600&q=80' }],
-                    7: [{ vi: 'Muối', es: 'Sal', img: 'https://images.unsplash.com/photo-1518117715206-c4d6823c68e1?auto=format&fit=crop&w=600&q=80' }, { vi: 'Tiêu', es: 'Pimienta', img: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=600&q=80' }]
+                    1: [
+                        { vi: 'Táo', es: 'Manzana', img: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Chuối', es: 'Plátano', img: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Bánh mì', es: 'Pan', img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Nước', es: 'Agua', img: genSVG('💧') },
+                        { vi: 'Sữa', es: 'Leche', img: genSVG('🥛') }
+                    ],
+                    2: [
+                        { vi: 'Phở', es: 'Sopa', img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Cam', es: 'Naranja', img: 'https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Trứng', es: 'Huevo', img: genSVG('🥚') },
+                        { vi: 'Thịt', es: 'Carne', img: genSVG('🥩') },
+                        { vi: 'Cơm', es: 'Arroz', img: genSVG('🍚') }
+                    ],
+                    3: [
+                        { vi: 'Bánh ngọt', es: 'Pastel', img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Phô mai', es: 'Queso', img: 'https://images.unsplash.com/photo-1452195100486-9cc805987862?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Trà', es: 'Té', img: genSVG('🍵') },
+                        { vi: 'Cà phê', es: 'Café', img: genSVG('☕') }
+                    ],
+                    4: [
+                        { vi: 'Dưa hấu', es: 'Sandía', img: 'https://images.unsplash.com/photo-1587049352847-4a222e784d38?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Dâu tây', es: 'Fresa', img: 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Nho', es: 'Uva', img: genSVG('🍇') },
+                        { vi: 'Xoài', es: 'Mango', img: genSVG('🥭') }
+                    ],
+                    5: [
+                        { vi: 'Cà chua', es: 'Tomate', img: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Khoai tây', es: 'Patata', img: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Cà rốt', es: 'Zanahoria', img: genSVG('🥕') },
+                        { vi: 'Ngô', es: 'Maíz', img: genSVG('🌽') }
+                    ],
+                    6: [
+                        { vi: 'Pizza', es: 'Pizza', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Kem', es: 'Helado', img: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Bơ gơ', es: 'Hamburguesa', img: genSVG('🍔') },
+                        { vi: 'Xúc xích', es: 'Salchicha', img: genSVG('🌭') }
+                    ],
+                    7: [
+                        { vi: 'Muối', es: 'Sal', img: 'https://images.unsplash.com/photo-1518117715206-c4d6823c68e1?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Tiêu', es: 'Pimienta', img: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Đường', es: 'Azúcar', img: genSVG('🍬') },
+                        { vi: 'Dầu ăn', es: 'Aceite', img: genSVG('🫒') }
+                    ]
                 }
             },
             { 
-                id: 'colors', vi: 'Màu Sắc', es: 'Colores', emoji: '🎨',
+                id: 'colors', vi: 'Màu Sắc & Hình khối', es: 'Colores y Formas', emoji: '🎨',
                 levels: {
-                    1: [{ vi: 'Đỏ', es: 'Rojo', img: 'https://placehold.co/600x400/ef4444/FFF?text=Red' }, { vi: 'Xanh dương', es: 'Azul', img: 'https://placehold.co/600x400/3b82f6/FFF?text=Blue' }, { vi: 'Vàng', es: 'Amarillo', img: 'https://placehold.co/600x400/eab308/FFF?text=Yellow' }],
-                    2: [{ vi: 'Xanh lá', es: 'Verde', img: 'https://placehold.co/600x400/22c55e/FFF?text=Green' }, { vi: 'Đen', es: 'Negro', img: 'https://placehold.co/600x400/000000/FFF?text=Black' }],
-                    3: [{ vi: 'Trắng', es: 'Blanco', img: 'https://placehold.co/600x400/ffffff/000?text=White' }, { vi: 'Xám', es: 'Gris', img: 'https://placehold.co/600x400/6b7280/FFF?text=Gray' }],
-                    4: [{ vi: 'Tím', es: 'Morado', img: 'https://placehold.co/600x400/a855f7/FFF?text=Purple' }, { vi: 'Hồng', es: 'Rosa', img: 'https://placehold.co/600x400/ec4899/FFF?text=Pink' }],
-                    5: [{ vi: 'Hình Tròn', es: 'Círculo', img: 'https://placehold.co/600x400/FFF/000?text=O' }],
-                    6: [{ vi: 'Hình Vuông', es: 'Cuadrado', img: 'https://placehold.co/600x400/FFF/000?text=%5B%5D' }],
-                    7: [{ vi: 'Màu Cam', es: 'Naranja', img: 'https://placehold.co/600x400/f97316/FFF?text=Orange' }]
+                    1: [
+                        { vi: 'Đỏ', es: 'Rojo', img: genSVG('🟥') }, 
+                        { vi: 'Xanh dương', es: 'Azul', img: genSVG('🟦') }, 
+                        { vi: 'Vàng', es: 'Amarillo', img: genSVG('🟨') },
+                        { vi: 'Xanh lá', es: 'Verde', img: genSVG('🟩') }
+                    ],
+                    2: [
+                        { vi: 'Cam', es: 'Naranja', img: genSVG('🟧') },
+                        { vi: 'Tím', es: 'Morado', img: genSVG('🟪') },
+                        { vi: 'Hồng', es: 'Rosa', img: genSVG('🌸') },
+                        { vi: 'Nâu', es: 'Marrón', img: genSVG('🟫') }
+                    ],
+                    3: [
+                        { vi: 'Đen', es: 'Negro', img: genSVG('⬛') },
+                        { vi: 'Trắng', es: 'Blanco', img: genSVG('⬜') },
+                        { vi: 'Xám', es: 'Gris', img: genSVG('🐘') }
+                    ],
+                    4: [
+                        { vi: 'Hình Tròn', es: 'Círculo', img: genSVG('🔴') },
+                        { vi: 'Hình Vuông', es: 'Cuadrado', img: genSVG('🟩') },
+                        { vi: 'Hình Tam Giác', es: 'Triángulo', img: genSVG('🔺') },
+                        { vi: 'Ngôi Sao', es: 'Estrella', img: genSVG('⭐') }
+                    ],
+                    5: [
+                        { vi: 'Trái Tim', es: 'Corazón', img: genSVG('❤️') },
+                        { vi: 'Kim Cương', es: 'Diamante', img: genSVG('♦️') },
+                        { vi: 'Hình Bầu Dục', es: 'Óvalo', img: genSVG('🏈') }
+                    ],
+                    6: [
+                        { vi: 'Đường Thẳng', es: 'Línea Recta', img: genSVG('➖') },
+                        { vi: 'Đường Cong', es: 'Curva', img: genSVG('〰️') },
+                        { vi: 'Mũi Tên', es: 'Flecha', img: genSVG('➡️') }
+                    ],
+                    7: [
+                        { vi: 'Đậm', es: 'Oscuro', img: genSVG('🌑') },
+                        { vi: 'Nhạt', es: 'Claro', img: genSVG('🌕') },
+                        { vi: 'Sáng bóng', es: 'Brillante', img: genSVG('✨') },
+                        { vi: 'Cầu Vồng', es: 'Arcoíris', img: genSVG('🌈') }
+                    ]
                 }
             },
             { 
-                id: 'numbers', vi: 'Số & Toán Học', es: 'Números', emoji: '🔢',
+                id: 'numbers', vi: 'Số & Toán Học', es: 'Números y Mates', emoji: '🔢',
                 levels: {
-                    1: [{ vi: '1 - Một', es: '1 - Uno', img: 'https://placehold.co/600x400/f59e0b/FFF?text=1' }, { vi: '2 - Hai', es: '2 - Dos', img: 'https://placehold.co/600x400/f59e0b/FFF?text=2' }, { vi: '3 - Ba', es: '3 - Tres', img: 'https://placehold.co/600x400/f59e0b/FFF?text=3' }, { vi: '4 - Bốn', es: '4 - Cuatro', img: 'https://placehold.co/600x400/f59e0b/FFF?text=4' }],
-                    2: [{ vi: '5 - Năm', es: '5 - Cinco', img: 'https://placehold.co/600x400/f59e0b/FFF?text=5' }, { vi: '6 - Sáu', es: '6 - Seis', img: 'https://placehold.co/600x400/f59e0b/FFF?text=6' }, { vi: '7 - Bảy', es: '7 - Siete', img: 'https://placehold.co/600x400/f59e0b/FFF?text=7' }, { vi: '8 - Tám', es: '8 - Ocho', img: 'https://placehold.co/600x400/f59e0b/FFF?text=8' }],
-                    3: [{ vi: '10 - Mười', es: '10 - Diez', img: 'https://placehold.co/600x400/10b981/FFF?text=10' }, { vi: '15 - Mười lăm', es: '15 - Quince', img: 'https://placehold.co/600x400/10b981/FFF?text=15' }, { vi: '20 - Hai mươi', es: '20 - Veinte', img: 'https://placehold.co/600x400/10b981/FFF?text=20' }],
-                    4: [{ vi: '30 - Ba mươi', es: '30 - Treinta', img: 'https://placehold.co/600x400/3b82f6/FFF?text=30' }, { vi: '40 - Bốn mươi', es: '40 - Cuarenta', img: 'https://placehold.co/600x400/3b82f6/FFF?text=40' }, { vi: '50 - Năm mươi', es: '50 - Cincuenta', img: 'https://placehold.co/600x400/3b82f6/FFF?text=50' }],
-                    5: [{ vi: '70 - Bảy mươi', es: '70 - Setenta', img: 'https://placehold.co/600x400/a855f7/FFF?text=70' }, { vi: '80 - Tám mươi', es: '80 - Ochenta', img: 'https://placehold.co/600x400/a855f7/FFF?text=80' }],
-                    6: [{ vi: '100 - Một trăm', es: '100 - Cien', img: 'https://placehold.co/600x400/f43f5e/FFF?text=100' }],
-                    7: [{ vi: '1 + 1 = 2', es: '1 + 1 = 2', img: 'https://placehold.co/600x400/0ea5e9/FFF?text=1%2B1%3D2' }, { vi: '5 - 2 = 3', es: '5 - 2 = 3', img: 'https://placehold.co/600x400/0ea5e9/FFF?text=5-2%3D3' }]
+                    1: [
+                        { vi: '1 - Một', es: '1 - Uno', img: genSVG('1️⃣') }, 
+                        { vi: '2 - Hai', es: '2 - Dos', img: genSVG('2️⃣') }, 
+                        { vi: '3 - Ba', es: '3 - Tres', img: genSVG('3️⃣') }, 
+                        { vi: '4 - Bốn', es: '4 - Cuatro', img: genSVG('4️⃣') },
+                        { vi: '5 - Năm', es: '5 - Cinco', img: genSVG('5️⃣') }
+                    ],
+                    2: [
+                        { vi: '6 - Sáu', es: '6 - Seis', img: genSVG('6️⃣') }, 
+                        { vi: '7 - Bảy', es: '7 - Siete', img: genSVG('7️⃣') }, 
+                        { vi: '8 - Tám', es: '8 - Ocho', img: genSVG('8️⃣') }, 
+                        { vi: '9 - Chín', es: '9 - Nueve', img: genSVG('9️⃣') },
+                        { vi: '10 - Mười', es: '10 - Diez', img: genSVG('🔟') }
+                    ],
+                    3: [
+                        { vi: '11 - Mười một', es: '11 - Once', img: genSVG('11') }, 
+                        { vi: '12 - Mười hai', es: '12 - Doce', img: genSVG('12') }, 
+                        { vi: '15 - Mười lăm', es: '15 - Quince', img: genSVG('15') },
+                        { vi: '20 - Hai mươi', es: '20 - Veinte', img: genSVG('20') }
+                    ],
+                    4: [
+                        { vi: '30 - Ba mươi', es: '30 - Treinta', img: genSVG('30') }, 
+                        { vi: '40 - Bốn mươi', es: '40 - Cuarenta', img: genSVG('40') }, 
+                        { vi: '50 - Năm mươi', es: '50 - Cincuenta', img: genSVG('50') },
+                        { vi: '60 - Sáu mươi', es: '60 - Sesenta', img: genSVG('60') }
+                    ],
+                    5: [
+                        { vi: '70 - Bảy mươi', es: '70 - Setenta', img: genSVG('70') }, 
+                        { vi: '80 - Tám mươi', es: '80 - Ochenta', img: genSVG('80') },
+                        { vi: '90 - Chín mươi', es: '90 - Noventa', img: genSVG('90') },
+                        { vi: '100 - Một trăm', es: '100 - Cien', img: genSVG('100') }
+                    ],
+                    6: [
+                        { vi: '0 - Không', es: '0 - Cero', img: genSVG('0️⃣') },
+                        { vi: '1000 - Một nghìn', es: '1000 - Mil', img: genSVG('1000') },
+                        { vi: 'Nửa (1/2)', es: 'Mitad (1/2)', img: genSVG('🌗') }
+                    ],
+                    7: [
+                        { vi: '1 + 1 = 2', es: '1 + 1 = 2', img: genSVG('1+1=2', '0ea5e9') }, 
+                        { vi: '5 - 2 = 3', es: '5 - 2 = 3', img: genSVG('5-2=3', '0ea5e9') },
+                        { vi: '3 + 4 = 7', es: '3 + 4 = 7', img: genSVG('3+4=7', '0ea5e9') },
+                        { vi: '10 - 5 = 5', es: '10 - 5 = 5', img: genSVG('10-5=5', '0ea5e9') }
+                    ]
                 }
             },
             { 
                 id: 'body', vi: 'Cơ Thể', es: 'Cuerpo', emoji: '👀',
                 levels: {
-                    1: [{ vi: 'Mắt', es: 'Ojo', img: 'https://images.unsplash.com/photo-1494869042583-f6c911f04b4c?auto=format&fit=crop&w=600&q=80' }, { vi: 'Mũi', es: 'Nariz', img: 'https://images.unsplash.com/photo-1590510523098-b80c3099cd35?auto=format&fit=crop&w=600&q=80' }],
-                    2: [{ vi: 'Miệng', es: 'Boca', img: 'https://images.unsplash.com/photo-1588636402447-75e11f75d5cd?auto=format&fit=crop&w=600&q=80' }, { vi: 'Tai', es: 'Oreja', img: 'https://images.unsplash.com/photo-1582560469792-74c0b5c19208?auto=format&fit=crop&w=600&q=80' }],
-                    3: [{ vi: 'Tay', es: 'Mano', img: 'https://images.unsplash.com/photo-1502514278453-33d3ab2e4fb4?auto=format&fit=crop&w=600&q=80' }],
-                    4: [{ vi: 'Chân', es: 'Pie', img: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&q=80' }],
-                    5: [{ vi: 'Ngón tay', es: 'Dedo', img: 'https://images.unsplash.com/photo-1618218685167-2713f00155b9?auto=format&fit=crop&w=600&q=80' }],
-                    6: [{ vi: 'Tóc', es: 'Pelo', img: 'https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=600&q=80' }],
-                    7: [{ vi: 'Răng', es: 'Diente', img: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=600&q=80' }]
+                    1: [
+                        { vi: 'Mắt', es: 'Ojo', img: 'https://images.unsplash.com/photo-1494869042583-f6c911f04b4c?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Mũi', es: 'Nariz', img: 'https://images.unsplash.com/photo-1590510523098-b80c3099cd35?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Miệng', es: 'Boca', img: genSVG('👄') },
+                        { vi: 'Tai', es: 'Oreja', img: genSVG('👂') }
+                    ],
+                    2: [
+                        { vi: 'Tóc', es: 'Pelo', img: 'https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Đầu', es: 'Cabeza', img: genSVG('👤') },
+                        { vi: 'Cổ', es: 'Cuello', img: genSVG('🧣') },
+                        { vi: 'Cằm', es: 'Barbilla', img: genSVG('🧔') }
+                    ],
+                    3: [
+                        { vi: 'Tay', es: 'Mano', img: 'https://images.unsplash.com/photo-1502514278453-33d3ab2e4fb4?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Ngón tay', es: 'Dedo', img: 'https://images.unsplash.com/photo-1618218685167-2713f00155b9?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Cánh tay', es: 'Brazo', img: genSVG('💪') },
+                        { vi: 'Vai', es: 'Hombro', img: genSVG('🤷') }
+                    ],
+                    4: [
+                        { vi: 'Chân', es: 'Pie', img: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Ngón chân', es: 'Dedo del pie', img: genSVG('🦶') },
+                        { vi: 'Đầu gối', es: 'Rodilla', img: genSVG('🦵') },
+                        { vi: 'Lưng', es: 'Espalda', img: genSVG('🧍') }
+                    ],
+                    5: [
+                        { vi: 'Răng', es: 'Diente', img: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Lưỡi', es: 'Lengua', img: genSVG('👅') },
+                        { vi: 'Bụng', es: 'Estómago', img: genSVG('🤰') },
+                        { vi: 'Môi', es: 'Labio', img: genSVG('💋') }
+                    ],
+                    6: [
+                        { vi: 'Da', es: 'Piel', img: genSVG('🤚') },
+                        { vi: 'Móng tay', es: 'Uña', img: genSVG('💅') },
+                        { vi: 'Khuỷu tay', es: 'Codo', img: genSVG('💪') },
+                        { vi: 'Cổ tay', es: 'Muñeca', img: genSVG('⌚') }
+                    ],
+                    7: [
+                        { vi: 'Tim', es: 'Corazón', img: genSVG('🫀') },
+                        { vi: 'Xương', es: 'Hueso', img: genSVG('🦴') },
+                        { vi: 'Máu', es: 'Sangre', img: genSVG('🩸') },
+                        { vi: 'Phổi', es: 'Pulmón', img: genSVG('🫁') }
+                    ]
                 }
             },
             { 
                 id: 'home', vi: 'Nhà Cửa', es: 'Casa', emoji: '🏠',
                 levels: {
-                    1: [{ vi: 'Nhà', es: 'Casa', img: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=600&q=80' }, { vi: 'Giường', es: 'Cama', img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=600&q=80' }],
-                    2: [{ vi: 'Cửa', es: 'Puerta', img: 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=600&q=80' }, { vi: 'Cửa sổ', es: 'Ventana', img: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=600&q=80' }],
-                    3: [{ vi: 'Bàn', es: 'Mesa', img: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=600&q=80' }],
-                    4: [{ vi: 'Ghế', es: 'Silla', img: 'https://images.unsplash.com/photo-1580481077494-e3299ac25e94?auto=format&fit=crop&w=600&q=80' }],
-                    5: [{ vi: 'Tivi', es: 'Televisión', img: 'https://images.unsplash.com/photo-1593784991095-a205069470b6?auto=format&fit=crop&w=600&q=80' }],
-                    6: [{ vi: 'Bếp', es: 'Cocina', img: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=600&q=80' }],
-                    7: [{ vi: 'Chăn', es: 'Manta', img: 'https://images.unsplash.com/photo-1580252516499-c8846c4f03cb?auto=format&fit=crop&w=600&q=80' }]
+                    1: [
+                        { vi: 'Nhà', es: 'Casa', img: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Giường', es: 'Cama', img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Cửa', es: 'Puerta', img: 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Cửa sổ', es: 'Ventana', img: genSVG('🪟') }
+                    ],
+                    2: [
+                        { vi: 'Bàn', es: 'Mesa', img: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Ghế', es: 'Silla', img: 'https://images.unsplash.com/photo-1580481077494-e3299ac25e94?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Tủ', es: 'Armario', img: genSVG('🗄️') },
+                        { vi: 'Sofa', es: 'Sofá', img: genSVG('🛋️') }
+                    ],
+                    3: [
+                        { vi: 'Tivi', es: 'Televisión', img: 'https://images.unsplash.com/photo-1593784991095-a205069470b6?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Quạt', es: 'Ventilador', img: genSVG('🪭') },
+                        { vi: 'Đèn', es: 'Lámpara', img: genSVG('💡') },
+                        { vi: 'Đồng hồ', es: 'Reloj', img: genSVG('🕰️') }
+                    ],
+                    4: [
+                        { vi: 'Bếp', es: 'Cocina', img: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Tủ lạnh', es: 'Refrigerador', img: genSVG('🧊') },
+                        { vi: 'Bát', es: 'Cuenco', img: genSVG('🥣') },
+                        { vi: 'Đĩa', es: 'Plato', img: genSVG('🍽️') }
+                    ],
+                    5: [
+                        { vi: 'Phòng ngủ', es: 'Dormitorio', img: genSVG('🛌') },
+                        { vi: 'Phòng tắm', es: 'Baño', img: genSVG('🛁') },
+                        { vi: 'Vườn', es: 'Jardín', img: genSVG('🪴') },
+                        { vi: 'Sân', es: 'Patio', img: genSVG('🏡') }
+                    ],
+                    6: [
+                        { vi: 'Sách', es: 'Libro', img: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Chăn', es: 'Manta', img: 'https://images.unsplash.com/photo-1580252516499-c8846c4f03cb?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Gối', es: 'Almohada', img: genSVG('🛌') },
+                        { vi: 'Gương', es: 'Espejo', img: genSVG('🪞') }
+                    ],
+                    7: [
+                        { vi: 'Mẹ', es: 'Mamá', img: genSVG('👩') },
+                        { vi: 'Bố', es: 'Papá', img: genSVG('👨') },
+                        { vi: 'Anh', es: 'Hermano', img: genSVG('👦') },
+                        { vi: 'Chị', es: 'Hermana', img: genSVG('👧') }
+                    ]
                 }
             },
             { 
                 id: 'vehicles', vi: 'Phương Tiện', es: 'Vehículos', emoji: '🚗',
                 levels: {
-                    1: [{ vi: 'Xe ô tô', es: 'Coche', img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80' }, { vi: 'Xe đạp', es: 'Bicicleta', img: 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=600&q=80' }],
-                    2: [{ vi: 'Xe buýt', es: 'Autobús', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' }, { vi: 'Xe máy', es: 'Moto', img: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=600&q=80' }],
-                    3: [{ vi: 'Tàu hỏa', es: 'Tren', img: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=600&q=80' }],
-                    4: [{ vi: 'Máy bay', es: 'Avión', img: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=600&q=80' }],
-                    5: [{ vi: 'Thuyền', es: 'Barco', img: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80' }],
-                    6: [{ vi: 'Trực thăng', es: 'Helicóptero', img: 'https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=600&q=80' }],
-                    7: [{ vi: 'Tên lửa', es: 'Cohete', img: 'https://images.unsplash.com/photo-1517976487139-3f16dab6b18d?auto=format&fit=crop&w=600&q=80' }]
+                    1: [
+                        { vi: 'Xe ô tô', es: 'Coche', img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80' }, 
+                        { vi: 'Xe đạp', es: 'Bicicleta', img: 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Xe máy', es: 'Moto', img: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Xe buýt', es: 'Autobús', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' }
+                    ],
+                    2: [
+                        { vi: 'Tàu hỏa', es: 'Tren', img: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Đường sắt', es: 'Vía', img: 'https://images.unsplash.com/photo-1515165562839-978bbcfc993a?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Xe tải', es: 'Camión', img: genSVG('🚛') },
+                        { vi: 'Tàu điện ngầm', es: 'Metro', img: genSVG('🚇') }
+                    ],
+                    3: [
+                        { vi: 'Máy bay', es: 'Avión', img: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Trực thăng', es: 'Helicóptero', img: 'https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Khinh khí cầu', es: 'Globo aerostático', img: genSVG('🎈') }
+                    ],
+                    4: [
+                        { vi: 'Thuyền', es: 'Barco', img: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Tàu thủy', es: 'Buque', img: genSVG('🛳️') },
+                        { vi: 'Tàu ngầm', es: 'Submarino', img: genSVG('🚤') }
+                    ],
+                    5: [
+                        { vi: 'Xe cứu hỏa', es: 'Camión de bomberos', img: genSVG('🚒') },
+                        { vi: 'Xe cảnh sát', es: 'Coche de policía', img: genSVG('🚓') },
+                        { vi: 'Xe cứu thương', es: 'Ambulancia', img: genSVG('🚑') },
+                        { vi: 'Taxi', es: 'Taxi', img: genSVG('🚕') }
+                    ],
+                    6: [
+                        { vi: 'Tên lửa', es: 'Cohete', img: 'https://images.unsplash.com/photo-1517976487139-3f16dab6b18d?auto=format&fit=crop&w=600&q=80' },
+                        { vi: 'Vũ trụ', es: 'Espacio', img: genSVG('🌌') },
+                        { vi: 'Đĩa bay', es: 'OVNI', img: genSVG('🛸') }
+                    ],
+                    7: [
+                        { vi: 'Đường', es: 'Calle', img: genSVG('🛣️') },
+                        { vi: 'Cầu', es: 'Puente', img: genSVG('🌉') },
+                        { vi: 'Đèn giao thông', es: 'Semáforo', img: genSVG('🚦') },
+                        { vi: 'Trạm xăng', es: 'Gasolinera', img: genSVG('⛽') }
+                    ]
                 }
             }
         ];
@@ -462,23 +716,26 @@
                 beginner: [
                     { emoji: '🐶', text: 'El perro marrón mueve su cola.', prompt: '¿Qué animal aparece en la imagen?', options: ['El perro', 'El gato', 'El pájaro'], correct: 0 },
                     { emoji: '🍎', text: 'La manzana roja cuelga del árbol.', prompt: '¿Qué fruta es esta?', options: ['La manzana', 'El plátano', 'La uva'], correct: 0 },
-                    { emoji: '🚗', text: 'El coche rojo viaja por la calle.', prompt: '¿Qué vehículo es este?', options: ['El coche', 'La bicicleta', 'El avión'], correct: 0 }
+                    { emoji: '🚗', text: 'El coche rojo viaja por la calle.', prompt: '¿Qué vehículo es este?', options: ['El coche', 'La bicicleta', 'El avión'], correct: 0 },
+                    { emoji: '🏠', text: 'La pequeña casa amarilla con jardín.', prompt: '¿Qué lugar es este?', options: ['La casa', 'La escuela', 'El hospital'], correct: 0 }
                 ],
                 intermediate: [
                     { emoji: '🌅', text: 'El sol brillante ilumina la mañana.', prompt: '¿En qué momento del día ocurre?', options: ['Amanecer', 'Noche oscura', 'Mediodía'], correct: 0 },
-                    { emoji: '🚲', text: 'Sofía monta su bicicleta azul por el camino.', prompt: '¿Qué hace Sofía?', options: ['Monta su bicicleta', 'Juega al fútbol', 'Pinta cuadros'], correct: 0 }
+                    { emoji: '🚲', text: 'Sofía monta su bicicleta azul por el camino.', prompt: '¿Qué hace Sofía?', options: ['Monta su bicicleta', 'Juega al fútbol', 'Pinta cuadros'], correct: 0 },
+                    { emoji: '🍜', text: 'Un plato de sopa caliente y deliciosa acompañada de hierbas frescas y limón.', prompt: '¿Qué platillo se describe?', options: ['Una sopa caliente', 'Pan con queso', 'Ensalada verde'], correct: 0 }
                 ],
                 advanced: [
                     { emoji: '🏰', text: 'El antiguo castillo se alza majestuoso sobre una colina.', prompt: '¿Dónde está el castillo?', options: ['En una colina', 'Bajo el mar', 'En el bosque'], correct: 0 },
-                    { emoji: '🚀', text: 'La nave espacial cruza el cielo para explorar.', prompt: '¿Hacia dónde vuela la nave?', options: ['Al espacio', 'Al océano', 'A la escuela'], correct: 0 }
+                    { emoji: '🚀', text: 'La nave espacial cruza el cielo para explorar.', prompt: '¿Hacia dónde vuela la nave?', options: ['Al espacio', 'Al océano', 'A la escuela'], correct: 0 },
+                    { emoji: '🌊', text: 'El océano profundo esconde maravillas increíbles con arrecifes de coral brillantes y miles de coloridas especies marinas.', prompt: '¿Qué esconde el océano?', options: ['Arrecifes de coral', 'Edificios altos', 'Montañas nevadas'], correct: 0 }
                 ]
             }
         };
 
         const CONVERSATIONS = [
             {
-                vi: { title: "Chào hỏi", dialogue: [ { s: 'A', e: '👦', t: "Xin chào bạn!" }, { s: 'B', e: '👧', t: "Chào bạn! Bạn khỏe không?" }, { s: 'A', e: '👦', t: "Mình rất khỏe, cảm ơn bạn." } ] },
-                es: { title: "Saludos", dialogue: [ { s: 'A', e: '👦', t: "¡Hola amigo!" }, { s: 'B', e: '👧', t: "¡Hola! ¿Cómo estás?" }, { s: 'A', e: '👦', t: "Estoy muy bien, gracias." } ] }
+                vi: { title: "Chào hỏi cơ bản", dialogue: [ { s: 'A', e: '👦', t: "Xin chào bạn!" }, { s: 'B', e: '👧', t: "Chào bạn! Bạn khỏe không?" }, { s: 'A', e: '👦', t: "Mình rất khỏe, cảm ơn bạn." } ] },
+                es: { title: "Saludos básicos", dialogue: [ { s: 'A', e: '👦', t: "¡Hola amigo!" }, { s: 'B', e: '👧', t: "¡Hola! ¿Cómo estás?" }, { s: 'A', e: '👦', t: "Estoy muy bien, gracias." } ] }
             },
             {
                 vi: { title: "Hỏi tên", dialogue: [ { s: 'A', e: '🐯', t: "Bạn tên là gì?" }, { s: 'B', e: '🦊', t: "Mình tên là Cáo. Còn bạn?" }, { s: 'A', e: '🐯', t: "Mình là Hổ." } ] },
@@ -491,7 +748,7 @@
                 switchProfile: '⬅️ Đổi Hồ Sơ', timerTitle: 'Hẹn Giờ Lượt Chơi', timerSub: 'Phiên chơi công bằng',
                 alphaBtn: 'Bảng Chữ Cái', memoryBtn: 'Lật Hình Cặp', descBtn: 'Mô Tả Tranh', slicerBtn: 'Chém Từ HD', convoBtn: 'Hội Thoại',
                 mapTitle: 'Bản Đồ Học Tập Thực Tế', exit: '⬅️ Thoát', next: 'Tiếp Theo ➡️',
-                reportTitle: 'Hoàn Thành Cấp Độ!', newWordsBtn: '🔄 Lặp Lại Cấp Độ', nextLevelBtn: '⬆️ Thử Cấp Tiếp Theo', continueBtn: '🏠 Về Trang Chủ',
+                reportTitle: 'Hoàn Thành Cấp Độ!', newWordsBtn: '🔄 Học Thêm Từ Mới', nextLevelBtn: '⬆️ Thử Cấp Tiếp Theo', continueBtn: '🏠 Về Trang Chủ',
                 memTitle: '🧠 Lật Hình Tìm Cặp', memSub: 'Chạm vào thẻ để lật, nghe phát âm và tìm cặp đúng!', alertTimeUp: '⏰ Hết giờ lượt chơi! Đổi bạn khác nào!',
                 subTitleMain: 'Thế Giới Ngôn Ngữ Kỳ Diệu',
                 setEdit: '✏️ Chỉnh Sửa Hồ Sơ Hiện Tại', setReset: '🔄 Đặt Lại Điểm Toàn Bộ', setDel: '🗑️ Xóa Hồ Sơ Này', setClose: 'Đóng (Close)', setDark: 'Ban đêm (Dark Mode):', setTitle: '⚙️ Cài Đặt (Settings)',
@@ -501,7 +758,7 @@
                 switchProfile: '⬅️ Cambiar Perfil', timerTitle: 'Temporizador', timerSub: 'Turnos justos para todos',
                 alphaBtn: 'Alfabeto', memoryBtn: 'Memoria de Parejas', descBtn: 'Describir Imagen', slicerBtn: 'Cortar Palabras', convoBtn: 'Conversación',
                 mapTitle: 'Mapa de Aprendizaje HD', exit: '⬅️ Salir', next: 'Siguiente ➡️',
-                reportTitle: '¡Nivel Completado!', newWordsBtn: '🔄 Repetir este Nivel', nextLevelBtn: '⬆️ Siguiente Nivel', continueBtn: '🏠 Ir al Inicio',
+                reportTitle: '¡Nivel Completado!', newWordsBtn: '🔄 Aprender Palabras Nuevas', nextLevelBtn: '⬆️ Siguiente Nivel', continueBtn: '🏠 Ir al Inicio',
                 memTitle: '🧠 Memoria de Parejas', memSub: '¡Toca las tarjetas para voltearlas y encontrar parejas!', alertTimeUp: '⏰ ¡Se acabó el tiempo! ¡Cambien de jugador!',
                 subTitleMain: 'El Mundo Mágico de los Idiomas',
                 setEdit: '✏️ Editar Perfil Actual', setReset: '🔄 Restablecer Todo', setDel: '🗑️ Eliminar Este Perfil', setClose: 'Cerrar', setDark: 'Modo Oscuro:', setTitle: '⚙️ Ajustes',
@@ -583,7 +840,7 @@
         };
 
         window.showCustomAlert = function(msg) {
-            alert(msg); // fallback to standard alert to block UI thread completely
+            alert(msg); // standard alert block
         };
 
         // Dual-Layer Audio Engine
@@ -592,11 +849,11 @@
             const shortLang = currentLang === 'es' ? 'es' : 'vi';
             
             try {
-                // Primary: Try fetching from Google Cloud TTS for native voice
+                // Primary: Cloud TTS for native voice
                 const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${shortLang}&q=${encodeURIComponent(text)}`;
                 const audio = new Audio(url);
                 audio.play().catch(e => {
-                    console.warn("Cloud TTS blocked by browser policy, using internal fallback.");
+                    console.warn("Cloud TTS blocked, using internal fallback.");
                     window.fallbackAudio(text, langCode);
                 });
             } catch(e) {
@@ -795,7 +1052,9 @@
             document.getElementById('game-progress').innerText = `${currentActiveLesson.topic[currentLang]} • L${currentActiveLesson.lvl} (${currentLessonWordIdx + 1}/${currentActiveLesson.words.length})`;
             const photoEl = document.getElementById('active-photo');
             const fallbackEl = document.getElementById('active-emoji-fallback');
-            if (w.img && w.img.includes('http')) { 
+            
+            // Check if image is URL or SVG data
+            if (w.img && (w.img.includes('http') || w.img.includes('data:image'))) { 
                 photoEl.style.display = 'block'; fallbackEl.style.display = 'none'; photoEl.src = w.img; 
             } else { 
                 photoEl.style.display = 'none'; fallbackEl.style.display = 'block'; fallbackEl.innerText = w.img ? w.img : w[currentLang].substring(0,1); 
@@ -811,7 +1070,7 @@
                 currentLessonWordIdx++;
                 window.loadLessonCard();
             } else {
-                // Lesson complete logic
+                // Lesson complete logic triggers Report Modal
                 window.triggerConfetti();
                 if(currentProfile) {
                     if(!currentProfile.progress[currentActiveLesson.topic.id]) currentProfile.progress[currentActiveLesson.topic.id] = {};
@@ -907,7 +1166,7 @@
             let deck = [];
             subset.forEach(item => {
                 deck.push({ display: item[currentLang], speakText: item[currentLang], id: item.vi });
-                if(item.img && item.img.includes('http')) {
+                if(item.img && (item.img.includes('http') || item.img.includes('data:image'))) {
                     deck.push({ display: `<img src="${item.img}" class="w-full h-full object-cover rounded-xl"/>`, speakText: item[currentLang], id: item.vi });
                 } else {
                     deck.push({ display: `<span class="text-4xl">${item.img || item[currentLang].substring(0,1)}</span>`, speakText: item[currentLang], id: item.vi });
@@ -1025,7 +1284,7 @@
                 if (Math.random() < 0.035) {
                     const pool = TOPICS[0].levels[1].concat(TOPICS[1].levels[1]); // Mix animals/food
                     const sampleWord = pool[Math.floor(Math.random() * pool.length)];
-                    let emoji = '🍉'; // Placeholder if no emoji defined directly in dataset
+                    let emoji = '🍉'; // Default
                     if(sampleWord.vi==='Chó') emoji='🐶'; else if(sampleWord.vi==='Mèo') emoji='🐱'; else if(sampleWord.vi==='Táo') emoji='🍎'; else if(sampleWord.vi==='Chuối') emoji='🍌';
                     items.push({ emoji: emoji, word: sampleWord[currentLang], x: Math.random() * (canvas.width - 100) + 50, y: canvas.height + 50, vx: (Math.random() - 0.5) * 6, vy: -15 });
                 }
