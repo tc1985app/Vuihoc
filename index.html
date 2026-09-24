@@ -16,7 +16,6 @@
     <style>
         :root { --bg-light: #fdfaf6; }
         
-        /* Modern iOS viewport handling (dvh) */
         body, #app-body {
             min-height: 100vh;
             min-height: 100dvh !important;
@@ -58,7 +57,6 @@
         .pop-in { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* Chat bubbles for Conversation Mode */
         .chat-bubble { position: relative; background: #fff; border-radius: 1.5rem; padding: 1rem 1.5rem; border: 4px solid #e5e7eb; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .chat-left::after { content: ''; position: absolute; border: 12px solid transparent; border-right-color: #e5e7eb; border-left: 0; left: -16px; top: 50%; margin-top: -12px; }
         .chat-right::after { content: ''; position: absolute; border: 12px solid transparent; border-left-color: #e5e7eb; border-right: 0; right: -16px; top: 50%; margin-top: -12px; }
@@ -70,7 +68,6 @@
     </style>
 </head>
 <body id="app-body" class="flex flex-col items-center p-3 sm:p-6 cultural-bg">
-    <!-- Stream Confetti & Base Modals -->
     <div id="confetti-container" style="position:fixed; inset:0; pointer-events:none; z-index:9999;"></div>
 
     <!-- PROFILE EDIT MODAL -->
@@ -81,7 +78,7 @@
             
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2" id="ui-edit-name-lbl">Tên (Name):</label>
-                <input type="text" id="prof-name" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold" placeholder="VD: An, Sofia...">
+                <input type="text" id="prof-name" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold" placeholder="VD: An...">
             </div>
             
             <div class="mb-4">
@@ -97,7 +94,7 @@
                 </select>
             </div>
             
-            <!-- Proficiency Level Dropdown -->
+            <!-- RESTORED PROFICIENCY LEVEL DROPDOWN -->
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2" id="ui-edit-level-lbl">Cấp độ (Level):</label>
                 <select id="prof-level" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold">
@@ -108,10 +105,10 @@
             </div>
 
             <div class="mb-4">
-                <button type="button" onclick="window.resetCurrentProfileProgress()" class="btn-3d w-full bg-amber-100 text-amber-700 font-black py-3 rounded-xl border-2 border-amber-300 text-sm" id="ui-edit-reset">🔄 Đặt Lại Điểm Hồ Sơ Này</button>
+                <button type="button" onclick="window.resetCurrentProfileProgress()" class="btn-3d w-full bg-amber-100 text-amber-700 font-black py-3 rounded-xl border-2 border-amber-300 text-sm" id="ui-edit-reset">🔄 Đặt Lại Điểm</button>
             </div>
             <div class="mb-6">
-                <button type="button" onclick="window.deleteCurrentProfile()" class="btn-3d w-full bg-red-100 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm" id="ui-edit-delete">🗑️ Xóa Hồ Sơ Này</button>
+                <button type="button" onclick="window.deleteCurrentProfile()" class="btn-3d w-full bg-red-100 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm" id="ui-edit-delete">🗑️ Xóa Hồ Sơ</button>
             </div>
             <div class="flex gap-3">
                 <button type="button" onclick="window.closeProfileModal()" class="btn-3d flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-2xl" id="ui-edit-cancel">Hủy</button>
@@ -138,13 +135,13 @@
                 <input type="checkbox" id="dark-mode-toggle" class="w-6 h-6 cursor-pointer" onclick="window.toggleDarkMode(this.checked)">
             </div>
             <div class="mb-3">
-                <button type="button" onclick="window.openProfileModalForCurrent();" class="w-full bg-blue-100 text-blue-700 font-black py-3 rounded-xl border-2 border-blue-300 text-sm" id="ui-set-edit">✏️ Chỉnh Sửa Hồ Sơ Hiện Tại</button>
+                <button type="button" onclick="window.openProfileModalForCurrent();" class="w-full bg-blue-100 text-blue-700 font-black py-3 rounded-xl border-2 border-blue-300 text-sm" id="ui-set-edit">✏️ Chỉnh Sửa Hồ Sơ</button>
             </div>
             <div class="mb-3">
                 <button type="button" onclick="window.resetProgress();" class="w-full bg-red-100 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm" id="ui-set-reset">🔄 Đặt Lại Điểm Toàn Bộ</button>
             </div>
             <div class="mb-6">
-                <button type="button" onclick="window.deleteCurrentProfileFromSettings();" class="w-full bg-rose-100 text-rose-700 font-black py-3 rounded-xl border-2 border-rose-300 text-sm" id="ui-set-del">🗑️ Xóa Hồ Sơ Này</button>
+                <button type="button" onclick="window.deleteCurrentProfileFromSettings();" class="w-full bg-rose-100 text-rose-700 font-black py-3 rounded-xl border-2 border-rose-300 text-sm" id="ui-set-del">🗑️ Xóa Hồ Sơ</button>
             </div>
             <button type="button" onclick="window.closeSettings()" class="btn-3d w-full bg-amber-600 text-white font-game py-3 rounded-2xl text-lg text-center" id="ui-set-close">Đóng (Close)</button>
         </div>
@@ -172,7 +169,7 @@
         </div>
     </div>
 
-    <!-- POST-LESSON PROGRESSION MODAL (REPORT CARD) -->
+    <!-- POST-LESSON PROGRESSION MODAL -->
     <div id="report-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[170] flex items-center justify-center p-4">
         <div class="bg-white rounded-[3rem] p-8 max-w-sm w-full border-4 border-amber-300 shadow-2xl text-center pop-in">
             <span class="text-7xl mb-4 block animate-bounce">🏆</span>
@@ -332,14 +329,16 @@
         </div>
     </div>
 
-    <!-- 🌟 SCREEN 6: CONVERSATION MODE 🌟 -->
+    <!-- 🌟 SCREEN 6: CONVERSATION MODE (HỘI THOẠI) 🌟 -->
     <div id="screen-convo" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-rose-50 overflow-y-auto pt-8 px-4 pb-12">
         <div class="w-full max-w-lg flex justify-between items-center mb-6">
             <button type="button" onclick="window.exitConversationMode()" id="convo-btn-exit" class="btn-3d px-4 py-2 bg-white text-rose-800 font-black rounded-2xl border border-rose-200">⬅️ Thoát</button>
             <span id="convo-topic-lbl" class="font-black text-rose-900 bg-rose-200 px-4 py-1.5 rounded-full border border-rose-300">💬 Hội Thoại</span>
         </div>
         <div class="bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-rose-300 shadow-2xl w-full max-w-lg flex flex-col min-h-[450px]">
-            <div id="convo-chat-area" class="flex-1 w-full flex flex-col gap-6 pt-4"></div>
+            <div id="convo-chat-area" class="flex-1 w-full flex flex-col gap-6 pt-4">
+                <!-- Chat lines injected here -->
+            </div>
             <div class="w-full mt-auto pt-8 flex gap-3">
                 <button type="button" onclick="window.playConvoAudio()" class="btn-3d w-16 h-16 bg-red-500 rounded-2xl flex items-center justify-center text-3xl shadow-md text-white border-2 border-red-700">🔊</button>
                 <button type="button" onclick="window.nextConvoLine()" id="convo-btn-next" class="btn-3d flex-1 py-4 bg-rose-500 text-white font-black text-xl rounded-2xl shadow-md border-2 border-rose-700">Tiếp Theo ➡️</button>
@@ -378,8 +377,7 @@
     <!-- 🌟 JAVASCRIPT ENGINE 🌟 -->
     <script>
         // --- 1. GLOBAL STATE & INITIALIZATION ---
-        // Force fallback if user deletes everything
-        let profiles = JSON.parse(localStorage.getItem('vuihoc_v72_data'));
+        let profiles = JSON.parse(localStorage.getItem('vuihoc_v80_data'));
         if (!Array.isArray(profiles) || profiles.length === 0) {
             profiles = [
                 { id: '1', name: 'Bé An', emoji: '👦', lang: 'vi', level: 'beginner', stars: 10, progress: {} },
@@ -421,7 +419,7 @@
         document.addEventListener('touchstart', unlockAudio, { once: true, capture: true });
         document.addEventListener('click', unlockAudio, { once: true, capture: true });
 
-        window.saveProfiles = function() { localStorage.setItem('vuihoc_v72_data', JSON.stringify(profiles)); }
+        window.saveProfiles = function() { localStorage.setItem('vuihoc_v80_data', JSON.stringify(profiles)); }
 
         // --- 2. MASSIVE CURRICULUM DATASETS ---
         const ALPHABET_VI = [ { char: 'A', word: 'Áo' }, { char: 'Ă', word: 'Ăn' }, { char: 'Â', word: 'Ấm' }, { char: 'B', word: 'Bóng' }, { char: 'C', word: 'Cá' }, { char: 'D', word: 'Dép' }, { char: 'Đ', word: 'Đèn' }, { char: 'E', word: 'Em' }, { char: 'Ê', word: 'Êm' }, { char: 'G', word: 'Gà' }, { char: 'H', word: 'Hoa' }, { char: 'I', word: 'In' }, { char: 'K', word: 'Kẹo' }, { char: 'L', word: 'Lá' }, { char: 'M', word: 'Mèo' }, { char: 'N', word: 'Nhà' }, { char: 'O', word: 'Ong' }, { char: 'Ô', word: 'Ô tô' }, { char: 'Ơ', word: 'Ớt' }, { char: 'P', word: 'Phở' }, { char: 'Q', word: 'Quả' }, { char: 'R', word: 'Rổ' }, { char: 'S', word: 'Sách' }, { char: 'T', word: 'Tay' }, { char: 'U', word: 'Ủ' }, { char: 'Ư', word: 'Ức' }, { char: 'V', word: 'Vịt' }, { char: 'X', word: 'Xe' }, { char: 'Y', word: 'Yếm' } ];
@@ -541,7 +539,7 @@
                     { emoji: '🚀', text: 'Tàu vũ trụ khổng lồ phóng vào không gian sâu thẳm.', prompt: 'Tàu bay đi đâu?', options: ['Vào không gian', 'Xuống biển', 'Đến trường'], correct: 0 },
                     { emoji: '🌊', text: 'Đại dương xanh thẳm ẩn chứa vô số điều kỳ diệu với những rặng san hô rực rỡ.', prompt: 'Đại dương ẩn chứa điều gì?', options: ['Rặng san hô', 'Cây cổ thụ', 'Sa mạc'], correct: 0 },
                     { emoji: '🌋', text: 'Ngọn núi lửa đang phun trào dòng nham thạch đỏ rực, khói bụi mịt mù che kín bầu trời.', prompt: 'Ngọn núi lửa đang làm gì?', options: ['Phun trào nham thạch', 'Đang ngủ yên', 'Đang đổ mưa'], correct: 0 },
-                    { emoji: '🏜️', text: 'Sa mạc rộng lớn phủ đầy cát vàng, thỉnh thoảng mới thấy vài cây xương rồng gai góc.', prompt: 'Sa mạc được bao phủ bởi gì?', options: ['Cát vàng', 'Cỏ xanh', 'Tuyết trắng'], correct: 0 },
+                    { emoji: '🏜️', text: 'Sa mạc rộng lớn phủ đầy cát vàng, thỉnh occasional mới thấy vài cây xương rồng gai góc.', prompt: 'Sa mạc được bao phủ bởi gì?', options: ['Cát vàng', 'Cỏ xanh', 'Tuyết trắng'], correct: 0 },
                     { emoji: '🔬', text: 'Trong phòng thí nghiệm, nhà khoa học đang cẩn thận pha trộn các hóa chất nhiều màu sắc.', prompt: 'Nhà khoa học đang làm gì?', options: ['Pha trộn hóa chất', 'Đọc sách báo', 'Chơi điện tử'], correct: 0 },
                     { emoji: '🏛️', text: 'Viện bảo tàng lưu giữ những cổ vật quý giá có niên đại từ hàng nghìn năm trước.', prompt: 'Viện bảo tàng dùng để làm gì?', options: ['Lưu giữ cổ vật', 'Trồng cây xanh', 'Tổ chức tiệc'], correct: 0 },
                     { emoji: '🚁', text: 'Chiếc trực thăng cứu hộ dũng cảm bay xuyên qua cơn bão để giúp đỡ người dân vùng lũ.', prompt: 'Chiếc trực thăng làm nhiệm vụ gì?', options: ['Cứu hộ vùng lũ', 'Chở hàng hóa', 'Đi du lịch'], correct: 0 }
@@ -551,7 +549,7 @@
                 beginner: [
                     { emoji: '🐶', text: 'El perro marrón mueve su cola.', prompt: '¿Qué animal aparece en la imagen?', options: ['El perro', 'El gato', 'El pájaro'], correct: 0 },
                     { emoji: '🍎', text: 'La manzana roja cuelga del árbol.', prompt: '¿Qué fruta es esta?', options: ['La manzana', 'El plátano', 'La uva'], correct: 0 },
-                    { emoji: '🚗', text: 'El coche rojo viaja por la calle.', prompt: '¿Qué vehículo es este?', options: ['El coche', 'La bicicleta', 'El avión'], correct: 0 },
+                    { emoji: '🚗', text: 'El coche rojo viaja por la calle.', prompt: '¿Qué vehículo es este?', options: ['El coche', 'La bicicleta', 'El tren'], correct: 0 },
                     { emoji: '🏠', text: 'La pequeña casa amarilla con jardín.', prompt: '¿Qué lugar es este?', options: ['La casa', 'El hospital', 'La escuela'], correct: 0 },
                     { emoji: '🐟', text: 'El pequeño pez nada feliz en el agua.', prompt: '¿Qué animal es este?', options: ['El pez', 'El pájaro', 'El perro'], correct: 0 },
                     { emoji: '☀️', text: 'El sol brilla con mucha luz.', prompt: '¿Qué es esto?', options: ['El sol', 'La luna', 'La nube'], correct: 0 },
@@ -560,7 +558,7 @@
                 ],
                 intermediate: [
                     { emoji: '🌅', text: 'El sol brillante ilumina la mañana.', prompt: '¿En qué momento del día ocurre?', options: ['Amanecer', 'Noche oscura', 'Mediodía'], correct: 0 },
-                    { emoji: '🚲', text: 'Sofía monta su bicicleta azul por el camino.', prompt: '¿Qué hace Sofía?', options: ['Monta su bicicleta', 'Juega al fútbol', 'Pinta cuadros'], correct: 0 },
+                    { emoji: '🚲', text: 'Sofía monta su bicicleta azul por el camino.', prompt: '¿Qué hace Sofía?', options: ['Monta su bicicleta', 'Corre rápido', 'Nada en el río'], correct: 0 },
                     { emoji: '🍜', text: 'Un plato de sopa caliente y deliciosa en la mesa.', prompt: '¿Qué platillo se describe?', options: ['Una sopa caliente', 'Un sándwich', 'Arroz blanco'], correct: 0 },
                     { emoji: '🌧️', text: 'Llueve mucho y las gotas caen sobre el techo.', prompt: '¿Cómo está el clima?', options: ['Lluvioso', 'Soleado', 'Nevado'], correct: 0 },
                     { emoji: '🏕️', text: 'Una pequeña tienda de campaña en medio del bosque.', prompt: '¿Dónde está la tienda?', options: ['En el bosque', 'En la playa', 'En la ciudad'], correct: 0 },
@@ -679,11 +677,8 @@
             if(document.getElementById('opt-south')) document.getElementById('opt-south').innerText = t.accentSouth;
 
             setTxt('ui-edit-title', t.editTitle); setTxt('ui-edit-name-lbl', t.editName); setTxt('ui-edit-emoji-lbl', t.editEmoji); setTxt('ui-edit-lang-lbl', t.editLang); setTxt('ui-edit-reset', t.editReset); setTxt('ui-edit-delete', t.editDel); setTxt('ui-edit-cancel', t.editCancel); setTxt('ui-edit-save', t.editSave);
-            
             setTxt('ui-edit-level-lbl', t.editLevel);
-            setTxt('opt-beg', t.lvlBeg);
-            setTxt('opt-int', t.lvlInt);
-            setTxt('opt-adv', t.lvlAdv);
+            setTxt('opt-beg', t.lvlBeg); setTxt('opt-int', t.lvlInt); setTxt('opt-adv', t.lvlAdv);
 
             const timerBtn = document.getElementById('timer-toggle-btn');
             if(timerBtn) {
@@ -830,10 +825,16 @@
 
         window.saveProfileData = function() {
             const id = document.getElementById('prof-edit-id').value;
-            const name = document.getElementById('prof-name').value;
-            const emoji = document.getElementById('prof-emoji').value;
-            const lang = document.getElementById('prof-lang').value;
-            const level = document.getElementById('prof-level').value;
+            const nameEl = document.getElementById('prof-name');
+            const emojiEl = document.getElementById('prof-emoji');
+            const langEl = document.getElementById('prof-lang');
+            const levelEl = document.getElementById('prof-level');
+
+            const name = nameEl ? nameEl.value : 'Bé';
+            const emoji = emojiEl ? emojiEl.value : '🐯';
+            const lang = langEl ? langEl.value : 'vi';
+            const level = levelEl ? levelEl.value : 'beginner';
+
             profiles = profiles.map(p => p.id === id ? { ...p, name, emoji, lang, level } : p);
             window.saveProfiles(); window.closeProfileModal(); window.loadProfilesUI();
             if (currentProfile && currentProfile.id === id) {
@@ -1139,7 +1140,6 @@
         };
         window.exitMemoryGame = function() { window.showScreen('dashboard'); };
 
-        // Hội Thoại (Conversation Mode)
         window.startConversationMode = function() {
             activeConvo = CONVERSATIONS[Math.floor(Math.random() * CONVERSATIONS.length)][currentLang];
             convoLineIdx = 0;
@@ -1168,7 +1168,6 @@
         window.nextConvoLine = function() { convoLineIdx++; window.renderConvoLine(); };
         window.exitConversationMode = function() { window.showScreen('dashboard'); };
 
-        // Slicer Game
         let slicerRunning = false;
         
         window._slicerHandleMove = function(e) {
@@ -1213,7 +1212,7 @@
                 window._slicerTrail.forEach(t => t.age++); window._slicerTrail = window._slicerTrail.filter(t => t.age < 12);
 
                 if (Math.random() < 0.035) {
-                    const pool = TOPICS[0].levels[1].concat(TOPICS[1].levels[1]); // Mix animals/food
+                    const pool = TOPICS[0].levels[1].concat(TOPICS[1].levels[1]);
                     const sampleWord = pool[Math.floor(Math.random() * pool.length)];
                     let emoji = '🍉'; 
                     if(sampleWord.vi==='Chó') emoji='🐶'; else if(sampleWord.vi==='Mèo') emoji='🐱'; else if(sampleWord.vi==='Táo') emoji='🍎'; else if(sampleWord.vi==='Chuối') emoji='🍌';
