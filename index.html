@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Vui Học">
@@ -15,13 +15,18 @@
     
     <style>
         :root { --bg-light: #fdfaf6; }
-        body {
+        
+        /* Modern iOS viewport handling (dvh) */
+        body, #app-body {
+            min-height: 100vh;
+            min-height: 100dvh !important;
             font-family: 'Nunito', system-ui, sans-serif !important;
             background-color: var(--bg-light); color: #1f2937;
             overflow-x: hidden; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
             user-select: none; -webkit-user-select: none;
             transition: background-color 0.4s ease, color 0.4s ease;
         }
+        
         h1, h2, h3, .font-game { font-family: 'Nunito', sans-serif !important; font-weight: 900; letter-spacing: 0.5px; }
 
         .cultural-bg {
@@ -64,7 +69,7 @@
         canvas { display: block; width: 100%; height: 100%; touch-action: none; }
     </style>
 </head>
-<body id="app-body" class="min-h-screen flex flex-col items-center p-3 sm:p-6 cultural-bg">
+<body id="app-body" class="flex flex-col items-center p-3 sm:p-6 cultural-bg">
     <!-- Stream Confetti & Base Modals -->
     <div id="confetti-container" style="position:fixed; inset:0; pointer-events:none; z-index:9999;"></div>
 
@@ -105,6 +110,15 @@
     <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[150] flex items-center justify-center p-4">
         <div class="bg-white rounded-[2rem] p-6 max-w-sm w-full border-4 border-amber-400 shadow-2xl text-left pop-in">
             <h3 class="text-2xl font-game mb-6 text-gray-800 border-b-2 pb-2" id="ui-set-title">⚙️ Cài Đặt (Settings)</h3>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2" id="ui-set-accent-lbl">Giọng đọc Tiếng Việt (Accent):</label>
+                <select id="vi-accent-select" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold" onchange="window.setViAccent(this.value)">
+                    <option value="northern" id="opt-north">Giọng Miền Bắc (Northern)</option>
+                    <option value="southern" id="opt-south">Giọng Miền Nam (Southern)</option>
+                </select>
+            </div>
+
             <div class="mb-4 flex justify-between items-center bg-gray-100 p-3 rounded-xl border-2 border-gray-300">
                 <label class="text-gray-700 font-bold" id="ui-set-dark-lbl">Ban đêm (Dark Mode):</label>
                 <input type="checkbox" id="dark-mode-toggle" class="w-6 h-6 cursor-pointer" onclick="window.toggleDarkMode(this.checked)">
@@ -350,12 +364,13 @@
     <!-- 🌟 JAVASCRIPT ENGINE 🌟 -->
     <script>
         // --- 1. GLOBAL STATE & INITIALIZATION ---
-        let profiles = JSON.parse(localStorage.getItem('vuihoc_v60_data') || 'null') || [
+        let profiles = JSON.parse(localStorage.getItem('vuihoc_v62_data') || 'null') || [
             { id: '1', name: 'Bé An', emoji: '👦', lang: 'vi', level: 'beginner', stars: 10, progress: {} },
             { id: '2', name: 'Sofia', emoji: '👧', lang: 'es', level: 'intermediate', stars: 25, progress: {} }
         ];
         let currentProfile = null;
         let currentLang = 'vi';
+        let viAccent = localStorage.getItem('vuihoc_vi_accent') || 'northern';
         
         let turnTimerActive = false;
         let turnTotalSeconds = 120;
@@ -368,18 +383,29 @@
         let activeConvo = null;
         let convoLineIdx = 0;
 
+        // --- BULLETPROOF iOS 18 AUDIO UNLOCKER ---
         let audioUnlocked = false;
         const unlockAudio = () => {
-            if (!audioUnlocked && 'speechSynthesis' in window) {
-                const utt = new SpeechSynthesisUtterance('');
-                utt.volume = 0; window.speechSynthesis.speak(utt);
+            if (!audioUnlocked) {
+                // Unlock Web Speech API safely
+                if ('speechSynthesis' in window) {
+                    const utt = new SpeechSynthesisUtterance('');
+                    utt.volume = 0; 
+                    window.speechSynthesis.speak(utt);
+                }
+                // Unlock HTML5 Audio API via silent base64 MP3
+                try {
+                    const silentAudio = new Audio('data:audio/mp3;base64,//MkxAAQAAAAgAFAAAABgAAAAAA//MkxAAQAAAAgAFAAAABgAAAAAA');
+                    silentAudio.play().catch(() => {});
+                } catch(e){}
                 audioUnlocked = true;
             }
         };
-        document.body.addEventListener('touchstart', unlockAudio, { once: true });
-        document.body.addEventListener('click', unlockAudio, { once: true });
+        // Use capture phase on document to ensure it triggers before event propagation stops
+        document.addEventListener('touchstart', unlockAudio, { once: true, capture: true });
+        document.addEventListener('click', unlockAudio, { once: true, capture: true });
 
-        window.saveProfiles = function() { localStorage.setItem('vuihoc_v60_data', JSON.stringify(profiles)); }
+        window.saveProfiles = function() { localStorage.setItem('vuihoc_v62_data', JSON.stringify(profiles)); }
 
         // --- 2. MASSIVE CURRICULUM DATASETS ---
         const ALPHABET_VI = [ { char: 'A', word: 'Áo' }, { char: 'Ă', word: 'Ăn' }, { char: 'Â', word: 'Ấm' }, { char: 'B', word: 'Bóng' }, { char: 'C', word: 'Cá' }, { char: 'D', word: 'Dép' }, { char: 'Đ', word: 'Đèn' }, { char: 'E', word: 'Em' }, { char: 'Ê', word: 'Êm' }, { char: 'G', word: 'Gà' }, { char: 'H', word: 'Hoa' }, { char: 'I', word: 'In' }, { char: 'K', word: 'Kẹo' }, { char: 'L', word: 'Lá' }, { char: 'M', word: 'Mèo' }, { char: 'N', word: 'Nhà' }, { char: 'O', word: 'Ong' }, { char: 'Ô', word: 'Ô tô' }, { char: 'Ơ', word: 'Ớt' }, { char: 'P', word: 'Phở' }, { char: 'Q', word: 'Quả' }, { char: 'R', word: 'Rổ' }, { char: 'S', word: 'Sách' }, { char: 'T', word: 'Tay' }, { char: 'U', word: 'Ủ' }, { char: 'Ư', word: 'Ức' }, { char: 'V', word: 'Vịt' }, { char: 'X', word: 'Xe' }, { char: 'Y', word: 'Yếm' } ];
@@ -423,7 +449,7 @@
                 }
             },
             { 
-                id: 'numbers', vi: 'Số & Toán', es: 'Números', emoji: '🔢',
+                id: 'numbers', vi: 'Số & Toán Học', es: 'Números', emoji: '🔢',
                 levels: {
                     1: [{ vi: '1 - Một', es: '1 - Uno', img: 'https://placehold.co/600x400/f59e0b/FFF?text=1' }, { vi: '2 - Hai', es: '2 - Dos', img: 'https://placehold.co/600x400/f59e0b/FFF?text=2' }, { vi: '3 - Ba', es: '3 - Tres', img: 'https://placehold.co/600x400/f59e0b/FFF?text=3' }, { vi: '4 - Bốn', es: '4 - Cuatro', img: 'https://placehold.co/600x400/f59e0b/FFF?text=4' }],
                     2: [{ vi: '5 - Năm', es: '5 - Cinco', img: 'https://placehold.co/600x400/f59e0b/FFF?text=5' }, { vi: '6 - Sáu', es: '6 - Seis', img: 'https://placehold.co/600x400/f59e0b/FFF?text=6' }, { vi: '7 - Bảy', es: '7 - Siete', img: 'https://placehold.co/600x400/f59e0b/FFF?text=7' }, { vi: '8 - Tám', es: '8 - Ocho', img: 'https://placehold.co/600x400/f59e0b/FFF?text=8' }],
@@ -459,7 +485,7 @@
                 }
             },
             { 
-                id: 'vehicles', vi: 'Xe Cộ', es: 'Vehículos', emoji: '🚗',
+                id: 'vehicles', vi: 'Phương Tiện', es: 'Vehículos', emoji: '🚗',
                 levels: {
                     1: [{ vi: 'Xe ô tô', es: 'Coche', img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80' }, { vi: 'Xe đạp', es: 'Bicicleta', img: 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=600&q=80' }],
                     2: [{ vi: 'Xe buýt', es: 'Autobús', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' }, { vi: 'Xe máy', es: 'Moto', img: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=600&q=80' }],
@@ -587,6 +613,7 @@
                 memTitle: '🧠 Lật Hình Tìm Cặp', memSub: 'Chạm vào thẻ để lật, nghe phát âm và tìm cặp đúng!', alertTimeUp: '⏰ Hết giờ lượt chơi! Đổi bạn khác nào!',
                 subTitleMain: 'Thế Giới Ngôn Ngữ Kỳ Diệu',
                 setEdit: '✏️ Chỉnh Sửa Hồ Sơ Hiện Tại', setReset: '🔄 Đặt Lại Điểm Toàn Bộ', setDel: '🗑️ Xóa Hồ Sơ Này', setClose: 'Đóng (Close)', setDark: 'Ban đêm (Dark Mode):', setTitle: '⚙️ Cài Đặt (Settings)',
+                setAccent: 'Giọng đọc Tiếng Việt (Accent):', accentNorth: 'Giọng Miền Bắc (Northern)', accentSouth: 'Giọng Miền Nam (Southern)',
                 editTitle: '✏️ Chỉnh Sửa Hồ Sơ', editName: 'Tên (Name):', editEmoji: 'Biểu tượng (Emoji):', editLang: 'Ngôn ngữ học:', editReset: '🔄 Đặt Lại Điểm Hồ Sơ Này', editDel: '🗑️ Xóa Hồ Sơ Này', editCancel: 'Hủy', editSave: 'Lưu'
             },
             es: {
@@ -597,6 +624,7 @@
                 memTitle: '🧠 Memoria de Parejas', memSub: '¡Toca las tarjetas para voltearlas y encontrar parejas!', alertTimeUp: '⏰ ¡Se acabó el tiempo! ¡Cambien de jugador!',
                 subTitleMain: 'El Mundo Mágico de los Idiomas',
                 setEdit: '✏️ Editar Perfil Actual', setReset: '🔄 Restablecer Todo', setDel: '🗑️ Eliminar Este Perfil', setClose: 'Cerrar', setDark: 'Modo Oscuro:', setTitle: '⚙️ Ajustes',
+                setAccent: 'Acento Vietnamita:', accentNorth: 'Norte (Northern)', accentSouth: 'Sur (Southern)',
                 editTitle: '✏️ Editar Perfil', editName: 'Nombre:', editEmoji: 'Emoji:', editLang: 'Idioma de aprendizaje:', editReset: '🔄 Restablecer Puntaje', editDel: '🗑️ Eliminar Perfil', editCancel: 'Cancelar', editSave: 'Guardar'
             }
         };
@@ -636,7 +664,10 @@
 
             // Settings Modal
             setTxt('ui-set-title', t.setTitle); setTxt('ui-set-dark-lbl', t.setDark); setTxt('ui-set-edit', t.setEdit); setTxt('ui-set-reset', t.setReset); setTxt('ui-set-del', t.setDel); setTxt('ui-set-close', t.setClose);
-            
+            setTxt('ui-set-accent-lbl', t.setAccent);
+            if(document.getElementById('opt-north')) document.getElementById('opt-north').innerText = t.accentNorth;
+            if(document.getElementById('opt-south')) document.getElementById('opt-south').innerText = t.accentSouth;
+
             // Edit Profile Modal
             setTxt('ui-edit-title', t.editTitle); setTxt('ui-edit-name-lbl', t.editName); setTxt('ui-edit-emoji-lbl', t.editEmoji); setTxt('ui-edit-lang-lbl', t.editLang); setTxt('ui-edit-reset', t.editReset); setTxt('ui-edit-delete', t.editDel); setTxt('ui-edit-cancel', t.editCancel); setTxt('ui-edit-save', t.editSave);
 
@@ -645,6 +676,11 @@
                 if(turnTimerActive) { timerBtn.innerText = currentLang === 'es' ? 'Pausar' : 'Tạm Dừng'; } 
                 else { timerBtn.innerText = currentLang === 'es' ? 'Iniciar ⏱️' : 'Bắt Đầu ⏱️'; }
             }
+        };
+
+        window.setViAccent = function(val) {
+            viAccent = val;
+            localStorage.setItem('vuihoc_vi_accent', val);
         };
 
         window.setTimerMinutes = function(mins) {
@@ -688,21 +724,56 @@
             alert(msg);
         };
 
-        // Native Only Audio Engine (to bypass iOS block)
+        // Custom Southern Voice Interceptor Engine
         window.playAudio = function(text, forceLang) {
             const langCode = forceLang || (currentLang === 'es' ? 'es-ES' : 'vi-VN');
+            const shortLang = currentLang === 'es' ? 'es' : 'vi';
+            
+            // If Vietnamese and Southern is requested, bypass Google Translate (which forces Northern)
+            if (shortLang === 'vi' && viAccent === 'southern') {
+                window.fallbackAudio(text, langCode, true);
+                return;
+            }
+
+            try {
+                // Primary: Try fetching from Google Cloud TTS for native default voice
+                const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${shortLang}&q=${encodeURIComponent(text)}`;
+                const audio = new Audio(url);
+                audio.play().catch(e => {
+                    window.fallbackAudio(text, langCode, false);
+                });
+            } catch(e) {
+                window.fallbackAudio(text, langCode, false);
+            }
+        };
+
+        window.fallbackAudio = function(text, langCode, forceSouthern = false) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const utt = new SpeechSynthesisUtterance(text);
-                
-                // Force native voices to load immediately to avoid generic robot on Windows/Android
                 const voices = window.speechSynthesis.getVoices();
-                const bestVoice = voices.find(v => v.lang === langCode || v.lang.startsWith(langCode.split('-')[0]));
-                if(bestVoice) {
-                    utt.voice = bestVoice;
+                
+                let bestVoice = voices.find(v => v.lang === langCode || v.lang.startsWith(langCode.split('-')[0]));
+                
+                // Advanced Device Scraper for Southern Voice
+                if (forceSouthern && langCode.startsWith('vi')) {
+                    const southernVoice = voices.find(v => 
+                        v.lang.startsWith('vi') && (
+                            v.name.toLowerCase().includes('hoaimy') || // Edge/Windows Southern
+                            v.name.toLowerCase().includes('southern') || // Generic tag
+                            v.name.toLowerCase().includes('-vic') || // Android Network Female Southern
+                            v.name.toLowerCase().includes('-vid')    // Android Network Male Southern
+                        )
+                    );
+                    if (southernVoice) bestVoice = southernVoice;
                 }
+
+                if (bestVoice) utt.voice = bestVoice;
                 
                 utt.lang = langCode;
+                utt.volume = 1;
+                utt.rate = 1;
+                utt.pitch = 1;
                 window.speechSynthesis.speak(utt);
             }
         };
@@ -816,6 +887,7 @@
                 if(editBtn) editBtn.style.display = 'block';
                 if(delBtn) delBtn.style.display = 'block';
             }
+            if(document.getElementById('vi-accent-select')) document.getElementById('vi-accent-select').value = viAccent;
             document.getElementById('settings-modal').classList.remove('hidden'); 
         };
         
@@ -849,14 +921,10 @@
             currentLang = l;
             document.getElementById('lang-vi').className = `px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${l==='vi'?'bg-amber-500 text-white shadow-sm':'text-gray-700'}`;
             document.getElementById('lang-es').className = `px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${l==='es'?'bg-amber-500 text-white shadow-sm':'text-gray-700'}`;
-            if (currentProfile) {
-                currentProfile.lang = l;
-                window.saveProfiles();
-            }
             window.updateUILanguage(); window.renderDashboardMap();
         };
 
-        // NEW: Progress Report Feature
+        // Progress Report Feature
         window.openProgressReport = function() {
             const container = document.getElementById('progress-report-content');
             if(!container || !currentProfile) return;
@@ -1081,8 +1149,8 @@
                         } else {
                             const prev = firstCardEl; firstCardEl = null; firstCardObj = null;
                             setTimeout(() => {
-                                prev.innerHTML = '❓'; prev.className = "btn-3d h-28 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center shadow-md overflow-hidden";
-                                card.innerHTML = '❓'; card.className = "btn-3d h-28 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center shadow-md overflow-hidden";
+                                prev.innerHTML = '❓'; prev.className = "btn-3d h-28 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center overflow-hidden";
+                                card.innerHTML = '❓'; card.className = "btn-3d h-28 bg-white rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 text-purple-900 p-1 text-center overflow-hidden";
                             }, 800);
                         }
                     }
@@ -1123,6 +1191,23 @@
 
         // Slicer Game
         let slicerRunning = false;
+        
+        window._slicerHandleMove = function(e) {
+            e.preventDefault(); // iOS 18 REQUIRES this listener to be { passive: false }
+            const x = e.touches ? e.touches[0].clientX : e.clientX;
+            const y = e.touches ? e.touches[0].clientY : e.clientY;
+            window._slicerTrail.push({ x, y, age: 0 });
+            window._slicerItems.forEach(it => {
+                if (Math.hypot(x - it.x, y - it.y) < 75) {
+                    window.playAudio(it.word); 
+                    window.triggerConfetti(); 
+                    it.y = -200; 
+                    window._slicerScore++; 
+                    document.getElementById('slicer-score').innerText = window._slicerScore;
+                }
+            });
+        };
+
         window.startSlicerGame = function() {
             window.showScreen('slicer');
             const canvas = document.getElementById('slicer-canvas');
@@ -1130,55 +1215,70 @@
             const ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             slicerRunning = true;
-            let trail = [];
-            let items = [];
-            let score = 0; document.getElementById('slicer-score').innerText = '0';
+            window._slicerTrail = [];
+            window._slicerItems = [];
+            window._slicerScore = 0; document.getElementById('slicer-score').innerText = '0';
 
-            const handleMove = (e) => {
-                e.preventDefault();
-                const x = e.touches ? e.touches[0].clientX : e.clientX;
-                const y = e.touches ? e.touches[0].clientY : e.clientY;
-                trail.push({ x, y, age: 0 });
-                items.forEach(it => {
-                    if (Math.hypot(x - it.x, y - it.y) < 75) {
-                        window.playAudio(it.word); window.triggerConfetti(); it.y = -200; score++; document.getElementById('slicer-score').innerText = score;
-                    }
-                });
-            };
-            canvas.onpointermove = handleMove; canvas.ontouchmove = handleMove;
+            // Explicitly bind with passive: false for iOS Safari strict scrolling rules
+            canvas.addEventListener('touchmove', window._slicerHandleMove, { passive: false });
+            canvas.addEventListener('mousemove', window._slicerHandleMove, { passive: false });
 
             const loop = () => {
                 if(!slicerRunning) return;
                 ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                if (trail.length > 0) {
-                    ctx.beginPath(); ctx.moveTo(trail[0].x, trail[0].y);
-                    for (let i = 1; i < trail.length; i++) ctx.lineTo(trail[i].x, trail[i].y);
+                if (window._slicerTrail.length > 0) {
+                    ctx.beginPath(); ctx.moveTo(window._slicerTrail[0].x, window._slicerTrail[0].y);
+                    for (let i = 1; i < window._slicerTrail.length; i++) ctx.lineTo(window._slicerTrail[i].x, window._slicerTrail[i].y);
                     ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 8; ctx.lineCap = 'round';
                     ctx.shadowBlur = 15; ctx.shadowColor = '#0ea5e9'; ctx.stroke(); ctx.shadowBlur = 0;
                 }
-                trail.forEach(t => t.age++); trail = trail.filter(t => t.age < 12);
+                window._slicerTrail.forEach(t => t.age++); window._slicerTrail = window._slicerTrail.filter(t => t.age < 12);
 
                 if (Math.random() < 0.035) {
                     const pool = TOPICS[0].levels[1].concat(TOPICS[1].levels[1]); // Mix animals/food
                     const sampleWord = pool[Math.floor(Math.random() * pool.length)];
-                    let emoji = '🍉'; // Placeholder if no emoji defined directly in dataset
+                    let emoji = '🍉'; 
                     if(sampleWord.vi==='Chó') emoji='🐶'; else if(sampleWord.vi==='Mèo') emoji='🐱'; else if(sampleWord.vi==='Táo') emoji='🍎'; else if(sampleWord.vi==='Chuối') emoji='🍌';
-                    items.push({ emoji: emoji, word: sampleWord[currentLang], x: Math.random() * (canvas.width - 100) + 50, y: canvas.height + 50, vx: (Math.random() - 0.5) * 6, vy: -15 });
+                    window._slicerItems.push({ emoji: emoji, word: sampleWord[currentLang], x: Math.random() * (canvas.width - 100) + 50, y: canvas.height + 50, vx: (Math.random() - 0.5) * 6, vy: -15 });
                 }
 
-                items.forEach((it, idx) => {
+                window._slicerItems.forEach((it, idx) => {
                     it.x += it.vx; it.y += it.vy; it.vy += 0.35;
                     ctx.font = "70px sans-serif"; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                     ctx.fillText(it.emoji, it.x, it.y);
-                    if (it.y > canvas.height + 150) items.splice(idx, 1);
+                    if (it.y > canvas.height + 150) window._slicerItems.splice(idx, 1);
                 });
                 requestAnimationFrame(loop);
             };
             requestAnimationFrame(loop);
         };
-        window.exitSlicer = function() { slicerRunning = false; window.showScreen('dashboard'); };
+        
+        window.exitSlicer = function() { 
+            slicerRunning = false; 
+            const canvas = document.getElementById('slicer-canvas');
+            if(canvas) {
+                canvas.removeEventListener('touchmove', window._slicerHandleMove);
+                canvas.removeEventListener('mousemove', window._slicerHandleMove);
+            }
+            window.showScreen('dashboard'); 
+        };
 
-        // Singalong Engine
+        // 🌟 SINGALONG & KARAOKE ENGINE 🌟
+        const SONGS = {
+            vi: [
+                { title: "Một Con Vịt (Video)", emoji: "🦆", videoId: "bADpiLWn50A", type: "video" },
+                { title: "Một Con Vịt (Karaoke)", emoji: "🎤", videoId: "YWsNJV-X68s", type: "karaoke" },
+                { title: "Kìa Con Bướm Vàng", emoji: "🦋", videoId: "cTkWo1S8fKw", type: "video" }
+            ],
+            es: [
+                { title: "La Vaca Lola (Video)", emoji: "🐮", videoId: "eNLjdPI9zdE", type: "video" },
+                { title: "La Vaca Lola (Karaoke)", emoji: "🎤", videoId: "q000pdnlVAY", type: "karaoke" },
+                { title: "Estrellita Dónde Estás", emoji: "⭐", videoId: "rPGCmuWNVIU", type: "video" }
+            ]
+        };
+        let currentSongIdx = 0;
+        let isKaraokeMode = false;
+
         window.startSingalong = function() {
             currentSongIdx = 0;
             isKaraokeMode = false;
@@ -1188,13 +1288,9 @@
 
         window.loadSong = function() {
             const songList = SONGS[currentLang];
-            // Filter list based on current mode
             const filteredSongs = songList.filter(s => isKaraokeMode ? s.type === 'karaoke' : s.type === 'video');
-            
-            // Safety check if no songs match mode
             if(filteredSongs.length === 0) return;
             
-            // Adjust index to stay within filtered bounds
             const safeIdx = currentSongIdx % filteredSongs.length;
             const song = filteredSongs[safeIdx];
             
@@ -1211,7 +1307,7 @@
 
         window.toggleKaraokeMode = function() {
             isKaraokeMode = !isKaraokeMode;
-            currentSongIdx = 0; // Reset index when switching modes
+            currentSongIdx = 0;
             window.loadSong();
         };
 
@@ -1222,7 +1318,7 @@
 
         window.exitSingalong = function() {
             const iframe = document.getElementById('sing-video-frame');
-            iframe.src = ""; // Stop video from playing in background
+            iframe.src = ""; 
             window.showScreen('dashboard');
         };
 
