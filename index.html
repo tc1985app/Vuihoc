@@ -74,18 +74,18 @@
             <h3 class="text-2xl font-game mb-6 text-gray-800 border-b-2 pb-2" id="ui-edit-title">✏️ Chỉnh Sửa Hồ Sơ</h3>
             <input type="hidden" id="prof-edit-id" value="">
             <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2" id="ui-edit-name">Tên (Name):</label>
+                <label class="block text-gray-700 font-bold mb-2" id="ui-edit-name-lbl">Tên (Name):</label>
                 <input type="text" id="prof-name" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold" placeholder="VD: An, Sofia...">
             </div>
             <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2" id="ui-edit-emoji">Biểu tượng (Emoji):</label>
+                <label class="block text-gray-700 font-bold mb-2" id="ui-edit-emoji-lbl">Biểu tượng (Emoji):</label>
                 <input type="text" id="prof-emoji" maxlength="2" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold text-2xl text-center" placeholder="🐯">
             </div>
             <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2" id="ui-edit-lang">Ngôn ngữ học:</label>
+                <label class="block text-gray-700 font-bold mb-2" id="ui-edit-lang-lbl">Ngôn ngữ học:</label>
                 <select id="prof-lang" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold">
-                    <option value="vi">🇻🇳 Tiếng Việt</option>
-                    <option value="es">🇪🇸 Español</option>
+                    <option value="vi" id="opt-vi">🇻🇳 Tiếng Việt</option>
+                    <option value="es" id="opt-es">🇪🇸 Español</option>
                 </select>
             </div>
             <div class="mb-4">
@@ -106,7 +106,7 @@
         <div class="bg-white rounded-[2rem] p-6 max-w-sm w-full border-4 border-amber-400 shadow-2xl text-left pop-in">
             <h3 class="text-2xl font-game mb-6 text-gray-800 border-b-2 pb-2" id="ui-set-title">⚙️ Cài Đặt (Settings)</h3>
             <div class="mb-4 flex justify-between items-center bg-gray-100 p-3 rounded-xl border-2 border-gray-300">
-                <label class="text-gray-700 font-bold" id="ui-set-dark">Ban đêm (Dark Mode):</label>
+                <label class="text-gray-700 font-bold" id="ui-set-dark-lbl">Ban đêm (Dark Mode):</label>
                 <input type="checkbox" id="dark-mode-toggle" class="w-6 h-6 cursor-pointer" onclick="window.toggleDarkMode(this.checked)">
             </div>
             <div class="mb-3">
@@ -155,6 +155,9 @@
                 <button type="button" onclick="window.setGlobalLang('vi')" id="g-lang-vi" class="btn-3d px-4 py-2 bg-amber-500 text-white font-black rounded-2xl shadow-md border-2 border-amber-600">VI</button>
                 <button type="button" onclick="window.setGlobalLang('es')" id="g-lang-es" class="btn-3d px-4 py-2 bg-white text-gray-700 font-black rounded-2xl shadow-sm border border-gray-300">ES</button>
             </div>
+            <div class="absolute top-0 left-0">
+                <button type="button" onclick="window.openSettings()" class="btn-3d px-4 py-2 bg-white text-gray-700 font-bold rounded-2xl border-2 border-gray-300 text-sm shadow-sm">⚙️</button>
+            </div>
             <div class="text-7xl mb-4 floating drop-shadow-lg mt-8">🪷</div>
             <h1 class="text-5xl sm:text-7xl font-game text-white mb-2 drop-shadow-xl" style="text-shadow: 0 4px 0 #d97706;" id="home-title">Vui Học</h1>
             <p id="sub-title-main" class="text-base sm:text-xl text-blue-900 font-black mb-8 bg-white/60 backdrop-blur-md px-6 py-2 rounded-full uppercase tracking-wider border-2 border-white">Thế Giới Ngôn Ngữ Kỳ Diệu</p>
@@ -165,7 +168,7 @@
 
     <!-- 🌟 SCREEN 2: DASHBOARD 🌟 -->
     <div id="screen-dashboard" class="screen-container screen-hidden flex-1 w-full max-w-4xl flex-col items-center pb-24 mt-2">
-        <div class="w-full flex justify-between items-center p-4 bg-white/95 backdrop-blur-md rounded-3xl shadow-lg border-2 border-amber-200 mb-6">
+        <div class="w-full flex justify-between items-center p-4 bg-white/90 backdrop-blur-md rounded-3xl shadow-lg border-2 border-amber-200 mb-6">
             <button type="button" onclick="window.showScreen('profiles')" id="dash-btn-switch" class="btn-3d px-4 py-2 bg-amber-100 text-amber-900 font-extrabold rounded-2xl text-sm">⬅️ Đổi Hồ Sơ</button>
             
             <div class="flex items-center gap-3">
@@ -181,12 +184,12 @@
                     <button type="button" onclick="window.toggleLanguage('vi')" id="lang-vi" class="px-3 py-1.5 rounded-xl text-sm font-black bg-amber-500 text-white shadow-sm">VI</button>
                     <button type="button" onclick="window.toggleLanguage('es')" id="lang-es" class="px-3 py-1.5 rounded-xl text-sm font-black text-gray-700">ES</button>
                 </div>
-                <button type="button" onclick="window.openSettings()" class="btn-3d p-2.5 bg-amber-100 hover:bg-amber-200 rounded-2xl text-sm shadow-sm text-gray-800 border border-amber-200">⚙️</button>
+                <button type="button" onclick="window.openSettings()" class="btn-3d p-2.5 bg-amber-100 rounded-2xl text-sm shadow-sm text-gray-800 border border-amber-200">⚙️</button>
             </div>
         </div>
 
         <!-- Turn Timer Bar -->
-        <div class="w-full bg-white/95 backdrop-blur-md p-4 rounded-3xl shadow-md border-2 border-amber-200 mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div class="w-full bg-white/90 backdrop-blur-md p-4 rounded-3xl shadow-md border-2 border-amber-200 mb-6 flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-2">
                 <span class="text-2xl shake">⏳</span>
                 <div>
@@ -205,28 +208,28 @@
             </div>
         </div>
 
-        <!-- Arcade Buttons -->
+        <!-- Quick Games Bar -->
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 w-full mb-8">
             <button type="button" onclick="window.openAlphabetModal()" class="btn-3d py-4 bg-amber-500 text-white font-black text-sm rounded-3xl flex flex-col items-center shadow-lg">
-                <span class="text-4xl mb-2 floating">🔤</span> <span id="arcade-btn-alpha">Bảng Chữ Cái</span>
+                <span class="text-3xl mb-1 floating">🔤</span> <span id="arcade-btn-alpha">Bảng Chữ Cái</span>
             </button>
             <button type="button" onclick="window.startMemoryGame()" class="btn-3d py-4 bg-purple-600 text-white font-black text-sm rounded-3xl flex flex-col items-center shadow-lg">
-                <span class="text-4xl mb-2 floating">🧠</span> <span id="arcade-btn-memory">Lật Hình Cặp</span>
+                <span class="text-3xl mb-1 floating">🧠</span> <span id="arcade-btn-memory">Lật Hình Cặp</span>
             </button>
             <button type="button" onclick="window.startDescribeGame()" class="btn-3d py-4 bg-teal-600 text-white font-black text-sm rounded-3xl flex flex-col items-center shadow-lg">
-                <span class="text-4xl mb-2 floating">🖼️</span> <span id="arcade-btn-describe">Mô Tả Tranh</span>
+                <span class="text-3xl mb-1 floating">🖼️</span> <span id="arcade-btn-describe">Mô Tả Tranh</span>
             </button>
             <button type="button" onclick="window.startSlicerGame()" class="btn-3d py-4 bg-orange-500 text-white font-black text-sm rounded-3xl flex flex-col items-center shadow-lg">
-                <span class="text-4xl mb-2 floating">🍉</span> <span id="arcade-btn-slicer">Chém Từ HD</span>
+                <span class="text-3xl mb-1 floating">🍉</span> <span id="arcade-btn-slicer">Chém Từ HD</span>
             </button>
             <button type="button" onclick="window.startConversationMode()" class="btn-3d py-4 bg-rose-500 text-white font-black text-sm rounded-3xl flex flex-col items-center sm:col-span-1 col-span-2 shadow-lg">
-                <span class="text-4xl mb-2 floating">💬</span> <span id="arcade-btn-convo">Hội Thoại</span>
+                <span class="text-3xl mb-1 floating">💬</span> <span id="arcade-btn-convo">Hội Thoại</span>
             </button>
         </div>
 
         <!-- Curriculum Roadmap -->
         <div class="w-full space-y-6">
-            <h2 id="curriculum-title" class="text-3xl font-game text-white text-center mb-6 drop-shadow-md" style="text-shadow: 0 3px 0 #1e3a8a;"><span>📚</span> Bản Đồ Học Tập (7 Cấp Độ)</h2>
+            <h2 id="curriculum-title" class="text-3xl font-game text-white text-center mb-6 drop-shadow-md" style="text-shadow: 0 3px 0 #1e3a8a;"><span>📚</span> Bản Đồ Học Tập Thực Tế (7 Cấp Độ)</h2>
             <div id="lessons-map" class="w-full space-y-4"></div>
         </div>
     </div>
@@ -305,15 +308,15 @@
 
     <!-- 🌟 SCREEN 7: FRUIT SLICER 🌟 -->
     <div id="screen-slicer" class="screen-container screen-hidden fixed inset-0 z-[100] flex-col items-center bg-slate-900">
-        <div class="absolute top-6 left-6 z-20"><button type="button" onclick="window.exitSlicer()" id="slice-btn-exit" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-600 font-black">Thoát</button></div>
-        <div class="absolute top-6 right-6 z-20 bg-orange-500 px-6 py-3 rounded-2xl text-white font-black text-xl shadow-lg"><span id="slice-lbl-score">Điểm</span>: <span id="slicer-score">0</span></div>
+        <div class="absolute top-6 left-6 z-20"><button type="button" onclick="window.exitSlicer()" id="slice-btn-exit" class="btn-3d px-5 py-3 bg-white rounded-2xl text-red-600 font-black border-2 border-gray-300">Thoát</button></div>
+        <div class="absolute top-6 right-6 z-20 bg-orange-500 px-6 py-3 rounded-2xl text-white font-black text-xl shadow-lg border-2 border-orange-300"><span id="slice-lbl-score">Điểm</span>: <span id="slicer-score">0</span></div>
         <canvas id="slicer-canvas"></canvas>
     </div>
 
     <!-- 🌟 JAVASCRIPT ENGINE 🌟 -->
     <script>
         // --- 1. GLOBAL STATE & INITIALIZATION ---
-        let profiles = JSON.parse(localStorage.getItem('vuihoc_v38_data') || 'null') || [
+        let profiles = JSON.parse(localStorage.getItem('vuihoc_v40_data') || 'null') || [
             { id: '1', name: 'Bé An', emoji: '👦', lang: 'vi', level: 'beginner', stars: 10, progress: {} },
             { id: '2', name: 'Sofia', emoji: '👧', lang: 'es', level: 'intermediate', stars: 25, progress: {} }
         ];
@@ -333,22 +336,17 @@
 
         // Initialize Audio context on first touch to bypass browser block
         let audioUnlocked = false;
-        document.body.addEventListener('touchstart', () => {
+        const unlockAudio = () => {
             if (!audioUnlocked && 'speechSynthesis' in window) {
                 const utt = new SpeechSynthesisUtterance('');
                 utt.volume = 0; window.speechSynthesis.speak(utt);
                 audioUnlocked = true;
             }
-        }, { once: true });
-        document.body.addEventListener('click', () => {
-            if (!audioUnlocked && 'speechSynthesis' in window) {
-                const utt = new SpeechSynthesisUtterance('');
-                utt.volume = 0; window.speechSynthesis.speak(utt);
-                audioUnlocked = true;
-            }
-        }, { once: true });
+        };
+        document.body.addEventListener('touchstart', unlockAudio, { once: true });
+        document.body.addEventListener('click', unlockAudio, { once: true });
 
-        window.saveProfiles = function() { localStorage.setItem('vuihoc_v38_data', JSON.stringify(profiles)); };
+        window.saveProfiles = function() { localStorage.setItem('vuihoc_v40_data', JSON.stringify(profiles)); }
 
         // --- 2. MASSIVE CURRICULUM DATASETS ---
         const ALPHABET_VI = [ { char: 'A', word: 'Áo' }, { char: 'Ă', word: 'Ăn' }, { char: 'Â', word: 'Ấm' }, { char: 'B', word: 'Bóng' }, { char: 'C', word: 'Cá' }, { char: 'D', word: 'Dép' }, { char: 'Đ', word: 'Đèn' }, { char: 'E', word: 'Em' }, { char: 'Ê', word: 'Êm' }, { char: 'G', word: 'Gà' }, { char: 'H', word: 'Hoa' }, { char: 'I', word: 'In' }, { char: 'K', word: 'Kẹo' }, { char: 'L', word: 'Lá' }, { char: 'M', word: 'Mèo' }, { char: 'N', word: 'Nhà' }, { char: 'O', word: 'Ong' }, { char: 'Ô', word: 'Ô tô' }, { char: 'Ơ', word: 'Ớt' }, { char: 'P', word: 'Phở' }, { char: 'Q', word: 'Quả' }, { char: 'R', word: 'Rổ' }, { char: 'S', word: 'Sách' }, { char: 'T', word: 'Tay' }, { char: 'U', word: 'Ủ' }, { char: 'Ư', word: 'Ức' }, { char: 'V', word: 'Vịt' }, { char: 'X', word: 'Xe' }, { char: 'Y', word: 'Yếm' } ];
@@ -446,15 +444,18 @@
                 beginner: [
                     { emoji: '🐶', text: 'Con chó màu vàng đang vẫy đuôi.', prompt: 'Con vật trong tranh là gì?', options: ['Con chó', 'Con mèo', 'Con chim'], correct: 0 },
                     { emoji: '🍎', text: 'Quả táo đỏ mọng trên cành cây.', prompt: 'Đây là loại quả gì?', options: ['Quả táo', 'Quả chuối', 'Quả cam'], correct: 0 },
-                    { emoji: '🚗', text: 'Chiếc ô tô màu đỏ chạy trên đường.', prompt: 'Phương tiện này là gì?', options: ['Xe ô tô', 'Xe đạp', 'Tàu hỏa'], correct: 0 }
+                    { emoji: '🚗', text: 'Chiếc ô tô màu đỏ chạy trên đường.', prompt: 'Phương tiện này là gì?', options: ['Xe ô tô', 'Xe đạp', 'Tàu hỏa'], correct: 0 },
+                    { emoji: '🏠', text: 'Ngôi nhà nhỏ màu vàng có khu vườn xinh.', prompt: 'Nơi này là gì?', options: ['Ngôi nhà', 'Bệnh viện', 'Trường học'], correct: 0 }
                 ],
                 intermediate: [
                     { emoji: '🌅', text: 'Buổi sáng bình minh trên biển, mặt trời rực rỡ.', prompt: 'Cảnh tượng này diễn ra lúc nào?', options: ['Bình minh', 'Đêm tối', 'Trưa nắng'], correct: 0 },
-                    { emoji: '🚲', text: 'Bé An đạp chiếc xe đạp màu xanh trên đường làng.', prompt: 'Bé An đang làm gì?', options: ['Đạp xe đạp', 'Chạy bộ', 'Đi bơi'], correct: 0 }
+                    { emoji: '🚲', text: 'Bé An đạp chiếc xe đạp màu xanh trên đường làng.', prompt: 'Bé An đang làm gì?', options: ['Đạp xe đạp', 'Chạy bộ', 'Đi bơi'], correct: 0 },
+                    { emoji: '🍜', text: 'Tô phở bò nóng hổi khói nghi ngút đặt trên bàn, kèm theo đĩa rau thơm tươi ngon.', prompt: 'Món ăn được miêu tả là gì?', options: ['Tô phở bò', 'Bún chả', 'Cơm tấm'], correct: 0 }
                 ],
                 advanced: [
                     { emoji: '🏰', text: 'Lâu đài cổ kính nằm sừng sững trên đỉnh đồi cao.', prompt: 'Lâu đài nằm ở đâu?', options: ['Đỉnh đồi cao', 'Dưới biển', 'Trong rừng'], correct: 0 },
-                    { emoji: '🚀', text: 'Tàu vũ trụ khổng lồ phóng vào không gian sâu thẳm.', prompt: 'Tàu bay đi đâu?', options: ['Vào không gian', 'Xuống biển', 'Đến trường'], correct: 0 }
+                    { emoji: '🚀', text: 'Tàu vũ trụ khổng lồ phóng vào không gian sâu thẳm.', prompt: 'Tàu bay đi đâu?', options: ['Vào không gian', 'Xuống biển', 'Đến trường'], correct: 0 },
+                    { emoji: '🌊', text: 'Đại dương xanh thẳm ẩn chứa vô số điều kỳ diệu với những rặng san hô rực rỡ sắc màu và hàng ngàn loài sinh vật biển.', prompt: 'Đại dương ẩn chứa điều gì?', options: ['Rặng san hô rực rỡ', 'Cây cổ thụ', 'Sa mạc cát'], correct: 0 }
                 ]
             },
             es: {
@@ -492,7 +493,9 @@
                 mapTitle: 'Bản Đồ Học Tập Thực Tế', exit: '⬅️ Thoát', next: 'Tiếp Theo ➡️',
                 reportTitle: 'Hoàn Thành Cấp Độ!', newWordsBtn: '🔄 Lặp Lại Cấp Độ', nextLevelBtn: '⬆️ Thử Cấp Tiếp Theo', continueBtn: '🏠 Về Trang Chủ',
                 memTitle: '🧠 Lật Hình Tìm Cặp', memSub: 'Chạm vào thẻ để lật, nghe phát âm và tìm cặp đúng!', alertTimeUp: '⏰ Hết giờ lượt chơi! Đổi bạn khác nào!',
-                subTitleMain: 'Thế Giới Ngôn Ngữ Kỳ Diệu'
+                subTitleMain: 'Thế Giới Ngôn Ngữ Kỳ Diệu',
+                setEdit: '✏️ Chỉnh Sửa Hồ Sơ Hiện Tại', setReset: '🔄 Đặt Lại Điểm Toàn Bộ', setDel: '🗑️ Xóa Hồ Sơ Này', setClose: 'Đóng (Close)', setDark: 'Ban đêm (Dark Mode):', setTitle: '⚙️ Cài Đặt (Settings)',
+                editTitle: '✏️ Chỉnh Sửa Hồ Sơ', editName: 'Tên (Name):', editEmoji: 'Biểu tượng (Emoji):', editLang: 'Ngôn ngữ học:', editReset: '🔄 Đặt Lại Điểm Hồ Sơ Này', editDel: '🗑️ Xóa Hồ Sơ Này', editCancel: 'Hủy', editSave: 'Lưu'
             },
             es: {
                 switchProfile: '⬅️ Cambiar Perfil', timerTitle: 'Temporizador', timerSub: 'Turnos justos para todos',
@@ -500,7 +503,9 @@
                 mapTitle: 'Mapa de Aprendizaje HD', exit: '⬅️ Salir', next: 'Siguiente ➡️',
                 reportTitle: '¡Nivel Completado!', newWordsBtn: '🔄 Repetir este Nivel', nextLevelBtn: '⬆️ Siguiente Nivel', continueBtn: '🏠 Ir al Inicio',
                 memTitle: '🧠 Memoria de Parejas', memSub: '¡Toca las tarjetas para voltearlas y encontrar parejas!', alertTimeUp: '⏰ ¡Se acabó el tiempo! ¡Cambien de jugador!',
-                subTitleMain: 'El Mundo Mágico de los Idiomas'
+                subTitleMain: 'El Mundo Mágico de los Idiomas',
+                setEdit: '✏️ Editar Perfil Actual', setReset: '🔄 Restablecer Todo', setDel: '🗑️ Eliminar Este Perfil', setClose: 'Cerrar', setDark: 'Modo Oscuro:', setTitle: '⚙️ Ajustes',
+                editTitle: '✏️ Editar Perfil', editName: 'Nombre:', editEmoji: 'Emoji:', editLang: 'Idioma de aprendizaje:', editReset: '🔄 Restablecer Puntaje', editDel: '🗑️ Eliminar Perfil', editCancel: 'Cancelar', editSave: 'Guardar'
             }
         };
 
@@ -516,6 +521,8 @@
         window.updateUILanguage = function() {
             const t = UI_TEXT[currentLang];
             const setTxt = (id, txt) => { const el = document.getElementById(id); if (el) el.innerHTML = txt; };
+            
+            // Dashboard
             setTxt('dash-btn-switch', t.switchProfile); setTxt('timer-label', t.timerTitle); setTxt('timer-sub', t.timerSub);
             setTxt('arcade-btn-alpha', t.alphaBtn); setTxt('arcade-btn-memory', t.memoryBtn); setTxt('arcade-btn-describe', t.descBtn); 
             setTxt('arcade-btn-slicer', t.slicerBtn); setTxt('arcade-btn-convo', t.convoBtn);
@@ -524,6 +531,12 @@
             setTxt('report-title', t.reportTitle); setTxt('btn-new-words', t.newWordsBtn); setTxt('btn-next-level', t.nextLevelBtn); setTxt('btn-continue', t.continueBtn);
             setTxt('mem-title', t.memTitle); setTxt('mem-subtitle', t.memSub); setTxt('desc-btn-exit', t.exit); setTxt('mem-btn-exit', t.exit); setTxt('slice-btn-exit', t.exit); setTxt('convo-btn-exit', t.exit); setTxt('convo-btn-next', t.next);
             setTxt('sub-title-main', t.subTitleMain);
+            
+            // Settings Modal
+            setTxt('ui-set-title', t.setTitle); setTxt('ui-set-dark-lbl', t.setDark); setTxt('ui-set-edit', t.setEdit); setTxt('ui-set-reset', t.setReset); setTxt('ui-set-del', t.setDel); setTxt('ui-set-close', t.setClose);
+            
+            // Edit Profile Modal
+            setTxt('ui-edit-title', t.editTitle); setTxt('ui-edit-name-lbl', t.editName); setTxt('ui-edit-emoji-lbl', t.editEmoji); setTxt('ui-edit-lang-lbl', t.editLang); setTxt('ui-edit-reset', t.editReset); setTxt('ui-edit-delete', t.editDel); setTxt('ui-edit-cancel', t.editCancel); setTxt('ui-edit-save', t.editSave);
 
             const timerBtn = document.getElementById('timer-toggle-btn');
             if(timerBtn) {
@@ -548,7 +561,7 @@
             const display = document.getElementById('turn-timer-display');
             if(!turnTimerActive) {
                 turnTimerActive = true;
-                if(btn) { btn.innerText = currentLang==='es'?'Pausar':'Tạm Dừng'; btn.className = "btn-3d px-4 py-2 bg-rose-500 text-white font-black rounded-2xl text-sm shadow-md"; }
+                if(btn) { btn.innerText = currentLang==='es'?'Pausar':'Tạm Dừng'; btn.className = "btn-3d px-4 py-2 bg-rose-500 text-white font-black rounded-2xl text-sm shadow-md border border-rose-600"; }
                 turnTimerInterval = setInterval(() => {
                     if(turnSecondsLeft > 0) {
                         turnSecondsLeft--;
@@ -556,8 +569,8 @@
                     } else {
                         clearInterval(turnTimerInterval);
                         turnTimerActive = false;
-                        if(btn) { btn.innerText = currentLang==='es'?'Iniciar ⏱️':'Bắt Đầu ⏱️'; btn.className = "btn-3d px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md"; }
-                        alert(UI_TEXT[currentLang].alertTimeUp);
+                        if(btn) { btn.innerText = currentLang==='es'?'Iniciar ⏱️':'Bắt Đầu ⏱️'; btn.className = "btn-3d px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md border border-emerald-600"; }
+                        window.showCustomAlert(UI_TEXT[currentLang].alertTimeUp);
                         turnSecondsLeft = turnTotalSeconds;
                         if(display) display.innerText = `${Math.floor(turnSecondsLeft / 60)}:${(turnSecondsLeft % 60).toString().padStart(2,'0')}`;
                     }
@@ -565,11 +578,15 @@
             } else {
                 clearInterval(turnTimerInterval);
                 turnTimerActive = false;
-                if(btn) { btn.innerText = currentLang==='es'?'Continuar':'Tiếp Tục'; btn.className = "btn-3d px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md"; }
+                if(btn) { btn.innerText = currentLang==='es'?'Continuar':'Tiếp Tục'; btn.className = "btn-3d px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md border border-emerald-600"; }
             }
         };
 
-        // Dual-Layer Audio Engine to Guarantee Sound
+        window.showCustomAlert = function(msg) {
+            alert(msg); // fallback to standard alert to block UI thread completely
+        };
+
+        // Dual-Layer Audio Engine
         window.playAudio = function(text, forceLang) {
             const langCode = forceLang || (currentLang === 'es' ? 'es-ES' : 'vi-VN');
             const shortLang = currentLang === 'es' ? 'es' : 'vi';
@@ -636,7 +653,8 @@
         };
 
         window.createProfile = function() {
-            const name = prompt("Tên bé hoặc người dùng mới? (Name):", "Bé " + Math.floor(Math.random()*100));
+            const promptMsg = currentLang === 'es' ? '¿Nombre del niño o nuevo usuario?' : 'Tên bé hoặc người dùng mới? (Name):';
+            const name = prompt(promptMsg, "Bé " + Math.floor(Math.random()*100));
             if (name && name.trim().length > 0) {
                 profiles.push({ id: Date.now().toString(), name, emoji: ['👦','👧','🐯','🐱','🦊','🐼'][Math.floor(Math.random()*6)], lang: currentLang, level: 'beginner', stars: 0, progress: {} });
                 window.saveProfiles(); window.loadProfilesUI();
@@ -650,7 +668,6 @@
             document.getElementById('prof-name').value = p.name;
             document.getElementById('prof-emoji').value = p.emoji;
             document.getElementById('prof-lang').value = p.lang || 'vi';
-            document.getElementById('prof-level').value = p.level || 'beginner';
             document.getElementById('profile-modal').classList.remove('hidden');
         };
 
@@ -661,8 +678,7 @@
             const name = document.getElementById('prof-name').value;
             const emoji = document.getElementById('prof-emoji').value;
             const lang = document.getElementById('prof-lang').value;
-            const level = document.getElementById('prof-level').value;
-            profiles = profiles.map(p => p.id === id ? { ...p, name, emoji, lang, level } : p);
+            profiles = profiles.map(p => p.id === id ? { ...p, name, emoji, lang } : p);
             window.saveProfiles(); window.closeProfileModal(); window.loadProfilesUI();
             if (currentProfile && currentProfile.id === id) {
                 currentProfile = profiles.find(p => p.id === id);
@@ -675,7 +691,8 @@
 
         window.deleteCurrentProfile = function() {
             const id = document.getElementById('prof-edit-id').value;
-            if (confirm("Xóa vĩnh viễn hồ sơ này? (Delete Profile permanently?)")) {
+            const confirmMsg = currentLang === 'es' ? '¿Eliminar este perfil permanentemente?' : 'Xóa vĩnh viễn hồ sơ này?';
+            if (confirm(confirmMsg)) {
                 profiles = profiles.filter(p => p.id !== id);
                 window.saveProfiles(); window.closeProfileModal(); window.loadProfilesUI(); window.showScreen('profiles');
             }
@@ -683,7 +700,8 @@
 
         window.resetCurrentProfileProgress = function() {
             const id = document.getElementById('prof-edit-id').value;
-            if (confirm("Đặt lại điểm hồ sơ này? (Reset stars & progress?)")) {
+            const confirmMsg = currentLang === 'es' ? '¿Restablecer puntajes de este perfil?' : 'Đặt lại điểm hồ sơ này?';
+            if (confirm(confirmMsg)) {
                 profiles = profiles.map(p => p.id === id ? { ...p, stars: 0, progress: {} } : p);
                 window.saveProfiles(); window.closeProfileModal(); window.loadProfilesUI();
                 if(currentProfile && currentProfile.id === id) {
@@ -694,8 +712,21 @@
             }
         };
 
-        window.openSettings = function() { document.getElementById('settings-modal').classList.remove('hidden'); };
+        window.openSettings = function() { 
+            const editBtn = document.getElementById('ui-set-edit');
+            const delBtn = document.getElementById('ui-set-del');
+            if (!currentProfile) {
+                if(editBtn) editBtn.style.display = 'none';
+                if(delBtn) delBtn.style.display = 'none';
+            } else {
+                if(editBtn) editBtn.style.display = 'block';
+                if(delBtn) delBtn.style.display = 'block';
+            }
+            document.getElementById('settings-modal').classList.remove('hidden'); 
+        };
+        
         window.closeSettings = function() { document.getElementById('settings-modal').classList.add('hidden'); };
+        
         window.toggleDarkMode = function(isDark) { isDark ? document.body.classList.add('dark-mode') : document.body.classList.remove('dark-mode'); };
         
         window.openProfileModalForCurrent = function() { 
@@ -704,18 +735,27 @@
         
         window.deleteCurrentProfileFromSettings = function() {
             if (!currentProfile) return;
-            if (confirm("Xóa vĩnh viễn hồ sơ hiện tại?")) {
+            const confirmMsg = currentLang === 'es' ? '¿Eliminar perfil actual permanentemente?' : 'Xóa vĩnh viễn hồ sơ hiện tại?';
+            if (confirm(confirmMsg)) {
                 profiles = profiles.filter(p => p.id !== currentProfile.id);
                 window.saveProfiles(); window.closeSettings(); window.loadProfilesUI(); window.showScreen('profiles');
             }
         };
 
         window.resetProgress = function() {
-            if(confirm("Đặt lại toàn bộ điểm tất cả các hồ sơ?")) {
+            const confirmMsg = currentLang === 'es' ? '¿Restablecer el puntaje de todos los perfiles?' : 'Đặt lại toàn bộ điểm tất cả các hồ sơ?';
+            if(confirm(confirmMsg)) {
                 profiles = profiles.map(p => ({...p, stars: 0, progress: {}}));
                 if(currentProfile) currentProfile.stars = 0;
                 window.saveProfiles(); window.loadProfilesUI(); window.renderDashboardMap(); window.closeSettings();
             }
+        };
+
+        window.toggleLanguage = function(l) {
+            currentLang = l;
+            document.getElementById('lang-vi').className = `px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${l==='vi'?'bg-amber-500 text-white shadow-sm':'text-gray-700'}`;
+            document.getElementById('lang-es').className = `px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${l==='es'?'bg-amber-500 text-white shadow-sm':'text-gray-700'}`;
+            window.updateUILanguage(); window.renderDashboardMap();
         };
 
         window.renderDashboardMap = function() {
@@ -758,7 +798,7 @@
             if (w.img && w.img.includes('http')) { 
                 photoEl.style.display = 'block'; fallbackEl.style.display = 'none'; photoEl.src = w.img; 
             } else { 
-                photoEl.style.display = 'none'; fallbackEl.style.display = 'block'; fallbackEl.innerText = w[currentLang].substring(0,1); 
+                photoEl.style.display = 'none'; fallbackEl.style.display = 'block'; fallbackEl.innerText = w.img ? w.img : w[currentLang].substring(0,1); 
             }
             document.getElementById('active-word').innerText = w[currentLang];
             window.playAudio(w[currentLang]);
@@ -771,7 +811,7 @@
                 currentLessonWordIdx++;
                 window.loadLessonCard();
             } else {
-                // FIXED: Pop-up Report Modal seamlessly at the end of the lesson array
+                // Lesson complete logic
                 window.triggerConfetti();
                 if(currentProfile) {
                     if(!currentProfile.progress[currentActiveLesson.topic.id]) currentProfile.progress[currentActiveLesson.topic.id] = {};
@@ -846,7 +886,7 @@
             optContainer.innerHTML = '';
             q.options.forEach((opt, i) => {
                 const btn = document.createElement('button');
-                btn.className = "btn-3d py-4 bg-teal-500 text-white font-black text-xl rounded-2xl shadow-md";
+                btn.className = "btn-3d py-4 bg-teal-500 hover:bg-teal-600 text-white font-black text-xl rounded-2xl shadow-md";
                 btn.innerText = opt;
                 btn.onclick = () => {
                     if(i === q.correct) { window.triggerConfetti(); descIdx++; setTimeout(window.loadDescribeCard, 800); }
@@ -905,8 +945,8 @@
                         } else {
                             const prev = firstCardEl; firstCardEl = null; firstCardObj = null;
                             setTimeout(() => {
-                                prev.innerHTML = '❓'; prev.className = "btn-3d h-28 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center overflow-hidden";
-                                card.innerHTML = '❓'; card.className = "btn-3d h-28 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center overflow-hidden";
+                                prev.innerHTML = '❓'; prev.className = "btn-3d h-28 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center shadow-md overflow-hidden";
+                                card.innerHTML = '❓'; card.className = "h-28 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center shadow-md overflow-hidden";
                             }, 800);
                         }
                     }
@@ -1010,4 +1050,3 @@
     </script>
 </body>
 </html>
-```eof
