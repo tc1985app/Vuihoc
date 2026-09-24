@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Vui Học">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪷</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
     
     <title>Vui Học - Thế Giới Ngôn Ngữ</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -14,30 +14,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
     
     <style>
-        :root { --bg-light: #fdfaf6; }
-        
-        body, #app-body {
+        /* Modern iOS viewport handling (dvh) & Vibrant Kids Theme */
+        body {
             min-height: 100vh;
             min-height: 100dvh !important;
             font-family: 'Nunito', system-ui, sans-serif !important;
-            background-color: var(--bg-light); color: #1f2937;
+            
+            /* Vibrant Sky Blue with Polka Dots */
+            background-color: #38bdf8 !important; 
+            background-image: radial-gradient(#ffffff 3px, transparent 3px), radial-gradient(#ffffff 3px, transparent 3px) !important;
+            background-size: 60px 60px !important;
+            background-position: 0 0, 30px 30px !important;
+            
+            color: #1f2937;
             overflow-x: hidden; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
             user-select: none; -webkit-user-select: none;
             transition: background-color 0.4s ease, color 0.4s ease;
         }
         
-        h1, h2, h3, .font-game { font-family: 'Nunito', sans-serif !important; font-weight: 900; letter-spacing: 0.5px; }
-
-        .cultural-bg {
-            background-color: #8ecae6;
-            background-image: radial-gradient(#ffffff 2px, transparent 2px), radial-gradient(#ffffff 2px, transparent 2px);
-            background-size: 50px 50px; background-position: 0 0, 25px 25px;
+        body.dark-mode { 
+            background-color: #0f172a !important; 
+            background-image: radial-gradient(#334155 3px, transparent 3px), radial-gradient(#334155 3px, transparent 3px) !important;
+            color: #f8fafc !important; 
         }
-
-        body.dark-mode { background-color: #0f172a !important; color: #f8fafc !important; }
-        body.dark-mode .cultural-bg { background-color: #0f172a; background-image: radial-gradient(#334155 2px, transparent 2px), radial-gradient(#334155 2px, transparent 2px); }
         body.dark-mode .bg-white { background-color: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important; }
         body.dark-mode .text-gray-800, body.dark-mode .text-gray-700 { color: #f8fafc !important; }
+
+        h1, h2, h3, .font-game { font-family: 'Nunito', sans-serif !important; font-weight: 900; letter-spacing: 0.5px; }
 
         .screen-container { transition: opacity 0.3s ease, transform 0.3s ease; width: 100%; display: flex; flex-direction: column; align-items: center; }
         .screen-hidden { opacity: 0 !important; transform: scale(0.98) !important; pointer-events: none; position: absolute; display: none !important; z-index: -1; }
@@ -52,22 +55,47 @@
         }
 
         .floating { animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
         
         .pop-in { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
+        /* Animated Clouds */
+        .cloud { position: absolute; background: white; border-radius: 200px; opacity: 0.9; z-index: 0; }
+        .cloud::before, .cloud::after { content: ''; position: absolute; background: white; border-radius: 50%; }
+        .cloud1 { width: 140px; height: 45px; top: 12%; left: 5%; animation: floatClouds 6s ease-in-out infinite; }
+        .cloud1::before { width: 60px; height: 60px; top: -30px; left: 20px; }
+        .cloud1::after { width: 80px; height: 80px; top: -40px; right: 20px; }
+        .cloud2 { width: 180px; height: 60px; top: 25%; right: 5%; animation: floatClouds 8s ease-in-out infinite reverse; }
+        .cloud2::before { width: 70px; height: 70px; top: -35px; left: 25px; }
+        .cloud2::after { width: 100px; height: 100px; top: -50px; right: 25px; }
+        .cloud3 { width: 120px; height: 40px; bottom: 15%; left: 15%; animation: floatClouds 7s ease-in-out infinite 1s; }
+        .cloud3::before { width: 50px; height: 50px; top: -25px; left: 15px; }
+        .cloud3::after { width: 70px; height: 70px; top: -35px; right: 15px; }
+        
+        body.dark-mode .cloud { opacity: 0.1; }
+
+        @keyframes floatClouds {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(15px, -10px); }
+        }
+
+        /* 3D Title Text */
+        .title-text {
+            color: #ffde21;
+            text-shadow: 0 8px 0 #d97706, 0 15px 25px rgba(0,0,0,0.3);
+        }
+
+        /* Chat bubbles */
         .chat-bubble { position: relative; background: #fff; border-radius: 1.5rem; padding: 1rem 1.5rem; border: 4px solid #e5e7eb; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .chat-left::after { content: ''; position: absolute; border: 12px solid transparent; border-right-color: #e5e7eb; border-left: 0; left: -16px; top: 50%; margin-top: -12px; }
         .chat-right::after { content: ''; position: absolute; border: 12px solid transparent; border-left-color: #e5e7eb; border-right: 0; right: -16px; top: 50%; margin-top: -12px; }
         body.dark-mode .chat-bubble { background: #1e293b; border-color: #334155; }
         body.dark-mode .chat-left::after { border-right-color: #334155; }
         body.dark-mode .chat-right::after { border-left-color: #334155; }
-
-        canvas { display: block; width: 100%; height: 100%; touch-action: none; }
     </style>
 </head>
-<body id="app-body" class="flex flex-col items-center p-3 sm:p-6 cultural-bg">
+<body id="app-body" class="flex flex-col items-center p-3 sm:p-6">
     <!-- Stream Confetti & Base Modals -->
     <div id="confetti-container" style="position:fixed; inset:0; pointer-events:none; z-index:9999;"></div>
 
@@ -79,7 +107,7 @@
             
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2" id="ui-edit-name-lbl">Tên (Name):</label>
-                <input type="text" id="prof-name" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold" placeholder="VD: An...">
+                <input type="text" id="prof-name" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold" placeholder="VD: An, Sofia...">
             </div>
             
             <div class="mb-4">
@@ -105,10 +133,10 @@
             </div>
 
             <div class="mb-4">
-                <button type="button" onclick="window.resetCurrentProfileProgress()" class="btn-3d w-full bg-amber-100 text-amber-700 font-black py-3 rounded-xl border-2 border-amber-300 text-sm" id="ui-edit-reset">🔄 Đặt Lại Điểm</button>
+                <button type="button" onclick="window.resetCurrentProfileProgress()" class="btn-3d w-full bg-amber-100 text-amber-700 font-black py-3 rounded-xl border-2 border-amber-300 text-sm" id="ui-edit-reset">🔄 Đặt Lại Điểm Hồ Sơ Này</button>
             </div>
             <div class="mb-6">
-                <button type="button" onclick="window.deleteCurrentProfile()" class="btn-3d w-full bg-red-100 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm" id="ui-edit-delete">🗑️ Xóa Hồ Sơ</button>
+                <button type="button" onclick="window.deleteCurrentProfile()" class="btn-3d w-full bg-red-100 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm" id="ui-edit-delete">🗑️ Xóa Hồ Sơ Này</button>
             </div>
             <div class="flex gap-3">
                 <button type="button" onclick="window.closeProfileModal()" class="btn-3d flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-2xl" id="ui-edit-cancel">Hủy</button>
@@ -141,7 +169,7 @@
                 <button type="button" onclick="window.resetProgress();" class="w-full bg-red-100 text-red-600 font-black py-3 rounded-xl border-2 border-red-300 text-sm" id="ui-set-reset">🔄 Đặt Lại Điểm Toàn Bộ</button>
             </div>
             <div class="mb-6">
-                <button type="button" onclick="window.deleteCurrentProfileFromSettings();" class="w-full bg-rose-100 text-rose-700 font-black py-3 rounded-xl border-2 border-rose-300 text-sm" id="ui-set-del">🗑️ Xóa Hồ Sơ</button>
+                <button type="button" onclick="window.deleteCurrentProfileFromSettings();" class="w-full bg-rose-100 text-rose-700 font-black py-3 rounded-xl border-2 border-rose-300 text-sm" id="ui-set-del">🗑️ Xóa Hồ Sơ Này</button>
             </div>
             <button type="button" onclick="window.closeSettings()" class="btn-3d w-full bg-amber-600 text-white font-game py-3 rounded-2xl text-lg text-center" id="ui-set-close">Đóng (Close)</button>
         </div>
@@ -186,7 +214,12 @@
 
     <!-- 🌟 SCREEN 1: BILINGUAL HOMEPAGE 🌟 -->
     <div id="screen-profiles" class="screen-container flex-1 w-full max-w-4xl flex flex-col items-center justify-center text-center relative z-10 mt-8">
-        <header class="mb-10 w-full relative z-10 flex flex-col items-center">
+        <!-- CSS Clouds -->
+        <div class="cloud cloud1 hidden sm:block"></div>
+        <div class="cloud cloud2"></div>
+        <div class="cloud cloud3 hidden sm:block"></div>
+
+        <header class="mb-12 w-full relative z-10 flex flex-col items-center pt-8">
             <div class="absolute top-0 right-0 flex gap-2">
                 <button type="button" onclick="window.setGlobalLang('vi')" id="g-lang-vi" class="btn-3d px-4 py-2 bg-amber-500 text-white font-black rounded-2xl shadow-md border-2 border-amber-600">VI</button>
                 <button type="button" onclick="window.setGlobalLang('es')" id="g-lang-es" class="btn-3d px-4 py-2 bg-white text-gray-700 font-black rounded-2xl shadow-sm border border-gray-300">ES</button>
@@ -194,12 +227,12 @@
             <div class="absolute top-0 left-0">
                 <button type="button" onclick="window.openSettings()" class="btn-3d px-4 py-2 bg-white text-gray-700 font-bold rounded-2xl border-2 border-gray-300 text-sm shadow-sm">⚙️</button>
             </div>
-            <div class="text-7xl mb-4 floating drop-shadow-lg mt-8">🪷</div>
-            <h1 class="text-5xl sm:text-7xl font-game text-white mb-2 drop-shadow-xl" style="text-shadow: 0 4px 0 #d97706;" id="home-title">Vui Học</h1>
-            <p id="sub-title-main" class="text-base sm:text-xl text-blue-900 font-black mb-8 bg-white/60 backdrop-blur-md px-6 py-2 rounded-full uppercase tracking-wider border-2 border-white">Thế Giới Ngôn Ngữ Kỳ Diệu</p>
+            <div class="text-7xl sm:text-8xl mb-6 floating drop-shadow-2xl">🚀</div>
+            <h1 class="text-6xl sm:text-8xl font-black text-white mb-6 drop-shadow-2xl title-text" id="home-title">Vui Học</h1>
+            <p id="sub-title-main" class="text-sm sm:text-xl text-white font-black mb-8 bg-gradient-to-r from-pink-500 to-orange-400 shadow-xl px-8 py-3 rounded-full uppercase tracking-widest border-4 border-white transform -rotate-2 hover:rotate-0 transition-transform">Thế Giới Ngôn Ngữ Kỳ Diệu</p>
         </header>
         <div id="profiles-container" class="flex flex-wrap justify-center gap-6 w-full mb-10 z-10"></div>
-        <button type="button" onclick="window.createProfile()" id="add-profile-btn" class="btn-3d z-10 px-8 py-4 bg-amber-500 hover:bg-amber-600 text-white font-game text-xl rounded-[2rem] border-4 border-white shadow-2xl">➕ Thêm Tên Người Dùng</button>
+        <button type="button" onclick="window.createProfile()" id="add-profile-btn" class="btn-3d z-10 px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-game text-xl rounded-[2rem] border-4 border-white shadow-2xl">➕ Thêm Tên Người Dùng</button>
     </div>
 
     <!-- 🌟 SCREEN 2: DASHBOARD 🌟 -->
@@ -323,8 +356,8 @@
             
             <div id="mem-post-game" class="hidden flex-col gap-3 pop-in bg-purple-50 p-6 rounded-3xl border-2 border-purple-200">
                 <h4 class="text-2xl font-game text-purple-800">🎉 Tuyệt Vời!</h4>
-                <button type="button" onclick="window.startMemoryGame(4)" class="btn-3d w-full py-3 bg-purple-600 text-white font-game rounded-xl">🔄 Chơi Thêm Ván Nữa</button>
-                <button type="button" onclick="window.startMemoryGame(6)" class="btn-3d w-full py-3 bg-indigo-600 text-white font-game rounded-xl">🔥 Cấp Khó Hơn</button>
+                <button type="button" onclick="window.startMemoryGame(4)" class="btn-3d w-full py-3 bg-purple-600 text-white font-game rounded-xl">🔄 Chơi Thêm Ván Nữa (4 Cặp)</button>
+                <button type="button" onclick="window.startMemoryGame(6)" class="btn-3d w-full py-3 bg-indigo-600 text-white font-game rounded-xl">🔥 Cấp Khó Hơn (6 Cặp)</button>
             </div>
         </div>
     </div>
@@ -351,7 +384,7 @@
         <canvas id="slicer-canvas"></canvas>
     </div>
 
-    <!-- 🌟 SCREEN 8: SINGALONG & KARAOKE 🌟 -->
+    <!-- 🌟 SCREEN 8: SINGALONG & KARAOKE (YOUTUBE) 🌟 -->
     <div id="screen-singalong" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-pink-50 overflow-y-auto pt-8 px-4 pb-12">
         <div class="w-full max-w-2xl flex justify-between items-center mb-6">
             <button type="button" onclick="window.exitSingalong()" id="sing-btn-exit" class="btn-3d px-4 py-2 bg-white text-pink-800 font-black rounded-2xl border border-pink-200">⬅️ Thoát</button>
@@ -375,7 +408,7 @@
     <!-- 🌟 JAVASCRIPT ENGINE 🌟 -->
     <script>
         // --- 1. GLOBAL STATE & INITIALIZATION ---
-        let profiles = JSON.parse(localStorage.getItem('vuihoc_v85_data') || localStorage.getItem('vuihoc_v80_data'));
+        let profiles = JSON.parse(localStorage.getItem('vuihoc_v90_data'));
         if (!Array.isArray(profiles) || profiles.length === 0) {
             profiles = [
                 { id: '1', name: 'Bé An', emoji: '👦', lang: 'vi', level: 'beginner', stars: 10, progress: {} },
@@ -401,6 +434,7 @@
         let activeConvo = null;
         let convoLineIdx = 0;
 
+        // Initialize Audio context on first touch to bypass browser block
         let audioUnlocked = false;
         const unlockAudio = () => {
             if (!audioUnlocked) {
@@ -419,7 +453,7 @@
         document.addEventListener('touchstart', unlockAudio, { once: true, capture: true });
         document.addEventListener('click', unlockAudio, { once: true, capture: true });
 
-        window.saveProfiles = function() { localStorage.setItem('vuihoc_v85_data', JSON.stringify(profiles)); }
+        window.saveProfiles = function() { localStorage.setItem('vuihoc_v90_data', JSON.stringify(profiles)); }
 
         // --- 2. MASSIVE CURRICULUM DATASETS ---
         const ALPHABET_VI = [ { char: 'A', word: 'Áo' }, { char: 'Ă', word: 'Ăn' }, { char: 'Â', word: 'Ấm' }, { char: 'B', word: 'Bóng' }, { char: 'C', word: 'Cá' }, { char: 'D', word: 'Dép' }, { char: 'Đ', word: 'Đèn' }, { char: 'E', word: 'Em' }, { char: 'Ê', word: 'Êm' }, { char: 'G', word: 'Gà' }, { char: 'H', word: 'Hoa' }, { char: 'I', word: 'In' }, { char: 'K', word: 'Kẹo' }, { char: 'L', word: 'Lá' }, { char: 'M', word: 'Mèo' }, { char: 'N', word: 'Nhà' }, { char: 'O', word: 'Ong' }, { char: 'Ô', word: 'Ô tô' }, { char: 'Ơ', word: 'Ớt' }, { char: 'P', word: 'Phở' }, { char: 'Q', word: 'Quả' }, { char: 'R', word: 'Rổ' }, { char: 'S', word: 'Sách' }, { char: 'T', word: 'Tay' }, { char: 'U', word: 'Ủ' }, { char: 'Ư', word: 'Ức' }, { char: 'V', word: 'Vịt' }, { char: 'X', word: 'Xe' }, { char: 'Y', word: 'Yếm' } ];
@@ -836,16 +870,13 @@
             const level = levelEl ? levelEl.value : 'beginner';
 
             profiles = profiles.map(p => p.id === id ? { ...p, name, emoji, lang, level } : p);
-            window.saveProfiles(); 
-            window.closeProfileModal(); 
-            window.loadProfilesUI();
+            window.saveProfiles(); window.closeProfileModal(); window.loadProfilesUI();
             
             if (currentProfile && currentProfile.id === id) {
                 currentProfile = profiles.find(p => p.id === id);
                 if (currentProfile.lang && currentProfile.lang !== 'both') {
                     currentLang = currentProfile.lang;
-                    window.updateUILanguage(); 
-                    window.renderDashboardMap();
+                    window.updateUILanguage(); window.renderDashboardMap();
                 }
             }
         };
@@ -1310,4 +1341,3 @@
     </script>
 </body>
 </html>
-```eof
