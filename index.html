@@ -9,7 +9,6 @@
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪷</text></svg>">
     
     <title>Vui Học - Thế Giới Ngôn Ngữ</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
@@ -54,14 +53,19 @@
         .pop-in { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
+        /* Chat bubbles for Conversation Mode */
         .chat-bubble { position: relative; background: #fff; border-radius: 1.5rem; padding: 1rem 1.5rem; border: 4px solid #e5e7eb; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .chat-left::after { content: ''; position: absolute; border: 12px solid transparent; border-right-color: #e5e7eb; border-left: 0; left: -16px; top: 50%; margin-top: -12px; }
         .chat-right::after { content: ''; position: absolute; border: 12px solid transparent; border-left-color: #e5e7eb; border-right: 0; right: -16px; top: 50%; margin-top: -12px; }
-        
+        body.dark-mode .chat-bubble { background: #1e293b; border-color: #334155; }
+        body.dark-mode .chat-left::after { border-right-color: #334155; }
+        body.dark-mode .chat-right::after { border-left-color: #334155; }
+
         canvas { display: block; width: 100%; height: 100%; touch-action: none; }
     </style>
 </head>
 <body id="app-body" class="min-h-screen flex flex-col items-center p-3 sm:p-6 cultural-bg">
+    <!-- Stream Confetti & Base Modals -->
     <div id="confetti-container" style="position:fixed; inset:0; pointer-events:none; z-index:9999;"></div>
 
     <!-- PROFILE EDIT MODAL -->
@@ -80,8 +84,8 @@
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2" id="ui-edit-lang-lbl">Ngôn ngữ học:</label>
                 <select id="prof-lang" class="w-full bg-gray-100 border-2 border-gray-300 text-gray-800 rounded-xl p-3 font-bold">
-                    <option value="vi">🇻🇳 Tiếng Việt</option>
-                    <option value="es">🇪🇸 Español</option>
+                    <option value="vi" id="opt-vi">🇻🇳 Tiếng Việt</option>
+                    <option value="es" id="opt-es">🇪🇸 Español</option>
                 </select>
             </div>
             <div class="mb-4">
@@ -143,6 +147,18 @@
             </div>
         </div>
     </div>
+    <!-- PROGRESS REPORT MODAL -->
+    <div id="progress-report-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[160] flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-6 max-w-lg w-full border-4 border-amber-400 shadow-2xl text-left pop-in max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-6 border-b-2 pb-2">
+                <h3 class="text-2xl font-game text-gray-800" id="ui-progress-title">📊 Báo Cáo Tiến Độ</h3>
+                <button type="button" onclick="window.closeProgressReport()" class="btn-3d px-4 py-2 bg-gray-200 rounded-xl font-bold" id="ui-progress-close">✕ Đóng</button>
+            </div>
+            <div id="progress-report-content" class="flex-1 overflow-y-auto space-y-4">
+                <!-- Progress bars will be injected here -->
+            </div>
+        </div>
+    </div>
 
     <!-- 🌟 SCREEN 1: BILINGUAL HOMEPAGE 🌟 -->
     <div id="screen-profiles" class="screen-container flex-1 w-full max-w-4xl flex flex-col items-center justify-center text-center relative z-10 mt-8">
@@ -164,7 +180,7 @@
 
     <!-- 🌟 SCREEN 2: DASHBOARD 🌟 -->
     <div id="screen-dashboard" class="screen-container screen-hidden flex-1 w-full max-w-4xl flex-col items-center pb-24 mt-2">
-        <div class="w-full flex justify-between items-center p-4 bg-white/90 backdrop-blur-md rounded-3xl shadow-lg border-2 border-amber-200 mb-6">
+        <div class="w-full flex justify-between items-center p-4 bg-white/95 backdrop-blur-md rounded-3xl shadow-lg border-2 border-amber-200 mb-6">
             <button type="button" onclick="window.showScreen('profiles')" id="dash-btn-switch" class="btn-3d px-4 py-2 bg-amber-100 text-amber-900 font-extrabold rounded-2xl text-sm">⬅️ Đổi Hồ Sơ</button>
             
             <div class="flex items-center gap-3">
@@ -180,12 +196,13 @@
                     <button type="button" onclick="window.toggleLanguage('vi')" id="lang-vi" class="px-3 py-1.5 rounded-xl text-sm font-black bg-amber-500 text-white shadow-sm">VI</button>
                     <button type="button" onclick="window.toggleLanguage('es')" id="lang-es" class="px-3 py-1.5 rounded-xl text-sm font-black text-gray-700">ES</button>
                 </div>
+                <button type="button" onclick="window.openProgressReport()" class="btn-3d p-2.5 bg-blue-100 rounded-2xl text-sm shadow-sm text-blue-800 border border-blue-200" title="Tiến Độ">📊</button>
                 <button type="button" onclick="window.openSettings()" class="btn-3d p-2.5 bg-amber-100 rounded-2xl text-sm shadow-sm text-gray-800 border border-amber-200">⚙️</button>
             </div>
         </div>
 
         <!-- Turn Timer Bar -->
-        <div class="w-full bg-white/90 backdrop-blur-md p-4 rounded-3xl shadow-md border-2 border-amber-200 mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div class="w-full bg-white/95 backdrop-blur-md p-4 rounded-3xl shadow-md border-2 border-amber-200 mb-6 flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-2">
                 <span class="text-2xl shake">⏳</span>
                 <div>
@@ -204,7 +221,7 @@
             </div>
         </div>
 
-        <!-- Quick Games Bar -->
+        <!-- Arcade Buttons -->
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 w-full mb-8">
             <button type="button" onclick="window.openAlphabetModal()" class="btn-3d py-4 bg-amber-500 text-white font-black text-sm rounded-3xl flex flex-col items-center shadow-lg">
                 <span class="text-4xl mb-2 floating">🔤</span> <span id="arcade-btn-alpha">Bảng Chữ Cái</span>
@@ -237,7 +254,7 @@
             <span id="game-progress" class="font-black text-amber-800 uppercase tracking-widest text-sm bg-amber-100 px-4 py-1.5 rounded-full border border-amber-300">Topic • L1</span>
         </div>
 
-        <div id="active-card" onclick="window.playCurrentWordAudio()" class="btn-3d bg-white border-4 border-amber-300 rounded-[3rem] p-6 w-full max-w-md flex flex-col items-center shadow-2xl mb-8 cursor-pointer overflow-hidden group">
+        <div id="active-card" onclick="window.playCurrentWordAudio()" class="btn-3d bg-white border-4 border-amber-300 rounded-[3rem] p-6 w-full max-w-md flex flex-col items-center shadow-2xl mb-8 group overflow-hidden">
             <div class="w-full h-72 rounded-3xl overflow-hidden mb-6 shadow-inner relative bg-gray-100 flex items-center justify-center">
                 <img id="active-photo" src="" alt="HD Photo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.style.display='none'; document.getElementById('active-emoji-fallback').style.display='block';">
                 <span id="active-emoji-fallback" class="text-8xl hidden">🔢</span>
@@ -312,7 +329,7 @@
     <!-- 🌟 JAVASCRIPT ENGINE 🌟 -->
     <script>
         // --- 1. GLOBAL STATE & INITIALIZATION ---
-        let profiles = JSON.parse(localStorage.getItem('vuihoc_v41_data') || 'null') || [
+        let profiles = JSON.parse(localStorage.getItem('vuihoc_v40_data') || 'null') || [
             { id: '1', name: 'Bé An', emoji: '👦', lang: 'vi', level: 'beginner', stars: 10, progress: {} },
             { id: '2', name: 'Sofia', emoji: '👧', lang: 'es', level: 'intermediate', stars: 25, progress: {} }
         ];
@@ -342,7 +359,7 @@
         document.body.addEventListener('touchstart', unlockAudio, { once: true });
         document.body.addEventListener('click', unlockAudio, { once: true });
 
-        window.saveProfiles = function() { localStorage.setItem('vuihoc_v41_data', JSON.stringify(profiles)); }
+        window.saveProfiles = function() { localStorage.setItem('vuihoc_v40_data', JSON.stringify(profiles)); }
 
         // --- 2. MASSIVE CURRICULUM DATASETS ---
         
@@ -748,21 +765,23 @@
                 switchProfile: '⬅️ Đổi Hồ Sơ', timerTitle: 'Hẹn Giờ Lượt Chơi', timerSub: 'Phiên chơi công bằng',
                 alphaBtn: 'Bảng Chữ Cái', memoryBtn: 'Lật Hình Cặp', descBtn: 'Mô Tả Tranh', slicerBtn: 'Chém Từ HD', convoBtn: 'Hội Thoại',
                 mapTitle: 'Bản Đồ Học Tập Thực Tế', exit: '⬅️ Thoát', next: 'Tiếp Theo ➡️',
-                reportTitle: 'Hoàn Thành Cấp Độ!', newWordsBtn: '🔄 Học Thêm Từ Mới', nextLevelBtn: '⬆️ Thử Cấp Tiếp Theo', continueBtn: '🏠 Về Trang Chủ',
+                reportTitle: 'Hoàn Thành Cấp Độ!', newWordsBtn: '🔄 Lặp Lại Cấp Độ', nextLevelBtn: '⬆️ Thử Cấp Tiếp Theo', continueBtn: '🏠 Về Trang Chủ',
                 memTitle: '🧠 Lật Hình Tìm Cặp', memSub: 'Chạm vào thẻ để lật, nghe phát âm và tìm cặp đúng!', alertTimeUp: '⏰ Hết giờ lượt chơi! Đổi bạn khác nào!',
                 subTitleMain: 'Thế Giới Ngôn Ngữ Kỳ Diệu',
                 setEdit: '✏️ Chỉnh Sửa Hồ Sơ Hiện Tại', setReset: '🔄 Đặt Lại Điểm Toàn Bộ', setDel: '🗑️ Xóa Hồ Sơ Này', setClose: 'Đóng (Close)', setDark: 'Ban đêm (Dark Mode):', setTitle: '⚙️ Cài Đặt (Settings)',
-                editTitle: '✏️ Chỉnh Sửa Hồ Sơ', editName: 'Tên (Name):', editEmoji: 'Biểu tượng (Emoji):', editLang: 'Ngôn ngữ học:', editReset: '🔄 Đặt Lại Điểm Hồ Sơ Này', editDel: '🗑️ Xóa Hồ Sơ Này', editCancel: 'Hủy', editSave: 'Lưu'
+                editTitle: '✏️ Chỉnh Sửa Hồ Sơ', editName: 'Tên (Name):', editEmoji: 'Biểu tượng (Emoji):', editLang: 'Ngôn ngữ học:', editReset: '🔄 Đặt Lại Điểm Hồ Sơ Này', editDel: '🗑️ Xóa Hồ Sơ Này', editCancel: 'Hủy', editSave: 'Lưu',
+                progTitle: '📊 Báo Cáo Tiến Độ', progClose: '✕ Đóng', topicComplete: 'Cấp độ hoàn thành:'
             },
             es: {
                 switchProfile: '⬅️ Cambiar Perfil', timerTitle: 'Temporizador', timerSub: 'Turnos justos para todos',
                 alphaBtn: 'Alfabeto', memoryBtn: 'Memoria de Parejas', descBtn: 'Describir Imagen', slicerBtn: 'Cortar Palabras', convoBtn: 'Conversación',
                 mapTitle: 'Mapa de Aprendizaje HD', exit: '⬅️ Salir', next: 'Siguiente ➡️',
-                reportTitle: '¡Nivel Completado!', newWordsBtn: '🔄 Aprender Palabras Nuevas', nextLevelBtn: '⬆️ Siguiente Nivel', continueBtn: '🏠 Ir al Inicio',
+                reportTitle: '¡Nivel Completado!', newWordsBtn: '🔄 Repetir este Nivel', nextLevelBtn: '⬆️ Siguiente Nivel', continueBtn: '🏠 Ir al Inicio',
                 memTitle: '🧠 Memoria de Parejas', memSub: '¡Toca las tarjetas para voltearlas y encontrar parejas!', alertTimeUp: '⏰ ¡Se acabó el tiempo! ¡Cambien de jugador!',
                 subTitleMain: 'El Mundo Mágico de los Idiomas',
                 setEdit: '✏️ Editar Perfil Actual', setReset: '🔄 Restablecer Todo', setDel: '🗑️ Eliminar Este Perfil', setClose: 'Cerrar', setDark: 'Modo Oscuro:', setTitle: '⚙️ Ajustes',
-                editTitle: '✏️ Editar Perfil', editName: 'Nombre:', editEmoji: 'Emoji:', editLang: 'Idioma de aprendizaje:', editReset: '🔄 Restablecer Puntaje', editDel: '🗑️ Eliminar Perfil', editCancel: 'Cancelar', editSave: 'Guardar'
+                editTitle: '✏️ Editar Perfil', editName: 'Nombre:', editEmoji: 'Emoji:', editLang: 'Idioma de aprendizaje:', editReset: '🔄 Restablecer Puntaje', editDel: '🗑️ Eliminar Perfil', editCancel: 'Cancelar', editSave: 'Guardar',
+                progTitle: '📊 Informe de Progreso', progClose: '✕ Cerrar', topicComplete: 'Niveles completados:'
             }
         };
 
@@ -794,6 +813,9 @@
             
             // Edit Profile Modal
             setTxt('ui-edit-title', t.editTitle); setTxt('ui-edit-name-lbl', t.editName); setTxt('ui-edit-emoji-lbl', t.editEmoji); setTxt('ui-edit-lang-lbl', t.editLang); setTxt('ui-edit-reset', t.editReset); setTxt('ui-edit-delete', t.editDel); setTxt('ui-edit-cancel', t.editCancel); setTxt('ui-edit-save', t.editSave);
+
+            // Progress Report Modal
+            setTxt('ui-progress-title', t.progTitle); setTxt('ui-progress-close', t.progClose);
 
             const timerBtn = document.getElementById('timer-toggle-btn');
             if(timerBtn) {
@@ -827,7 +849,7 @@
                         clearInterval(turnTimerInterval);
                         turnTimerActive = false;
                         if(btn) { btn.innerText = currentLang==='es'?'Iniciar ⏱️':'Bắt Đầu ⏱️'; btn.className = "btn-3d px-4 py-2 bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-md border border-emerald-600"; }
-                        window.showCustomAlert(UI_TEXT[currentLang].alertTimeUp);
+                        window.showCustomAlert(UI_TEXT[currentLang].alertTimeUp); // using alert fallback for simplicity here
                         turnSecondsLeft = turnTotalSeconds;
                         if(display) display.innerText = `${Math.floor(turnSecondsLeft / 60)}:${(turnSecondsLeft % 60).toString().padStart(2,'0')}`;
                     }
@@ -840,7 +862,7 @@
         };
 
         window.showCustomAlert = function(msg) {
-            alert(msg); // standard alert block
+            alert(msg); // simple fallback to guarantee block
         };
 
         // Dual-Layer Audio Engine
@@ -849,11 +871,11 @@
             const shortLang = currentLang === 'es' ? 'es' : 'vi';
             
             try {
-                // Primary: Cloud TTS for native voice
+                // Primary: Try fetching from Google Cloud TTS for native voice
                 const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${shortLang}&q=${encodeURIComponent(text)}`;
                 const audio = new Audio(url);
                 audio.play().catch(e => {
-                    console.warn("Cloud TTS blocked, using internal fallback.");
+                    console.warn("Cloud TTS blocked by browser policy, using internal fallback.");
                     window.fallbackAudio(text, langCode);
                 });
             } catch(e) {
@@ -1008,6 +1030,49 @@
             }
         };
 
+        // --- PROGRESS REPORT ---
+        window.openProgressReport = function() {
+            if (!currentProfile) return;
+            const container = document.getElementById('progress-report-content');
+            container.innerHTML = '';
+            
+            const tComplete = currentLang === 'es' ? 'Niveles completados:' : 'Cấp độ hoàn thành:';
+
+            TOPICS.forEach(topic => {
+                let completedCount = 0;
+                let totalCount = 7;
+                
+                for(let i=1; i<=7; i++) {
+                    if (currentProfile.progress[topic.id] && currentProfile.progress[topic.id][i]) {
+                        completedCount++;
+                    }
+                }
+                
+                const percentage = Math.round((completedCount / totalCount) * 100);
+                
+                const row = document.createElement('div');
+                row.className = "bg-gray-100 p-4 rounded-2xl border-2 border-gray-200";
+                row.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-black text-gray-800 text-lg">${topic.emoji} ${topic[currentLang]}</span>
+                        <span class="font-bold text-amber-600">${percentage}%</span>
+                    </div>
+                    <div class="w-full bg-gray-300 rounded-full h-4 mb-2 overflow-hidden shadow-inner">
+                        <div class="bg-amber-500 h-4 rounded-full transition-all duration-1000" style="width: ${percentage}%"></div>
+                    </div>
+                    <div class="text-xs text-gray-500 font-bold">${tComplete} ${completedCount}/${totalCount}</div>
+                `;
+                container.appendChild(row);
+            });
+
+            document.getElementById('progress-report-modal').classList.remove('hidden');
+        };
+
+        window.closeProgressReport = function() {
+            document.getElementById('progress-report-modal').classList.add('hidden');
+        };
+
+
         window.toggleLanguage = function(l) {
             currentLang = l;
             document.getElementById('lang-vi').className = `px-3 py-1.5 rounded-xl text-sm font-black transition-colors ${l==='vi'?'bg-amber-500 text-white shadow-sm':'text-gray-700'}`;
@@ -1052,9 +1117,7 @@
             document.getElementById('game-progress').innerText = `${currentActiveLesson.topic[currentLang]} • L${currentActiveLesson.lvl} (${currentLessonWordIdx + 1}/${currentActiveLesson.words.length})`;
             const photoEl = document.getElementById('active-photo');
             const fallbackEl = document.getElementById('active-emoji-fallback');
-            
-            // Check if image is URL or SVG data
-            if (w.img && (w.img.includes('http') || w.img.includes('data:image'))) { 
+            if (w.img && w.img.includes('http')) { 
                 photoEl.style.display = 'block'; fallbackEl.style.display = 'none'; photoEl.src = w.img; 
             } else { 
                 photoEl.style.display = 'none'; fallbackEl.style.display = 'block'; fallbackEl.innerText = w.img ? w.img : w[currentLang].substring(0,1); 
@@ -1166,7 +1229,7 @@
             let deck = [];
             subset.forEach(item => {
                 deck.push({ display: item[currentLang], speakText: item[currentLang], id: item.vi });
-                if(item.img && (item.img.includes('http') || item.img.includes('data:image'))) {
+                if(item.img && item.img.includes('http')) {
                     deck.push({ display: `<img src="${item.img}" class="w-full h-full object-cover rounded-xl"/>`, speakText: item[currentLang], id: item.vi });
                 } else {
                     deck.push({ display: `<span class="text-4xl">${item.img || item[currentLang].substring(0,1)}</span>`, speakText: item[currentLang], id: item.vi });
@@ -1204,8 +1267,8 @@
                         } else {
                             const prev = firstCardEl; firstCardEl = null; firstCardObj = null;
                             setTimeout(() => {
-                                prev.innerHTML = '❓'; prev.className = "btn-3d h-28 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center shadow-md overflow-hidden";
-                                card.innerHTML = '❓'; card.className = "h-28 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center shadow-md overflow-hidden";
+                                prev.innerHTML = '❓'; prev.className = "btn-3d h-28 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center overflow-hidden";
+                                card.innerHTML = '❓'; card.className = "btn-3d h-28 bg-purple-200 rounded-2xl flex items-center justify-center text-lg font-black cursor-pointer border-4 border-purple-400 p-2 text-center overflow-hidden";
                             }, 800);
                         }
                     }
@@ -1284,7 +1347,7 @@
                 if (Math.random() < 0.035) {
                     const pool = TOPICS[0].levels[1].concat(TOPICS[1].levels[1]); // Mix animals/food
                     const sampleWord = pool[Math.floor(Math.random() * pool.length)];
-                    let emoji = '🍉'; // Default
+                    let emoji = '🍉'; // Placeholder if no emoji defined directly in dataset
                     if(sampleWord.vi==='Chó') emoji='🐶'; else if(sampleWord.vi==='Mèo') emoji='🐱'; else if(sampleWord.vi==='Táo') emoji='🍎'; else if(sampleWord.vi==='Chuối') emoji='🍌';
                     items.push({ emoji: emoji, word: sampleWord[currentLang], x: Math.random() * (canvas.width - 100) + 50, y: canvas.height + 50, vx: (Math.random() - 0.5) * 6, vy: -15 });
                 }
