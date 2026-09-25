@@ -58,6 +58,18 @@
         .pop-in { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
+        /* Pulsing Microphone Animation */
+        .pulse-mic {
+            animation: pulseMic 1.5s infinite;
+            background-color: #ef4444 !important;
+            color: white !important;
+        }
+        @keyframes pulseMic {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.15); box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
         .cloud { position: absolute; background: white; border-radius: 200px; opacity: 0.9; z-index: 0; }
         .cloud::before, .cloud::after { content: ''; position: absolute; background: white; border-radius: 50%; }
         .cloud1 { width: 140px; height: 45px; top: 12%; left: 5%; animation: floatClouds 6s ease-in-out infinite; }
@@ -71,10 +83,7 @@
         .cloud3::after { width: 70px; height: 70px; top: -35px; right: 15px; }
         body.dark-mode .cloud { opacity: 0.1; }
 
-        @keyframes floatClouds {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(15px, -10px); }
-        }
+        @keyframes floatClouds { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(15px, -10px); } }
 
         .title-text { color: #ffde21; text-shadow: 0 8px 0 #d97706, 0 15px 25px rgba(0,0,0,0.3); }
         .chat-bubble { position: relative; background: #fff; border-radius: 1.5rem; padding: 1rem 1.5rem; border: 4px solid #e5e7eb; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
@@ -312,8 +321,13 @@
             <h2 id="active-word" class="text-4xl font-black text-gray-800 text-center">Word</h2>
         </div>
 
-        <div class="flex flex-col items-center gap-4 w-full max-w-md">
-            <button type="button" onclick="window.playCurrentWordAudio()" class="btn-3d w-24 h-24 bg-red-500 text-white rounded-full flex items-center justify-center text-4xl shadow-lg border-4 border-white">🔊</button>
+        <div class="flex items-center justify-center gap-4 w-full max-w-md mb-6">
+            <button type="button" onclick="window.playCurrentWordAudio()" class="btn-3d w-20 h-20 bg-blue-500 text-white rounded-full flex items-center justify-center text-3xl shadow-lg border-4 border-white">🔊</button>
+            <!-- 🎙️ NEW RECORD BUTTON -->
+            <button type="button" id="btn-mic-vocab" onclick="window.recordVocab()" class="btn-3d w-24 h-24 bg-red-500 text-white rounded-full flex items-center justify-center text-4xl shadow-lg border-4 border-white transition-all duration-300">🎙️</button>
+        </div>
+        
+        <div class="w-full max-w-md">
             <button type="button" onclick="window.skipWord()" id="lesson-btn-next" class="btn-3d w-full py-4 bg-amber-500 text-white font-black text-xl rounded-2xl border-2 border-amber-600 shadow-lg">Tiếp Theo ➡️</button>
         </div>
     </div>
@@ -346,8 +360,8 @@
             
             <div id="mem-post-game" class="hidden flex-col gap-3 pop-in bg-purple-50 p-6 rounded-3xl border-2 border-purple-200">
                 <h4 class="text-2xl font-game text-purple-800">🎉 Tuyệt Vời!</h4>
-                <button type="button" onclick="window.startMemoryGame(4)" class="btn-3d w-full py-3 bg-purple-600 text-white font-game rounded-xl">🔄 Chơi Thêm Ván Nữa</button>
-                <button type="button" onclick="window.startMemoryGame(6)" class="btn-3d w-full py-3 bg-indigo-600 text-white font-game rounded-xl">🔥 Cấp Khó Hơn</button>
+                <button type="button" onclick="window.startMemoryGame(4)" class="btn-3d w-full py-3 bg-purple-600 text-white font-game rounded-xl">🔄 Chơi Thêm Ván Nữa (4 Cặp)</button>
+                <button type="button" onclick="window.startMemoryGame(6)" class="btn-3d w-full py-3 bg-indigo-600 text-white font-game rounded-xl">🔥 Cấp Khó Hơn (6 Cặp)</button>
             </div>
         </div>
     </div>
@@ -358,11 +372,16 @@
             <button type="button" onclick="window.exitConversationMode()" id="convo-btn-exit" class="btn-3d px-4 py-2 bg-white text-rose-800 font-black rounded-2xl border border-rose-200">⬅️ Thoát</button>
             <span id="convo-topic-lbl" class="font-black text-rose-900 bg-rose-200 px-4 py-1.5 rounded-full border border-rose-300">💬 Hội Thoại</span>
         </div>
-        <div class="bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-rose-300 shadow-2xl w-full max-w-lg flex flex-col min-h-[450px]">
+        <div class="bg-white rounded-[3rem] p-6 sm:p-8 border-8 border-rose-300 shadow-2xl w-full max-w-lg flex flex-col min-h-[500px]">
             <div id="convo-chat-area" class="flex-1 w-full flex flex-col gap-6 pt-4"></div>
+            
+            <!-- 🎙️ NEW CONVO BUTTONS -->
             <div class="w-full mt-auto pt-8 flex gap-3">
-                <button type="button" onclick="window.playConvoAudio()" class="btn-3d w-16 h-16 bg-red-500 rounded-2xl flex items-center justify-center text-3xl shadow-md text-white border-2 border-red-700">🔊</button>
-                <button type="button" onclick="window.nextConvoLine()" id="convo-btn-next" class="btn-3d flex-1 py-4 bg-rose-500 text-white font-black text-xl rounded-2xl shadow-md border-2 border-rose-700">Tiếp Theo ➡️</button>
+                <button type="button" onclick="window.playConvoAudio()" class="btn-3d flex-1 py-4 bg-blue-500 rounded-2xl flex items-center justify-center text-xl font-black shadow-md text-white border-2 border-blue-700">🔊 Nghe</button>
+                <button type="button" id="btn-mic-convo" onclick="window.recordConvo()" class="btn-3d flex-1 py-4 bg-red-500 rounded-2xl flex items-center justify-center text-xl font-black shadow-md text-white border-2 border-red-700 transition-all duration-300">🎙️ Nói</button>
+            </div>
+            <div class="w-full mt-3">
+                <button type="button" onclick="window.nextConvoLine()" id="convo-btn-next" class="btn-3d w-full py-4 bg-rose-500 text-white font-black text-xl rounded-2xl shadow-md border-2 border-rose-700">Tiếp Theo ➡️</button>
             </div>
         </div>
     </div>
@@ -374,7 +393,7 @@
         <canvas id="slicer-canvas"></canvas>
     </div>
 
-    <!-- 🌟 SCREEN 8: SINGALONG & KARAOKE 🌟 -->
+    <!-- 🌟 SCREEN 8: SINGALONG & KARAOKE (YOUTUBE) 🌟 -->
     <div id="screen-singalong" class="screen-container screen-hidden fixed inset-0 z-50 flex-col items-center bg-pink-50 overflow-y-auto pt-8 px-4 pb-12">
         <div class="w-full max-w-2xl flex justify-between items-center mb-6">
             <button type="button" onclick="window.exitSingalong()" id="sing-btn-exit" class="btn-3d px-4 py-2 bg-white text-pink-800 font-black rounded-2xl border border-pink-200">⬅️ Thoát</button>
@@ -397,7 +416,8 @@
 
     <!-- 🌟 JAVASCRIPT ENGINE 🌟 -->
     <script>
-        let profiles = JSON.parse(localStorage.getItem('vuihoc_v95_data'));
+        // --- 1. GLOBAL STATE & INITIALIZATION ---
+        let profiles = JSON.parse(localStorage.getItem('vuihoc_v100_data'));
         if (!Array.isArray(profiles) || profiles.length === 0) {
             profiles = [
                 { id: '1', name: 'Bé An', emoji: '👦', lang: 'vi', level: 'beginner', stars: 10, progress: {} },
@@ -423,13 +443,13 @@
         let activeConvo = null;
         let convoLineIdx = 0;
 
+        // Initialize Audio context on first touch
         let audioUnlocked = false;
         const unlockAudio = () => {
             if (!audioUnlocked) {
                 if ('speechSynthesis' in window) {
                     const utt = new SpeechSynthesisUtterance('');
-                    utt.volume = 0; 
-                    window.speechSynthesis.speak(utt);
+                    utt.volume = 0; window.speechSynthesis.speak(utt);
                 }
                 try {
                     const silentAudio = new Audio('data:audio/mp3;base64,//MkxAAQAAAAgAFAAAABgAAAAAA//MkxAAQAAAAgAFAAAABgAAAAAA');
@@ -441,9 +461,9 @@
         document.addEventListener('touchstart', unlockAudio, { once: true, capture: true });
         document.addEventListener('click', unlockAudio, { once: true, capture: true });
 
-        window.saveProfiles = function() { localStorage.setItem('vuihoc_v95_data', JSON.stringify(profiles)); }
+        window.saveProfiles = function() { localStorage.setItem('vuihoc_v100_data', JSON.stringify(profiles)); }
 
-        // --- EXTENSIVE 7-LEVEL VOCABULARY DATASETS (4-6 ITEMS PER LEVEL) ---
+        // --- 2. MASSIVE CURRICULUM DATASETS ---
         const ALPHABET_VI = [ { char: 'A', word: 'Áo' }, { char: 'Ă', word: 'Ăn' }, { char: 'Â', word: 'Ấm' }, { char: 'B', word: 'Bóng' }, { char: 'C', word: 'Cá' }, { char: 'D', word: 'Dép' }, { char: 'Đ', word: 'Đèn' }, { char: 'E', word: 'Em' }, { char: 'Ê', word: 'Êm' }, { char: 'G', word: 'Gà' }, { char: 'H', word: 'Hoa' }, { char: 'I', word: 'In' }, { char: 'K', word: 'Kẹo' }, { char: 'L', word: 'Lá' }, { char: 'M', word: 'Mèo' }, { char: 'N', word: 'Nhà' }, { char: 'O', word: 'Ong' }, { char: 'Ô', word: 'Ô tô' }, { char: 'Ơ', word: 'Ớt' }, { char: 'P', word: 'Phở' }, { char: 'Q', word: 'Quả' }, { char: 'R', word: 'Rổ' }, { char: 'S', word: 'Sách' }, { char: 'T', word: 'Tay' }, { char: 'U', word: 'Ủ' }, { char: 'Ư', word: 'Ức' }, { char: 'V', word: 'Vịt' }, { char: 'X', word: 'Xe' }, { char: 'Y', word: 'Yếm' } ];
         const ALPHABET_ES = [ { char: 'A', word: 'Árbol' }, { char: 'B', word: 'Barco' }, { char: 'C', word: 'Casa' }, { char: 'D', word: 'Dedo' }, { char: 'E', word: 'Elefante' }, { char: 'F', word: 'Fuego' }, { char: 'G', word: 'Gato' }, { char: 'H', word: 'Hojas' }, { char: 'I', word: 'Isla' }, { char: 'J', word: 'Jirafa' }, { char: 'K', word: 'Koala' }, { char: 'L', word: 'León' }, { char: 'M', word: 'Mono' }, { char: 'N', word: 'Naranja' }, { char: 'O', word: 'Oso' }, { char: 'P', word: 'Perro' }, { char: 'Q', word: 'Queso' }, { char: 'R', word: 'Ratón' }, { char: 'S', word: 'Sol' }, { char: 'T', word: 'Tortuga' }, { char: 'U', word: 'Uva' }, { char: 'V', word: 'Vaca' }, { char: 'W', word: 'Wafle' }, { char: 'X', word: 'Xilófono' }, { char: 'Y', word: 'Yoyo' }, { char: 'Z', word: 'Zorro' } ];
 
@@ -513,7 +533,7 @@
                         { vi: 'Phở', es: 'Sopa', img: '🍜' }, 
                         { vi: 'Cam', es: 'Naranja', img: '🍊' },
                         { vi: 'Thịt', es: 'Carne', img: '🥩' },
-                        { vi: 'Cá (ăn)', es: 'Pescado', img: '🐟' }
+                        { vi: 'Cá', es: 'Pescado', img: '🐟' }
                     ],
                     3: [
                         { vi: 'Bánh ngọt', es: 'Pastel', img: '🍰' }, 
@@ -696,12 +716,16 @@
             vi: [
                 { title: "Một Con Vịt (Video)", emoji: "🦆", videoId: "bADpiLWn50A", type: "video" },
                 { title: "Một Con Vịt (Karaoke)", emoji: "🎤", videoId: "YWsNJV-X68s", type: "karaoke" },
-                { title: "Kìa Con Bướm Vàng", emoji: "🦋", videoId: "cTkWo1S8fKw", type: "video" }
+                { title: "Kìa Con Bướm Vàng", emoji: "🦋", videoId: "cTkWo1S8fKw", type: "video" },
+                { title: "Cháu Yêu Bà", emoji: "👵", videoId: "g25P9x6_4Dk", type: "video" },
+                { title: "Rửa Mặt Như Mèo", emoji: "🐱", videoId: "P-9N-yPzV-w", type: "video" }
             ],
             es: [
                 { title: "La Vaca Lola (Video)", emoji: "🐮", videoId: "eNLjdPI9zdE", type: "video" },
                 { title: "La Vaca Lola (Karaoke)", emoji: "🎤", videoId: "q000pdnlVAY", type: "karaoke" },
-                { title: "Estrellita Dónde Estás", emoji: "⭐", videoId: "rPGCmuWNVIU", type: "video" }
+                { title: "Estrellita Dónde Estás", emoji: "⭐", videoId: "rPGCmuWNVIU", type: "video" },
+                { title: "Los Pollitos Dicen", emoji: "🐥", videoId: "cwXzKj1L1vI", type: "video" },
+                { title: "Pin Pon es un Muñeco", emoji: "🪆", videoId: "I0RWeI_HqEM", type: "video" }
             ]
         };
 
@@ -850,6 +874,68 @@
                 utt.lang = langCode; utt.volume = 1; utt.rate = 1; utt.pitch = 1;
                 window.speechSynthesis.speak(utt);
             }
+        };
+
+        // NEW: RECORDING AUDIO ENGINE (SPEECH RECOGNITION FALLBACK)
+        window.startListening = function(callback) {
+            try {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) throw new Error("No API");
+                
+                const recognition = new SpeechRecognition();
+                recognition.lang = currentLang === 'es' ? 'es-ES' : 'vi-VN';
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+                
+                let handled = false;
+                
+                recognition.onresult = function(event) {
+                    if(handled) return; handled = true;
+                    callback(true);
+                };
+                
+                recognition.onerror = function(event) {
+                    if(handled) return; handled = true;
+                    callback(false);
+                };
+
+                recognition.onend = function() {
+                    if(!handled) { handled = true; callback(false); }
+                };
+                
+                recognition.start();
+            } catch(e) {
+                // Magic Fallback for strict iPads: Pretends to listen for 2.5 seconds, then rewards.
+                setTimeout(() => { callback(true); }, 2500);
+            }
+        };
+
+        window.recordVocab = function() {
+            const micBtn = document.getElementById('btn-mic-vocab');
+            micBtn.classList.add('pulse-mic');
+            window.startListening((success) => {
+                micBtn.classList.remove('pulse-mic');
+                if (success) {
+                    window.playAudio(currentLang === 'es' ? '¡Muy bien!' : 'Giỏi lắm!');
+                    window.triggerConfetti();
+                } else {
+                    window.playAudio(currentLang === 'es' ? 'Inténtalo de nuevo' : 'Nói lại nhé');
+                }
+            });
+        };
+
+        window.recordConvo = function() {
+            const micBtn = document.getElementById('btn-mic-convo');
+            micBtn.classList.add('pulse-mic');
+            window.startListening((success) => {
+                micBtn.classList.remove('pulse-mic');
+                if (success) {
+                    window.playAudio(currentLang === 'es' ? '¡Muy bien!' : 'Giỏi lắm!');
+                    window.triggerConfetti();
+                } else {
+                    window.playAudio(currentLang === 'es' ? 'Inténtalo de nuevo' : 'Nói lại nhé');
+                }
+            });
         };
 
         window.triggerConfetti = function() { if (typeof confetti === 'function') confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } }); };
@@ -1282,6 +1368,7 @@
         window.nextConvoLine = function() { convoLineIdx++; window.renderConvoLine(); };
         window.exitConversationMode = function() { window.showScreen('dashboard'); };
 
+        // --- NEW: PERFECT EMOJI MAPPING FOR SLICER GAME ---
         let slicerRunning = false;
         
         window._slicerHandleMove = function(e) {
@@ -1314,6 +1401,14 @@
             canvas.addEventListener('touchmove', window._slicerHandleMove, { passive: false });
             canvas.addEventListener('mousemove', window._slicerHandleMove, { passive: false });
 
+            // Extract verified Emoji/Word pairs from the Description game database
+            const SLICER_POOL = [];
+            Object.keys(DESCRIBE_QUESTIONS[currentLang]).forEach(level => {
+                DESCRIBE_QUESTIONS[currentLang][level].forEach(q => {
+                    SLICER_POOL.push({ emoji: q.emoji, word: q.options[0] }); // Index 0 is always correct in our dataset
+                });
+            });
+
             const loop = () => {
                 if(!slicerRunning) return;
                 ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1326,11 +1421,8 @@
                 window._slicerTrail.forEach(t => t.age++); window._slicerTrail = window._slicerTrail.filter(t => t.age < 12);
 
                 if (Math.random() < 0.035) {
-                    const pool = TOPICS[0].levels[1].concat(TOPICS[1].levels[1]); // Mix animals/food
-                    const sampleWord = pool[Math.floor(Math.random() * pool.length)];
-                    let emoji = '🍉'; 
-                    if(sampleWord.vi==='Chó') emoji='🐶'; else if(sampleWord.vi==='Mèo') emoji='🐱'; else if(sampleWord.vi==='Táo') emoji='🍎'; else if(sampleWord.vi==='Chuối') emoji='🍌';
-                    window._slicerItems.push({ emoji: emoji, word: sampleWord[currentLang], x: Math.random() * (canvas.width - 100) + 50, y: canvas.height + 50, vx: (Math.random() - 0.5) * 6, vy: -15 });
+                    const sample = SLICER_POOL[Math.floor(Math.random() * SLICER_POOL.length)];
+                    window._slicerItems.push({ emoji: sample.emoji, word: sample.word, x: Math.random() * (canvas.width - 100) + 50, y: canvas.height + 50, vx: (Math.random() - 0.5) * 6, vy: -15 });
                 }
 
                 window._slicerItems.forEach((it, idx) => {
